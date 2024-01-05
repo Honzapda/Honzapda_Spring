@@ -1,4 +1,4 @@
-package Honzapda.Honzapda_server.user.domain;
+package Honzapda.Honzapda_server.user.data.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

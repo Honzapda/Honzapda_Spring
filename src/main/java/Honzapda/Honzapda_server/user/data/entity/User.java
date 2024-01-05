@@ -1,6 +1,6 @@
-package Honzapda.Honzapda_server.user.domain;
+package Honzapda.Honzapda_server.user.data.entity;
 
-import Honzapda.Honzapda_server.user.domain.common.BaseEntity;
+import Honzapda.Honzapda_server.user.data.entity.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
