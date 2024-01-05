@@ -1,4 +1,4 @@
-package Honzapda.Honzapda_server.domain.common;
+package Honzapda.Honzapda_server.user.domain.common;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.EntityListeners;
