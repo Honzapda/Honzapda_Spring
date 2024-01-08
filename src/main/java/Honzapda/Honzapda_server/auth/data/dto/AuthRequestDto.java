@@ -21,7 +21,12 @@ public class AuthRequestDto {
     }
     @Getter
     public static class Register{
+        @Size(max=50)
+        @CheckId
+        @NotBlank
+        @Email
         String email;
+        @Size(max=50)
         String password;
     }
 }
