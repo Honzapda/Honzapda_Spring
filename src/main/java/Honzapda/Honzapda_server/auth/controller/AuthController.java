@@ -27,7 +27,18 @@ public class AuthController {
      */
     @PostMapping("/checkId")
     public ApiResult<Boolean>
-    memberJoin(@RequestBody @Valid AuthRequestDto.GetEmail request) {
+    checkId(@RequestBody @Valid AuthRequestDto.GetEmail request) {
         return ApiResult.onSuccess(true);
+    }
+    /**
+     * id 중복 검사
+     * 실패 : 에러
+     * 성공 : True
+     */
+    @PostMapping("/register")
+    public ApiResult<Boolean>
+    register(@RequestBody @Valid AuthRequestDto.Register request) {
+        authService.registerUser(request);
+        return ApiResult.onSuccess(SuccessStatus._CREATED,true);
     }
 }
