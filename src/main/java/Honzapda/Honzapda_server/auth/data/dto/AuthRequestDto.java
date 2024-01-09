@@ -8,11 +8,12 @@ import lombok.Getter;
 
 /*
 특수) api -> 회원가입 : register
-일반) method + 대상 + dto -> 리뷰 리스트 조회 : GetReviewList
+일반) method + 대상 -> 리뷰 리스트 조회 : GetReviewList
  */
 public class AuthRequestDto {
     @Getter
     public static class GetEmail{
+
         @Size(max=50)
         @CheckId
         @NotBlank
@@ -21,12 +22,24 @@ public class AuthRequestDto {
     }
     @Getter
     public static class Register{
-        @Size(max=50)
+
+        @Email
         @CheckId
         @NotBlank
-        @Email
+        @Size(max=50)
         String email;
+        @NotBlank
         @Size(max=50)
         String password;
     }
+    @Getter
+    public static class Login{
+
+        @Email
+        @NotBlank
+        String email;
+        @NotBlank
+        String password;
+    }
+
 }
