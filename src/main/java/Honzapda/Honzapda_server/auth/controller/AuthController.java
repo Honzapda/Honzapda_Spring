@@ -3,6 +3,7 @@ package Honzapda.Honzapda_server.auth.controller;
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
 import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.auth.data.dto.AuthRequestDto;
+import Honzapda.Honzapda_server.auth.data.dto.AuthResponseDto;
 import Honzapda.Honzapda_server.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class AuthController {
     private final AuthService authService;
 
     /**
-     * id 중복 검사
+     * id 중복 검사 api
      * 실패 : 에러
      * 성공 : True
      */
@@ -31,7 +32,7 @@ public class AuthController {
         return ApiResult.onSuccess(true);
     }
     /**
-     * id 중복 검사
+     * 회원가입 api
      * 실패 : 에러
      * 성공 : True
      */
@@ -40,5 +41,16 @@ public class AuthController {
     register(@RequestBody @Valid AuthRequestDto.Register request) {
         authService.registerUser(request);
         return ApiResult.onSuccess(SuccessStatus._CREATED,true);
+    }
+    /**
+     * 로그인 api
+     * 실패 : 에러
+     * 성공 : True
+     */
+    @PostMapping("/login")
+    public ApiResult<AuthResponseDto.Login>
+    register(@RequestBody @Valid AuthRequestDto.Login request) {
+
+        return ApiResult.onSuccess(authService.loginUser(request));
     }
 }
