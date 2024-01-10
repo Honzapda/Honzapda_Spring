@@ -1,0 +1,34 @@
+package Honzapda.Honzapda_server.auth.apple;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Component
+@FeignClient(
+        name = "apple-auth",
+        url = "${client.apple-auth.url}",
+        configuration = AppleFeignClientConfiguration.class
+)
+public interface AppleAuthClient {
+
+    @PostMapping(value = "/auth/token", consumes = "application/x-www-form-urlencoded")
+    AppleSocialTokenInfoResponse findAppleToken(
+            @RequestParam("client_id") String clientId,
+            @RequestParam("client_secret") String clientSecret,
+            @RequestParam("grant_type") String grantType,
+            @RequestParam("code") String code
+    );
+
+    @PostMapping(value="/auth/revoke",consumes = "application/x-www-form-urlencoded")
+    String revokeToken(
+//            @RequestHeader HttpHeaders headers,
+            @RequestParam("client_id") String clientId,
+            @RequestParam("client_secret") String clientSecret,
+            @RequestParam("token") String token,
+            @RequestParam("token_type_hint") String tokenHint
+    );
+}
