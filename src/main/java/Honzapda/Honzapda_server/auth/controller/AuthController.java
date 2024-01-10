@@ -4,7 +4,6 @@ import Honzapda.Honzapda_server.auth.service.AuthService;
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
-import Honzapda.Honzapda_server.user.data.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/apple")
-    public ResponseEntity<?> appleLogin(HttpServletRequest request, @RequestParam String authorizationCode){
+    public ResponseEntity<?> appleLogin(HttpServletRequest request, @RequestParam("code") String authorizationCode){
         try{
             ResponseEntity<?> responseEntity = authService.appleLogin(authorizationCode);
             if(responseEntity.getStatusCode().equals(HttpStatus.OK)){
@@ -42,7 +41,7 @@ public class AuthController {
             return responseEntity;
         }
         catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -90,7 +89,7 @@ public class AuthController {
             return new ResponseEntity<>("logout Success!", HttpStatus.OK);
         }
         catch (Exception e){
-            return new ResponseEntity<>("logout Fail", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -105,7 +104,6 @@ public class AuthController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
         catch (Exception e){
-            // exception 종류에 따라 response 다르게 주기..!
             return new ResponseEntity<>("Revoke Failed!", HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
