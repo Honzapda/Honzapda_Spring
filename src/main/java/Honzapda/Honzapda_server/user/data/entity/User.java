@@ -9,8 +9,11 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+//@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User extends BaseEntity {
 
@@ -18,14 +21,27 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50)
-    private String address;
-
-    @Column(length = 50)
-    private String address_spec;
-
     @Column(nullable = false, length = 25)
     private String name;
 
+    @Column(nullable = false, length = 50)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SignUpType signUpType;
+
+    @Column
     private LocalDateTime inactiveDate;
+
+    @Column
+    private String socialToken;
+
+    public enum SignUpType {
+        LOCAL, APPLE, GOOGLE, KAKAO
+    }
+
 }
