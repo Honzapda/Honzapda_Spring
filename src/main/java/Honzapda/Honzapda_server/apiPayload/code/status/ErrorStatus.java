@@ -18,7 +18,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     EMAIL_EXIST(HttpStatus.BAD_REQUEST,"JOIN4001","이미 존재하는 계정입니다."),
     // 로그인 응답
-    LOGIN_NOT_MATCH(HttpStatus.BAD_REQUEST,"LOGIN4002","ID혹은PW가 다릅니다."),
+    LOGIN_NOT_MATCH(HttpStatus.BAD_REQUEST,"LOGIN4002","ID혹은PW가 다릅니다.");
     // 유저 응답
 
 
