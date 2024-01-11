@@ -51,3 +51,15 @@ public class Shop extends BaseEntity{
     @JoinColumn(name = "userId")
     private User user;
 }
+
+/*
+{
+  "name": "Best Coffee Shop",
+  "description": "A cozy coffee shop with a variety of blends.",
+  "otherDetails": "Free Wi-Fi, Outdoor Seating",
+  "phoneNumber": "+1234567890",
+  "address": "456 Oak Avenue",
+  "address_spec": "Suite 2",
+  "userId": 1
+}
+ */
