@@ -8,5 +8,5 @@ public class UserJoinDto {
     private String name;
     private String email;
     private String password;
-    private AppleSocialTokenInfoResponse socialToken;
+    private String socialToken;
 }

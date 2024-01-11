@@ -5,6 +5,7 @@ import Honzapda.Honzapda_server.auth.apple.AppleIdTokenPayload;
 import Honzapda.Honzapda_server.auth.apple.AppleProperties;
 import Honzapda.Honzapda_server.auth.apple.AppleSocialTokenInfoResponse;
 import Honzapda.Honzapda_server.auth.apple.common.TokenDecoder;
+import Honzapda.Honzapda_server.user.data.dto.AppleJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
@@ -67,7 +68,8 @@ public class AuthServiceImpl implements AuthService{
             return new ResponseEntity<>(UserResDto.toDTO(user.get()),HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>(appleToken,HttpStatus.UNAUTHORIZED);
+            AppleJoinDto appleJoinDto = AppleJoinDto.toDTO(appleIdTokenPayload.getEmail(), appleToken.getRefreshToken());
+            return new ResponseEntity<>(appleJoinDto,HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -77,24 +79,19 @@ public class AuthServiceImpl implements AuthService{
         // 중복 체크 하기
         User user = new User();
         user.setName(userJoinDto.getName());
+        userRepository.findByEmail(userJoinDto.getEmail()).ifPresent(u->{
+            throw new DataIntegrityViolationException("이미 존재하는 회원입니다.");
+        });
+        user.setEmail(userJoinDto.getEmail());
 
         if(userJoinDto.getSocialToken()==null){
             // 일반 회원
-            userRepository.findByEmail(userJoinDto.getEmail()).ifPresent(u->{
-                throw new DataIntegrityViolationException("이미 존재하는 회원입니다.");
-            });
-            user.setEmail(userJoinDto.getEmail());
             user.setPassword(passwordEncoder.encode(userJoinDto.getPassword()));
             user.setSignUpType(User.SignUpType.LOCAL);
         }
         else{
             // 애플 회원
-            AppleIdTokenPayload appleIdTokenPayload = TokenDecoder.decodePayload(userJoinDto.getSocialToken().getIdToken(), AppleIdTokenPayload.class);
-            userRepository.findByEmail(appleIdTokenPayload.getEmail()).ifPresent(u->{
-                throw new DataIntegrityViolationException("이미 존재하는 회원입니다.");
-            });
-            user.setEmail(appleIdTokenPayload.getEmail());
-            user.setSocialToken(userJoinDto.getSocialToken().getRefreshToken());
+            user.setSocialToken(userJoinDto.getSocialToken());
             user.setSignUpType(User.SignUpType.APPLE);
         }
         userRepository.save(user);
