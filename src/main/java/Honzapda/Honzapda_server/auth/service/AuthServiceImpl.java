@@ -18,8 +18,18 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
+
     private final AuthRepository authRepository;
+    @Autowired
+    private final UserRepository userRepository;
+    @Autowired
+    private final AppleAuthClient appleAuthClient;
+    @Autowired
+    private final AppleProperties appleProperties;
+    @Autowired
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     public boolean isEMail(String email) {
         return authRepository.existsByEmail(email);
@@ -29,9 +39,10 @@ public class AuthServiceImpl implements AuthService{
     @Transactional
     public void registerUser(AuthRequestDto.Register request) {
 
-        User newUser = AuthConverter.toUser(request,genName());
+        User newUser = AuthConverter.toUser(request, genName());
         authRepository.save(newUser);
     }
+
     @Override
     public String genName() {
 
@@ -40,20 +51,21 @@ public class AuthServiceImpl implements AuthService{
                 "행복한", "슬픈", "게으른", "슬기로운", "수줍은",
                 "그리운", "더러운", "섹시한", "배고픈", "배부른",
                 "부자", "재벌", "웃고있는", "깨발랄한", "프로",
-                "잔잔한","아늑한","시끄러운","코딩","깨끗한"
+                "잔잔한", "아늑한", "시끄러운", "코딩", "깨끗한"
         );
         List<String> midName = Arrays.asList(
-                "카페","커피머신","조명","가격","책상","공간","짐깅","로딩",
-                "웅이","젬마","제로","휘리릭","맥구","체리","이제");
+                "카페", "커피머신", "조명", "가격", "책상", "공간", "짐깅", "로딩",
+                "웅이", "젬마", "제로", "휘리릭", "맥구", "체리", "이제");
         do {
-            String number = (int)(Math.random() * 99)+1 +"";
+            String number = (int) (Math.random() * 99) + 1 + "";
             Collections.shuffle(adjective);
             Collections.shuffle(midName);
-            name = adjective.get(0)+midName.get(0)+number;
+            name = adjective.get(0) + midName.get(0) + number;
 
-        }while(authRepository.existsByName(name));
+        } while (authRepository.existsByName(name));
         return name;
     }
+
     @Override
     public AuthResponseDto.Login loginUser(AuthRequestDto.Login request) {
 
@@ -65,4 +77,124 @@ public class AuthServiceImpl implements AuthService{
                 .memberId(getUser.getId())
                 .build();
     }
-}
+
+
+    public AuthServiceImpl(UserRepository userRepository, AppleAuthClient appleAuthClient, AppleProperties appleProperties, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.appleAuthClient = appleAuthClient;
+        this.appleProperties = appleProperties;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public ResponseEntity<?> appleLogin(String authorizationCode) {
+
+        AppleSocialTokenInfoResponse appleToken = appleAuthClient.findAppleToken(
+                appleProperties.getClientId(),
+                generateClientSecret(),
+                appleProperties.getGrantType(),
+                authorizationCode
+        );
+        AppleIdTokenPayload appleIdTokenPayload = TokenDecoder.decodePayload(appleToken.getIdToken(), AppleIdTokenPayload.class);
+
+        Optional<User> user = userRepository.findByEmail(appleIdTokenPayload.getEmail());
+
+        if (user.isPresent()) {
+            return new ResponseEntity<>(UserResDto.toDTO(user.get()), HttpStatus.OK);
+        } else {
+            AppleJoinDto appleJoinDto = AppleJoinDto.toDTO(appleIdTokenPayload.getEmail(), appleToken.getRefreshToken());
+            return new ResponseEntity<>(appleJoinDto, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @Override
+    public UserResDto join(UserJoinDto userJoinDto) {
+
+        // 중복 체크 하기
+        User user = new User();
+        user.setName(userJoinDto.getName());
+        userRepository.findByEmail(userJoinDto.getEmail()).ifPresent(u -> {
+            throw new DataIntegrityViolationException("이미 존재하는 회원입니다.");
+        });
+        user.setEmail(userJoinDto.getEmail());
+
+        if (userJoinDto.getSocialToken() == null) {
+            // 일반 회원
+            user.setPassword(passwordEncoder.encode(userJoinDto.getPassword()));
+            user.setSignUpType(User.SignUpType.LOCAL);
+        } else {
+            // 애플 회원
+            user.setSocialToken(userJoinDto.getSocialToken());
+            user.setSignUpType(User.SignUpType.APPLE);
+        }
+        userRepository.save(user);
+        return UserResDto.toDTO(user);
+    }
+
+    @Override
+    public UserResDto login(UserLoginDto userLoginDto) {
+
+        User user = userRepository.findByEmail(userLoginDto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("유저 정보 없음"));
+
+        boolean matches = passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword());
+        if (!matches) throw new BadCredentialsException("아이디 혹은 비밀번호를 확인하세요.");
+
+        return UserResDto.toDTO(user);
+    }
+
+    @Override
+    public void revoke(UserResDto userResDto) {
+
+        User user = userRepository.findById(userResDto.getId()).orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
+        System.out.println(user.getId());
+        if (user.getSignUpType() == User.SignUpType.APPLE) {
+            String refreshToken = user.getSocialToken();
+            if (refreshToken != null) {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+                appleAuthClient.revokeToken(
+                        appleProperties.getClientId(),
+                        generateClientSecret(),
+                        refreshToken,
+                        "refresh_token"
+                );
+            }
+
+        }
+        userRepository.deleteById(user.getId());
+    }
+        private String generateClientSecret () {
+
+            LocalDateTime expiration = LocalDateTime.now().plusMinutes(5);
+
+            return Jwts.builder()
+                    .setHeaderParam(JwsHeader.KEY_ID, appleProperties.getKeyId())
+                    .setIssuer(appleProperties.getTeamId())
+                    .setAudience(appleProperties.getAudience())
+                    .setSubject(appleProperties.getClientId())
+                    .setExpiration(Date.from(expiration.atZone(ZoneId.systemDefault()).toInstant()))
+                    .setIssuedAt(new Date())
+                    .signWith(getPrivateKey(), SignatureAlgorithm.ES256)
+                    .compact();
+        }
+
+        private PrivateKey getPrivateKey(){
+
+            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
+
+            try {
+                byte[] privateKeyBytes = Base64.getDecoder().decode(appleProperties.getPrivateKey());
+
+                PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
+                return converter.getPrivateKey(privateKeyInfo);
+            } catch (Exception e) {
+                throw new RuntimeException("Error converting private key from String", e);
+            }
+        }
+
+
+    }
+

@@ -6,7 +6,19 @@ import Honzapda.Honzapda_server.user.data.entity.User;
 
 public interface AuthService {
     boolean isEMail(String email);
+
     void registerUser(AuthRequestDto.Register request);
+
     String genName();
+
     AuthResponseDto.Login loginUser(AuthRequestDto.Login request);
+
+    ResponseEntity<?> appleLogin(String authorizationCode);
+
+    void revoke(UserResDto userResDto);
+
+    UserResDto join(UserJoinDto userJoinDto);
+
+    UserResDto login(UserLoginDto userLoginDto);
 }
+

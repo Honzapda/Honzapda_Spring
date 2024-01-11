@@ -7,9 +7,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Setter
 @Getter
 @Builder
+@NoArgsConstructor
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends BaseEntity {
@@ -18,42 +19,27 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50, nullable = false)
-    private String email;
-
-    @Column(length = 50, nullable = false)
-    private String password;
-
-    @Column(length = 50)
-    private String address;
-
-    @Column(length = 50)
-    private String address_spec;
-
-    @Enumerated(EnumType.STRING)
-    private SocialType socialType;
-
-    @Enumerated(EnumType.STRING)
-    private MemberType memberType;
-
     @Column(nullable = false, length = 25)
     private String name;
 
+    @Column(nullable = false, length = 50)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
-    private LocalDateTime inactiveDate;
-}
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SignUpType signUpType;
 
-/*
-{
-  "email": "example22@example.com",
-  "password": "password123",
-  "address": "123 Main St",
-  "address_spec": "Apt 456",
-  "socialType": "APPLE",
-  "memberType": "BASIC",
-  "name": "John Doe22"
+    @Column
+    private LocalDateTime inactiveDate;
+
+    @Column
+    private String socialToken;
+
+    public enum SignUpType {
+        LOCAL, APPLE, GOOGLE, KAKAO
+    }
+
 }
- */
