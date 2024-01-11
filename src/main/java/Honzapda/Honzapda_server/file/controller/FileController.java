@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/file")
@@ -22,11 +24,11 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadObject(GCSRequest gcsRequest) {
+    public ResponseEntity<?> uploadObject(@RequestPart List<MultipartFile> multipartFiles) {
 
         try{
-            String uuid = fileService.uploadObject(gcsRequest.getFile());
-            return new ResponseEntity<>(uuid,HttpStatus.OK);
+            List<String> uuids = fileService.uploadObject(multipartFiles);
+            return new ResponseEntity<>(uuids,HttpStatus.OK);
         }
         catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

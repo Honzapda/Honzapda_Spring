@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,18 +31,26 @@ public class FileServiceImpl implements FileService{
         this.storage = storage;
     }
     @Override
-    public String uploadObject(MultipartFile image) throws Exception{
+    public List<String> uploadObject(List<MultipartFile> multipartFiles) throws Exception{
 
-        String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
-        String ext = image.getContentType();
+        List<String> uuids = new ArrayList<>();
+        for(MultipartFile image : multipartFiles){
 
-        BlobInfo blobInfo = storage.create(
-                BlobInfo.newBuilder(bucketName, uuid)
-                        .setContentType(ext)
-                        .build(),
-                image.getInputStream()
-        );
-        return uuid;
+            String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+            String ext = image.getContentType();
+
+            BlobInfo blobInfo = storage.create(
+                    BlobInfo.newBuilder(bucketName, uuid)
+                            .setContentType(ext)
+                            .build(),
+                    image.getInputStream()
+            );
+
+            uuids.add(uuid);
+        }
+
+        return uuids;
+
     }
 
     @Override
