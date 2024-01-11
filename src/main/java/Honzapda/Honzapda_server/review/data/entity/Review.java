@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.review.data.entity;
 
 import Honzapda.Honzapda_server.review.data.entity.common.BaseEntity;
+import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -34,6 +35,6 @@ public class Review extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "storeId")
-    private Store store;
+    @JoinColumn(name = "shopId")
+    private Shop shop;
 }
