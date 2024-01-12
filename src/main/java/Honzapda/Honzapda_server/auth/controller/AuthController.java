@@ -1,13 +1,16 @@
 package Honzapda.Honzapda_server.auth.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
-import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.auth.data.dto.AuthRequestDto;
-import Honzapda.Honzapda_server.auth.data.dto.AuthResponseDto;
 import Honzapda.Honzapda_server.auth.service.AuthService;
+import Honzapda.Honzapda_server.user.data.dto.AppleJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -62,6 +65,11 @@ public class AuthController {
 //    }
 
     @PostMapping("/apple")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Created", content = @Content(schema = @Schema(implementation = UserResDto.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",content = @Content(schema = @Schema(implementation = AppleJoinDto.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",content = @Content(schema = @Schema(implementation = String.class)))
+    })
     public ResponseEntity<?> appleLogin(HttpServletRequest request, @RequestParam("code") String authorizationCode){
         try{
             ResponseEntity<?> responseEntity = authService.appleLogin(authorizationCode);
@@ -118,6 +126,10 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",content = @Content(schema = @Schema(implementation = String.class)))
+    })
     public ResponseEntity<?> logout(HttpSession session)
     {
         try{
@@ -130,6 +142,11 @@ public class AuthController {
     }
 
     @DeleteMapping("/revoke")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",content = @Content(schema = @Schema(implementation = String.class)))
+    })
     public ResponseEntity<?> revoke(@SessionAttribute UserResDto user){
 
         try{
