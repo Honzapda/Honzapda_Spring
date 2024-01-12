@@ -6,12 +6,15 @@ public class ShopRequestDto {
 
     @Getter
     public static class registerDto {
-        String name;
+        String shopName;
+        String adminName;
         String description;
         String otherDetails;
-        String phoneNumber;
+        String shopPhoneNumber;
+        String adminPhoneNumber;
         String address;
         String address_spec;
+        String businessNumber;
         Long userId;
     }
 }
