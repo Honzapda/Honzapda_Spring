@@ -2,24 +2,46 @@ package Honzapda.Honzapda_server.auth.service;
 
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.exception.handler.LoginHandler;
+import Honzapda.Honzapda_server.auth.apple.AppleAuthClient;
+import Honzapda.Honzapda_server.auth.apple.AppleIdTokenPayload;
+import Honzapda.Honzapda_server.auth.apple.AppleProperties;
+import Honzapda.Honzapda_server.auth.apple.AppleSocialTokenInfoResponse;
+import Honzapda.Honzapda_server.auth.apple.common.TokenDecoder;
 import Honzapda.Honzapda_server.auth.data.AuthConverter;
 import Honzapda.Honzapda_server.auth.data.dto.AuthRequestDto;
 import Honzapda.Honzapda_server.auth.data.dto.AuthResponseDto;
 import Honzapda.Honzapda_server.auth.repository.AuthRepository;
+import Honzapda.Honzapda_server.user.data.dto.AppleJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import Honzapda.Honzapda_server.user.repository.UserRepository;
+import io.jsonwebtoken.JwsHeader;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.security.PrivateKey;
+import java.security.Security;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
-
+    @Autowired
     private final AuthRepository authRepository;
     @Autowired
     private final UserRepository userRepository;
@@ -30,6 +52,13 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private final PasswordEncoder passwordEncoder;
 
+    public AuthServiceImpl(AuthRepository authRepository, UserRepository userRepository, AppleAuthClient appleAuthClient, AppleProperties appleProperties, PasswordEncoder passwordEncoder) {
+        this.authRepository = authRepository;
+        this.userRepository = userRepository;
+        this.appleAuthClient = appleAuthClient;
+        this.appleProperties = appleProperties;
+        this.passwordEncoder = passwordEncoder;
+    }
     @Override
     public boolean isEMail(String email) {
         return authRepository.existsByEmail(email);
@@ -79,12 +108,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-    public AuthServiceImpl(UserRepository userRepository, AppleAuthClient appleAuthClient, AppleProperties appleProperties, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.appleAuthClient = appleAuthClient;
-        this.appleProperties = appleProperties;
-        this.passwordEncoder = passwordEncoder;
-    }
+
 
     @Override
     public ResponseEntity<?> appleLogin(String authorizationCode) {

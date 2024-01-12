@@ -5,13 +5,20 @@ import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.auth.data.dto.AuthRequestDto;
 import Honzapda.Honzapda_server.auth.data.dto.AuthResponseDto;
 import Honzapda.Honzapda_server.auth.service.AuthService;
+import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RestController
@@ -36,23 +43,23 @@ public class AuthController {
      * 실패 : 에러
      * 성공 : True
      */
-    @PostMapping("/register")
-    public ApiResult<Boolean>
-    register(@RequestBody @Valid AuthRequestDto.Register request) {
-        authService.registerUser(request);
-        return ApiResult.onSuccess(SuccessStatus._CREATED,true);
-    }
-    /**
-     * 로그인 api
-     * 실패 : 에러
-     * 성공 : True
-     */
-    @PostMapping("/login")
-    public ApiResult<AuthResponseDto.Login>
-    register(@RequestBody @Valid AuthRequestDto.Login request) {
-
-        return ApiResult.onSuccess(authService.loginUser(request));
-    }
+//    @PostMapping("/register")
+//    public ApiResult<Boolean>
+//    register(@RequestBody @Valid AuthRequestDto.Register request) {
+//        authService.registerUser(request);
+//        return ApiResult.onSuccess(SuccessStatus._CREATED,true);
+//    }
+//    /**
+//     * 로그인 api
+//     * 실패 : 에러
+//     * 성공 : True
+//     */
+//    @PostMapping("/login")
+//    public ApiResult<AuthResponseDto.Login>
+//    register(@RequestBody @Valid AuthRequestDto.Login request) {
+//
+//        return ApiResult.onSuccess(authService.loginUser(request));
+//    }
 
     @PostMapping("/apple")
     public ResponseEntity<?> appleLogin(HttpServletRequest request, @RequestParam("code") String authorizationCode){

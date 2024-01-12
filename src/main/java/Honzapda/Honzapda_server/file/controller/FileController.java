@@ -1,7 +1,6 @@
 package Honzapda.Honzapda_server.file.controller;
 
 
-import Honzapda.Honzapda_server.file.data.dto.GCSRequest;
 import Honzapda.Honzapda_server.file.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,10 +23,10 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadObject(@RequestPart List<MultipartFile> multipartFiles) {
+    public ResponseEntity<?> uploadObject(@RequestPart List<MultipartFile> images) {
 
         try{
-            List<String> uuids = fileService.uploadObject(multipartFiles);
+            List<String> uuids = fileService.uploadObject(images);
             return new ResponseEntity<>(uuids,HttpStatus.OK);
         }
         catch (Exception e){

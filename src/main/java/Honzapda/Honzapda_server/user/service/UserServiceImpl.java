@@ -43,9 +43,6 @@ public class UserServiceImpl implements UserService{
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setAddress(request.getAddress());
-            user.setAddress_spec(request.getAddress_spec());
-            user.setMemberType(request.getMemberType());
             user.setName(request.getName());
 
             User savedUser = userRepository.save(user);
