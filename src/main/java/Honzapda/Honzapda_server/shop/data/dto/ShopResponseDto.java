@@ -17,14 +17,21 @@ public class ShopResponseDto {
     @AllArgsConstructor
     public static class searchDto {
         Long shopId;
-        String name;
+        String shopName;
+        String adminName;
         String description;
         String otherDetails;
-        String phoneNumber;
+        String shopPhoneNumber;
+        String adminPhoneNumber;
         Double rating;
         String address;
         String address_spec;
+        String businessNumber;
         LocalDateTime inactiveDate;
         List<Review> reviewList;
+
+        public void setRating(double rating){
+            this.rating = rating;
+        }
     }
 }
