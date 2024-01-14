@@ -18,6 +18,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/auth/checkId",
+                        "/auth/findId",
                         "/auth/register",
                         "/auth/login",
                         "/swagger-ui/**",
