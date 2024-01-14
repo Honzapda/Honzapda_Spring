@@ -4,10 +4,7 @@ import Honzapda.Honzapda_server.apiPayload.ApiResult;
 
 import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.auth.service.AuthService;
-import Honzapda.Honzapda_server.user.data.dto.UserEmail;
-import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
-import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
-import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import Honzapda.Honzapda_server.user.data.dto.*;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -29,7 +26,7 @@ public class AuthController {
 
     @PostMapping("/checkId")
     public ApiResult<Boolean>
-    checkId(@RequestBody @Valid UserEmail request) {
+    checkId(@RequestBody @Valid UserEmailDto request) {
         return ApiResult.onSuccess(true);
     }
 
@@ -42,9 +39,21 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResult<UserResDto>
-    register(@RequestBody @Valid UserLoginDto request) {
+    login(@RequestBody @Valid UserLoginDto request) {
         User loginUser = authService.loginUser(request);
         return ApiResult.onSuccess(UserResDto.toDTO(loginUser));
+    }
+
+    @PostMapping("/findId")
+    public ApiResult<String>
+    findId(@RequestBody @Valid UserNickNameDto request) {
+
+        User findUser = authService.getUserByNickName(request.getName());
+        String email = findUser.getEmail();
+        String masking = "**";
+        return ApiResult.onSuccess(
+                email.substring(0, email.indexOf("@")-masking.length())+masking);
+        // 이메일 @ 앞까지만 반환 + 뒤에 두자리는 masking 처림
     }
 
     @PostMapping("/apple")
