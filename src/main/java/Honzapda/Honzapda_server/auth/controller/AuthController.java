@@ -39,9 +39,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResult<UserResDto>
-    login(@RequestBody @Valid UserLoginDto request) {
-        User loginUser = authService.loginUser(request);
-        return ApiResult.onSuccess(UserResDto.toDTO(loginUser));
+    login(HttpServletRequest httpServletRequest, @RequestBody @Valid UserLoginDto request) {
+
+        UserResDto userResDto = UserResDto.toDTO(authService.loginUser(request));
+        HttpSession session = httpServletRequest.getSession(true);
+        session.setAttribute("user", userResDto);
+        session.setMaxInactiveInterval(60 * 30);
+
+        return ApiResult.onSuccess(userResDto);
     }
 
     @PostMapping("/findId")
