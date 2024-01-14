@@ -95,6 +95,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public User getUserByNickName(String nickname) {
+
+        return userRepository.findByName(nickname).orElseThrow(
+                ()->new UserHandler(ErrorStatus.NICKNAME_NOT_EXIST));
+    }
+
+    @Override
     public ResponseEntity<?> appleLogin(String authorizationCode) {
 
         AppleSocialTokenInfoResponse appleToken = appleAuthClient.findAppleToken(

@@ -10,6 +10,8 @@ public interface AuthService {
 
     User getUserByEMail(String email);
 
+    User getUserByNickName(String nickname);
+
     User registerUser(UserJoinDto request);
 
     User loginUser(UserLoginDto request);
