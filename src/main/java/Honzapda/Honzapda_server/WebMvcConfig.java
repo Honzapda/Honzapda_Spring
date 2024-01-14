@@ -17,8 +17,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginCheckInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns(
+                        "/auth/checkId",
                         "/auth/register",
-                        "/auth/login",
                         "/auth/login",
                         "/swagger-ui/**",
                         "/api-docs/**",
