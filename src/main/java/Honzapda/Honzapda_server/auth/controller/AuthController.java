@@ -1,21 +1,20 @@
 package Honzapda.Honzapda_server.auth.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
+
 import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
-import Honzapda.Honzapda_server.auth.data.dto.AuthRequestDto;
-import Honzapda.Honzapda_server.auth.data.dto.AuthResponseDto;
 import Honzapda.Honzapda_server.auth.service.AuthService;
+import Honzapda.Honzapda_server.user.data.dto.UserEmail;
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import Honzapda.Honzapda_server.user.data.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,38 +27,25 @@ public class AuthController {
 
     private final AuthService authService;
 
-    /**
-     * id 중복 검사 api
-     * 실패 : 에러
-     * 성공 : True
-     */
     @PostMapping("/checkId")
     public ApiResult<Boolean>
-    checkId(@RequestBody @Valid AuthRequestDto.GetEmail request) {
+    checkId(@RequestBody @Valid UserEmail request) {
         return ApiResult.onSuccess(true);
     }
-    /**
-     * 회원가입 api
-     * 실패 : 에러
-     * 성공 : True
-     */
-//    @PostMapping("/register")
-//    public ApiResult<Boolean>
-//    register(@RequestBody @Valid AuthRequestDto.Register request) {
-//        authService.registerUser(request);
-//        return ApiResult.onSuccess(SuccessStatus._CREATED,true);
-//    }
-//    /**
-//     * 로그인 api
-//     * 실패 : 에러
-//     * 성공 : True
-//     */
-//    @PostMapping("/login")
-//    public ApiResult<AuthResponseDto.Login>
-//    register(@RequestBody @Valid AuthRequestDto.Login request) {
-//
-//        return ApiResult.onSuccess(authService.loginUser(request));
-//    }
+
+    @PostMapping("/register")
+    public ApiResult<UserResDto>
+    register(@RequestBody @Valid UserJoinDto request) {
+        User newUser = authService.registerUser(request);
+        return ApiResult.onSuccess(SuccessStatus._CREATED, UserResDto.toDTO(newUser));
+    }
+
+    @PostMapping("/login")
+    public ApiResult<UserResDto>
+    register(@RequestBody @Valid UserLoginDto request) {
+        User loginUser = authService.loginUser(request);
+        return ApiResult.onSuccess(UserResDto.toDTO(loginUser));
+    }
 
     @PostMapping("/apple")
     public ResponseEntity<?> appleLogin(HttpServletRequest request, @RequestParam("code") String authorizationCode){
@@ -80,7 +66,7 @@ public class AuthController {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+/*
     @PostMapping("/register")
     public ResponseEntity<?> join(@RequestBody UserJoinDto userJoinDto){
 
@@ -113,10 +99,8 @@ public class AuthController {
         catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-
     }
-
+ */
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpSession session)
     {

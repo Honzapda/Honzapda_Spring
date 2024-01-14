@@ -1,16 +1,13 @@
 package Honzapda.Honzapda_server.auth.service;
 
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
-import Honzapda.Honzapda_server.apiPayload.exception.handler.LoginHandler;
+import Honzapda.Honzapda_server.apiPayload.exception.handler.UserHandler;
 import Honzapda.Honzapda_server.auth.apple.AppleAuthClient;
 import Honzapda.Honzapda_server.auth.apple.AppleIdTokenPayload;
 import Honzapda.Honzapda_server.auth.apple.AppleProperties;
 import Honzapda.Honzapda_server.auth.apple.AppleSocialTokenInfoResponse;
 import Honzapda.Honzapda_server.auth.apple.common.TokenDecoder;
-import Honzapda.Honzapda_server.auth.data.AuthConverter;
-import Honzapda.Honzapda_server.auth.data.dto.AuthRequestDto;
-import Honzapda.Honzapda_server.auth.data.dto.AuthResponseDto;
-import Honzapda.Honzapda_server.auth.repository.AuthRepository;
+import Honzapda.Honzapda_server.user.data.UserConverter;
 import Honzapda.Honzapda_server.user.data.dto.AppleJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
@@ -41,8 +38,7 @@ import java.util.*;
 @Service
 @Transactional
 public class AuthServiceImpl implements AuthService {
-    @Autowired
-    private final AuthRepository authRepository;
+
     @Autowired
     private final UserRepository userRepository;
     @Autowired
@@ -52,63 +48,51 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(AuthRepository authRepository, UserRepository userRepository, AppleAuthClient appleAuthClient, AppleProperties appleProperties, PasswordEncoder passwordEncoder) {
-        this.authRepository = authRepository;
+
+    public AuthServiceImpl(UserRepository userRepository, AppleAuthClient appleAuthClient, AppleProperties appleProperties, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.appleAuthClient = appleAuthClient;
         this.appleProperties = appleProperties;
         this.passwordEncoder = passwordEncoder;
     }
-    @Override
-    public boolean isEMail(String email) {
-        return authRepository.existsByEmail(email);
-    }
 
     @Override
     @Transactional
-    public void registerUser(AuthRequestDto.Register request) {
+    public User registerUser(UserJoinDto request) {
+        /*
+        ** 이메일 중복체크는 어노테이션으로 이미 처리.
+        ** Converter : 이메일, 이름, 비밀버호까지 처리 (Auth -> User 변경)
+         */
+        User newUser = UserConverter.toUser(request, passwordEncoder);
 
-        User newUser = AuthConverter.toUser(request, genName());
-        authRepository.save(newUser);
+        if (request.getSocialToken() == null) {
+            // 일반 회원
+            newUser.setSignUpType(User.SignUpType.LOCAL);
+        } else {
+            // 애플 회원
+            newUser.setSocialToken(request.getSocialToken());
+            newUser.setSignUpType(User.SignUpType.APPLE);
+        }
+
+        return userRepository.save(newUser);
     }
 
     @Override
-    public String genName() {
+    public User loginUser(UserLoginDto request) {
 
-        String name = null;
-        List<String> adjective = Arrays.asList(
-                "행복한", "슬픈", "게으른", "슬기로운", "수줍은",
-                "그리운", "더러운", "섹시한", "배고픈", "배부른",
-                "부자", "재벌", "웃고있는", "깨발랄한", "프로",
-                "잔잔한", "아늑한", "시끄러운", "코딩", "깨끗한"
-        );
-        List<String> midName = Arrays.asList(
-                "카페", "커피머신", "조명", "가격", "책상", "공간", "짐깅", "로딩",
-                "웅이", "젬마", "제로", "휘리릭", "맥구", "체리", "이제");
-        do {
-            String number = (int) (Math.random() * 99) + 1 + "";
-            Collections.shuffle(adjective);
-            Collections.shuffle(midName);
-            name = adjective.get(0) + midName.get(0) + number;
+        User dbUser = getUserByEMail(request.getEmail());
+        if(passwordEncoder.matches(request.getPassword(), dbUser.getPassword()))
+            throw new UserHandler(ErrorStatus.PW_NOT_MATCH);
 
-        } while (authRepository.existsByName(name));
-        return name;
+        return dbUser;
     }
 
     @Override
-    public AuthResponseDto.Login loginUser(AuthRequestDto.Login request) {
+    public User getUserByEMail(String email) {
 
-        User getUser = authRepository.findByEmail(request.getEmail())
-                .filter(find -> find.getPassword().equals(request.getPassword()))
-                .orElseThrow(() -> new LoginHandler(ErrorStatus.LOGIN_NOT_MATCH));
-
-        return AuthResponseDto.Login.builder()
-                .memberId(getUser.getId())
-                .build();
+        return userRepository.findByEmail(email).orElseThrow(
+                ()->new UserHandler(ErrorStatus.ID_NOT_EXIST));
     }
-
-
-
 
     @Override
     public ResponseEntity<?> appleLogin(String authorizationCode) {
@@ -130,7 +114,7 @@ public class AuthServiceImpl implements AuthService {
             return new ResponseEntity<>(appleJoinDto, HttpStatus.UNAUTHORIZED);
         }
     }
-
+/*
     @Override
     public UserResDto join(UserJoinDto userJoinDto) {
 
@@ -165,6 +149,8 @@ public class AuthServiceImpl implements AuthService {
 
         return UserResDto.toDTO(user);
     }
+
+ */
 
     @Override
     public void revoke(UserResDto userResDto) {
