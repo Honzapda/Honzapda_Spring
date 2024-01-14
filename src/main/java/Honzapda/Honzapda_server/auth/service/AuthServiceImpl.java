@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
     public User loginUser(UserLoginDto request) {
 
         User dbUser = getUserByEMail(request.getEmail());
-        if(passwordEncoder.matches(request.getPassword(), dbUser.getPassword()))
+        if(!passwordEncoder.matches(request.getPassword(), dbUser.getPassword()))
             throw new UserHandler(ErrorStatus.PW_NOT_MATCH);
 
         return dbUser;
