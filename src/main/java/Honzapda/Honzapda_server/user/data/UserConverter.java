@@ -1,9 +1,9 @@
 package Honzapda.Honzapda_server.user.data;
 
-import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
-import Honzapda.Honzapda_server.user.data.dto.UserRequestDto;
+import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResponseDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -20,10 +20,10 @@ import java.time.LocalDateTime;
 */
 public class UserConverter {
 
-    public static User toUser(UserRequestDto.registerDto request){
+    public static User toUser(UserJoinDto request, PasswordEncoder encoder){
         return User.builder()
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(encoder.encode(request.getPassword()))
                 .name(request.getName())
                 .inactiveDate(LocalDateTime.now())
                 .build();
