@@ -1,8 +1,7 @@
 package Honzapda.Honzapda_server.user.data;
 
-import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
-import Honzapda.Honzapda_server.user.data.dto.UserRequestDto;
-import Honzapda.Honzapda_server.user.data.dto.UserResponseDto;
+import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 
 import java.time.LocalDateTime;
@@ -20,7 +19,7 @@ import java.time.LocalDateTime;
 */
 public class UserConverter {
 
-    public static User toUser(UserRequestDto.registerDto request){
+    public static User toUser(UserJoinDto request){
         return User.builder()
                 .email(request.getEmail())
                 .password(request.getPassword())
@@ -29,10 +28,12 @@ public class UserConverter {
                 .build();
     }
 
-    public static UserResponseDto.searchDto toUserResponse(User user) {
-        return UserResponseDto.searchDto.builder()
+    public static UserResDto toUserResponse(User user) {
+        return UserResDto.builder()
                 .id(user.getId())
                 .name(user.getName())
+                .email(user.getEmail())
+                .signUpType(user.getSignUpType())
                 .build();
     }
 }

@@ -1,14 +1,15 @@
 package Honzapda.Honzapda_server.user.service;
 
 import Honzapda.Honzapda_server.user.data.UserConverter;
-import Honzapda.Honzapda_server.user.data.dto.UserRequestDto;
-import Honzapda.Honzapda_server.user.data.dto.UserResponseDto;
+import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -18,7 +19,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
 
-    public UserResponseDto.searchDto registerUser(UserRequestDto.registerDto request){
+    public UserResDto registerUser(UserJoinDto request){
         User user = UserConverter.toUser(request);
 
         userRepository.save(user);
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService{
         return UserConverter.toUserResponse(user);
     }
 
-    public UserResponseDto.searchDto searchUser(Long userId) {
+    public UserResDto searchUser(Long userId){
 
         Optional<User> optionalUser = userRepository.findById(userId);
 
@@ -34,11 +35,11 @@ public class UserServiceImpl implements UserService{
             User user = optionalUser.get();
             return UserConverter.toUserResponse(user);
         } else{
-            return null;
+            throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
         }
     }
 
-    public UserResponseDto.searchDto updateUser(UserRequestDto.updateDto request, Long userId){
+    public UserResDto updateUser(UserJoinDto request, Long userId){
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isPresent()) {
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService{
             User savedUser = userRepository.save(user);
             return UserConverter.toUserResponse(savedUser);
         } else{
-            return null;
+            throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
         }
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -35,9 +36,8 @@ public class ShopServiceImpl implements ShopService {
             Shop shop = ShopConverter.toShop(request, user.get());
             shopRepository.save(shop);
             return ShopConverter.toShopResponse(shop);
-        } else{
-            // 에러
-            return null;
+        } else {
+            throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
         }
     }
 
@@ -49,8 +49,8 @@ public class ShopServiceImpl implements ShopService {
             resultDto.setRating(getRating(shopId));
 
             return resultDto;
-        } else{
-            return null;
+        } else {
+            throw new NoSuchElementException("해당 가게가 존재하지 않습니다.");
         }
     }
 

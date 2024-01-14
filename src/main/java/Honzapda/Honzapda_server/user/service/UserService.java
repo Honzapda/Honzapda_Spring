@@ -1,13 +1,13 @@
 package Honzapda.Honzapda_server.user.service;
 
-import Honzapda.Honzapda_server.user.data.dto.UserRequestDto;
-import Honzapda.Honzapda_server.user.data.dto.UserResponseDto;
+import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 
 public interface UserService {
 
-    UserResponseDto.searchDto registerUser(UserRequestDto.registerDto request);
+    UserResDto registerUser(UserJoinDto request);
 
-    UserResponseDto.searchDto searchUser(Long userId);
+    UserResDto searchUser(Long userId);
 
-    UserResponseDto.searchDto updateUser(UserRequestDto.updateDto request, Long userId);
+    UserResDto updateUser(UserJoinDto request, Long userId);
 }
