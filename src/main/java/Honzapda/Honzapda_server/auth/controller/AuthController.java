@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final PasswordEncoder encoder;
 
     @PostMapping("/checkId")
     public ApiResult<Boolean>
@@ -46,7 +48,7 @@ public class AuthController {
 
     @PostMapping("/findId")
     public ApiResult<String>
-    findId(@RequestBody @Valid UserNickNameDto request) {
+    findId(@RequestBody @Valid FindEmailDto request) {
 
         User findUser = authService.getUserByNickName(request.getName());
         String email = findUser.getEmail();
@@ -54,6 +56,13 @@ public class AuthController {
         return ApiResult.onSuccess(
                 email.substring(0, email.indexOf("@")-masking.length())+masking);
         // 이메일 @ 앞까지만 반환 + 뒤에 두자리는 masking 처림
+    }
+
+    @PostMapping("/findPassword")
+    public ApiResult<String>
+    findPassword(@RequestBody @Valid FindPwDto request) {
+
+        return ApiResult.onSuccess(authService.patchUserPassword(request.getEmail()));
     }
 
     @PostMapping("/apple")
