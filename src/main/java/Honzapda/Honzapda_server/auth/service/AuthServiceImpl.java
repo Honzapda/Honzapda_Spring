@@ -7,6 +7,7 @@ import Honzapda.Honzapda_server.auth.apple.AppleIdTokenPayload;
 import Honzapda.Honzapda_server.auth.apple.AppleProperties;
 import Honzapda.Honzapda_server.auth.apple.AppleSocialTokenInfoResponse;
 import Honzapda.Honzapda_server.auth.apple.common.TokenDecoder;
+import Honzapda.Honzapda_server.auth.util.PasswordGenerator;
 import Honzapda.Honzapda_server.user.data.UserConverter;
 import Honzapda.Honzapda_server.user.data.dto.AppleJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
@@ -99,6 +100,17 @@ public class AuthServiceImpl implements AuthService {
 
         return userRepository.findByName(nickname).orElseThrow(
                 ()->new UserHandler(ErrorStatus.NICKNAME_NOT_EXIST));
+    }
+
+    @Override
+    public String patchUserPassword(String email) {
+
+        User findUser = getUserByEMail(email);
+        String newPassword = PasswordGenerator.generateRandomPassword(8);
+        findUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(findUser);
+
+        return newPassword;
     }
 
     @Override

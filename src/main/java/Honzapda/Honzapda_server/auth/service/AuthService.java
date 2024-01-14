@@ -12,6 +12,8 @@ public interface AuthService {
 
     User getUserByNickName(String nickname);
 
+    String patchUserPassword(String email);
+
     User registerUser(UserJoinDto request);
 
     User loginUser(UserLoginDto request);
