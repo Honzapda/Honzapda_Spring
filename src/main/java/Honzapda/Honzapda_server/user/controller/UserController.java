@@ -2,6 +2,7 @@ package Honzapda.Honzapda_server.user.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
 import Honzapda.Honzapda_server.user.data.dto.UserRequestDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResponseDto;
 import Honzapda.Honzapda_server.user.service.UserService;
 import jakarta.validation.Valid;
@@ -15,13 +16,13 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{userId}")
-    public ApiResult<UserResponseDto.searchDto> searchUser(@PathVariable(name = "userId") Long userId){
-        return ApiResult.onSuccess(userService.searchUser(userId));
+    @GetMapping("/")
+    public ApiResult<UserResponseDto.searchDto> searchUser(@SessionAttribute UserResDto user){
+        return ApiResult.onSuccess(userService.searchUser(user.getId()));
     }
 
-    @PostMapping("/{userId}")
-    public ApiResult<UserResponseDto.searchDto> updateUser(@RequestBody @Valid UserRequestDto.updateDto request, @PathVariable(name = "userId") Long userId){
-        return ApiResult.onSuccess(userService.updateUser(request, userId));
+    @PostMapping("/")
+    public ApiResult<UserResponseDto.searchDto> updateUser(@RequestBody @Valid UserRequestDto.updateDto request, @SessionAttribute UserResDto user){
+        return ApiResult.onSuccess(userService.updateUser(request, user.getId()));
     }
 }
