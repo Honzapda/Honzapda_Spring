@@ -57,8 +57,10 @@ public class AuthController {
         String email = findUser.getEmail();
         String masking = "**";
         return ApiResult.onSuccess(
-                email.substring(0, email.indexOf("@")-masking.length())+masking);
-        // 이메일 @ 앞까지만 반환 + 뒤에 두자리는 masking 처림
+                email.substring(0, email.indexOf("@")-masking.length())+masking
+                +email.substring(email.indexOf("@"))
+        );
+        // 이메일 '@' 앞에 두자리는 masking 처리 : yoonsh100**@naver.com
     }
 
     @PostMapping("/findPassword")
