@@ -1,5 +1,7 @@
 package Honzapda.Honzapda_server.shop.service;
 
+import Honzapda.Honzapda_server.review.data.entity.Review;
+import Honzapda.Honzapda_server.review.repository.ReviewRepository;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +24,8 @@ public class ShopServiceImpl implements ShopService {
     private final UserRepository userRepository;
 
     private final ShopRepository shopRepository;
+
+    private final ReviewRepository reviewRepository;
 
     public ShopResponseDto.searchDto registerShop(ShopRequestDto.registerDto request){
 
@@ -40,9 +45,21 @@ public class ShopServiceImpl implements ShopService {
         Optional<Shop> shop = shopRepository.findById(shopId);
 
         if (shop.isPresent()) {
-            return ShopConverter.toShopResponse(shop.get());
+            ShopResponseDto.searchDto resultDto = ShopConverter.toShopResponse(shop.get());
+            resultDto.setRating(getRating(shopId));
+
+            return resultDto;
         } else{
             return null;
         }
+    }
+
+    public double getRating(Long shopId){
+        List<Review> reviewList = reviewRepository.findByShopId(shopId);
+
+        return reviewList.stream()
+                .mapToDouble(Review::getScore)
+                .average()
+                .orElse(0.0);
     }
 }
