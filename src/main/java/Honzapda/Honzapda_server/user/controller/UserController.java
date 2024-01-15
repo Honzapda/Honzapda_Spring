@@ -15,11 +15,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/")
-    public ApiResult<UserResponseDto.searchDto> registerUser(@RequestBody @Valid UserRequestDto.registerDto request){
-        return ApiResult.onSuccess(userService.registerUser(request));
-    }
-
     @GetMapping("/{userId}")
     public ApiResult<UserResponseDto.searchDto> searchUser(@PathVariable(name = "userId") Long userId){
         return ApiResult.onSuccess(userService.searchUser(userId));

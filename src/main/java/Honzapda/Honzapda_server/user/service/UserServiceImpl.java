@@ -18,14 +18,6 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
 
-    public UserResponseDto.searchDto registerUser(UserRequestDto.registerDto request){
-        User user = UserConverter.toUser(request);
-
-        userRepository.save(user);
-
-        return UserConverter.toUserResponse(user);
-    }
-
     public UserResponseDto.searchDto searchUser(Long userId) {
 
         Optional<User> optionalUser = userRepository.findById(userId);
