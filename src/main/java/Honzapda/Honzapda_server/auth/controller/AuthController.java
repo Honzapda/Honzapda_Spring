@@ -39,28 +39,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResult<UserResDto>
-    login(HttpServletRequest httpServletRequest, @RequestBody @Valid UserLoginDto request) {
+    login(HttpServletRequest httpRequest, @RequestBody @Valid UserLoginDto request) {
 
         UserResDto userResDto = UserResDto.toDTO(authService.loginUser(request));
-        HttpSession session = httpServletRequest.getSession(true);
+        HttpSession session = httpRequest.getSession(true);
         session.setAttribute("user", userResDto);
         session.setMaxInactiveInterval(60 * 30);
 
         return ApiResult.onSuccess(userResDto);
-    }
-
-    @PostMapping("/findId")
-    public ApiResult<String>
-    findId(@RequestBody @Valid FindEmailDto request) {
-
-        User findUser = authService.getUserByNickName(request.getName());
-        String email = findUser.getEmail();
-        String masking = "**";
-        return ApiResult.onSuccess(
-                email.substring(0, email.indexOf("@")-masking.length())+masking
-                +email.substring(email.indexOf("@"))
-        );
-        // 이메일 '@' 앞에 두자리는 masking 처리 : yoonsh100**@naver.com
     }
 
     @PostMapping("/findPassword")
