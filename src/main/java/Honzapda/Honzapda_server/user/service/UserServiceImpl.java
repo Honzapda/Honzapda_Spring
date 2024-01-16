@@ -1,13 +1,11 @@
 package Honzapda.Honzapda_server.user.service;
 
 import Honzapda.Honzapda_server.user.data.UserConverter;
-import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserRequestDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResponseDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,20 +17,9 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
-    private final PasswordEncoder encoder;
 
-    @Override
-    public boolean isEMail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    @Override
-    public boolean isNickName(String name) {
-        return userRepository.existsByName(name);
-    }
-
-    public UserResponseDto.searchDto registerUser(UserJoinDto request){
-        User user = UserConverter.toUser(request,encoder);
+    public UserResponseDto.searchDto registerUser(UserRequestDto.registerDto request){
+        User user = UserConverter.toUser(request);
 
         userRepository.save(user);
 
