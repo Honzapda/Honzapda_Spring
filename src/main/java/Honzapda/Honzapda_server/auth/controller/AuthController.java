@@ -65,9 +65,8 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Unauthorized",content = @Content(schema = @Schema(implementation = AppleJoinDto.class))),
             @ApiResponse(responseCode = "500", description = "Internal Server Error",content = @Content(schema = @Schema(implementation = String.class)))
     })
-    public ResponseEntity<?> appleLogin(HttpServletRequest request){
+    public ResponseEntity<?> appleLogin(HttpServletRequest request, @RequestParam("code") String authorizationCode){
         try{
-            String authorizationCode = request.getParameter("code");
             ResponseEntity<?> responseEntity = authService.appleLogin(authorizationCode);
             if(responseEntity.getStatusCode().equals(HttpStatus.OK)){
                 UserResDto userResDto = (UserResDto) responseEntity.getBody();
