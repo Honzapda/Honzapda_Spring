@@ -21,24 +21,6 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
 
-    @Override
-    public boolean isEMail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    @Override
-    public boolean isNickName(String name) {
-        return userRepository.existsByName(name);
-    }
-
-    public UserResponseDto.searchDto registerUser(UserJoinDto request){
-        User user = UserConverter.toUser(request,encoder);
-
-        userRepository.save(user);
-
-        return UserConverter.toUserResponse(user);
-    }
-
     public UserResponseDto.searchDto searchUser(Long userId) {
 
         Optional<User> optionalUser = userRepository.findById(userId);
