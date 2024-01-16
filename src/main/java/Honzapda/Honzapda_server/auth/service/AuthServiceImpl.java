@@ -92,14 +92,14 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.findByEmail(email).orElseThrow(
                 ()->new UserHandler(ErrorStatus.ID_NOT_EXIST));
     }
-
+/*
     @Override
     public User getUserByNickName(String nickname) {
 
         return userRepository.findByName(nickname).orElseThrow(
                 ()->new UserHandler(ErrorStatus.NICKNAME_NOT_EXIST));
     }
-
+ */
     @Override
     public String patchUserPassword(String email) {
 

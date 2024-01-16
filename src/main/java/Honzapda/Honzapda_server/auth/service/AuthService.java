@@ -10,7 +10,7 @@ public interface AuthService {
 
     User getUserByEMail(String email);
 
-    User getUserByNickName(String nickname);
+    //User getUserByNickName(String nickname);
 
     String patchUserPassword(String email);
 
