@@ -14,11 +14,15 @@ public enum ErrorStatus implements BaseErrorCode {
     _BAD_REQUEST(HttpStatus.BAD_REQUEST,"COMMON400","잘못된 요청입니다."),
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"COMMON401","인증이 필요합니다."),
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
+    _DATA_INTEGRITY_VIOLATED(HttpStatus.CONFLICT,"COMMON409","이미 존제하는 데이터입니다."),
     // 회원가입 응답
-
-    EMAIL_EXIST(HttpStatus.BAD_REQUEST,"JOIN4001","이미 존재하는 계정입니다."),
+    EMAIL_NOT_UNIQUE(HttpStatus.CONFLICT,"JOIN"+HttpStatus.CONFLICT.value(),"이미 존재하는 계정입니다."),
+    NICKNAME_NOT_UNIQUE(HttpStatus.CONFLICT,"JOIN"+HttpStatus.CONFLICT.value(),"이미 존재하는 닉네임입니다."),
     // 로그인 응답
-    LOGIN_NOT_MATCH(HttpStatus.BAD_REQUEST,"LOGIN4002","ID혹은PW가 다릅니다.");
+    ID_NOT_EXIST(HttpStatus.NOT_FOUND,"LOGIN"+HttpStatus.NOT_FOUND.value(),"ID를 잘못 입력하셨습니다."),
+    NICKNAME_NOT_EXIST(HttpStatus.NOT_FOUND,"LOGIN"+HttpStatus.NOT_FOUND.value(),"닉네임을 잘못 입력하셨습니다."),
+    PW_NOT_MATCH(HttpStatus.FORBIDDEN,"LOGIN"+HttpStatus.FORBIDDEN.value(),"PW를 잘못 입력하셨습니다.");
+
     // 유저 응답
 
 
@@ -40,7 +44,6 @@ public enum ErrorStatus implements BaseErrorCode {
                 .code(code)
                 .isSuccess(false)
                 .httpStatus(httpStatus)
-                .build()
-                ;
+                .build();
     }
 }
