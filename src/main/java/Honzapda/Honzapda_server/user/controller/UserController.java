@@ -1,7 +1,6 @@
 package Honzapda.Honzapda_server.user.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
-import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserRequestDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResponseDto;
 import Honzapda.Honzapda_server.user.service.UserService;
@@ -17,7 +16,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/")
-    public ApiResult<UserResponseDto.searchDto> registerUser(@RequestBody @Valid UserJoinDto request){
+    public ApiResult<UserResponseDto.searchDto> registerUser(@RequestBody @Valid UserRequestDto.registerDto request){
         return ApiResult.onSuccess(userService.registerUser(request));
     }
 

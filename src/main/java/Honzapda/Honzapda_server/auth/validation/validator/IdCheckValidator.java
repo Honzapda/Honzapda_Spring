@@ -1,9 +1,8 @@
-package Honzapda.Honzapda_server.user.validation.validator;
+package Honzapda.Honzapda_server.auth.validation.validator;
 
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
-import Honzapda.Honzapda_server.user.service.UserService;
-import Honzapda.Honzapda_server.user.validation.annotation.UniqueEmail;
-
+import Honzapda.Honzapda_server.auth.service.AuthService;
+import Honzapda.Honzapda_server.auth.validation.annotation.CheckId;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
@@ -11,16 +10,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {
+public class IdCheckValidator implements ConstraintValidator<CheckId, String> {
 
-    private final UserService userService;
+    private final AuthService authService;
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-
-        boolean valid = !userService.isEMail(value);
+        boolean valid = !authService.isEMail(value);
         if (!valid) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorStatus.EMAIL_NOT_UNIQUE.getMessage()).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(ErrorStatus.EMAIL_EXIST.toString()).addConstraintViolation();
         }
         return valid;
     }

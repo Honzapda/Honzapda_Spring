@@ -1,6 +1,5 @@
 package Honzapda.Honzapda_server.apiPayload;
 
-import Honzapda.Honzapda_server.apiPayload.code.BaseErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,10 +39,10 @@ public class ApiResult<T> {
     2. 커스텀 에러 응답
      */
     public static <T> ApiResult<T> onFailure(String code, String message, T data){
-        return new ApiResult<>(false, code, message, data);
+        return new ApiResult<>(true, code, message, data);
     }
-     public static <T> ApiResult<T> of(BaseErrorCode code, T result){
-        return new ApiResult<>(false, code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
+     public static <T> ApiResult<T> of(BaseCode code, T result){
+        return new ApiResult<>(true, code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
     }
 
 }
