@@ -3,8 +3,6 @@ package Honzapda.Honzapda_server.shop.data.entity;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.data.entity.common.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -21,7 +19,10 @@ public class Shop extends BaseEntity{
     private Long id;
 
     @Column(nullable = false, length = 25)
-    private String name;
+    private String shopName;
+
+    @Column(nullable = false)
+    private String adminName;
 
     @Lob
     @Column
@@ -32,10 +33,11 @@ public class Shop extends BaseEntity{
     private String otherDetails;
 
     @Column(length = 50)
-    private String phoneNumber;
+    private String shopPhoneNumber;
 
-    @DecimalMin(value = "0.0", message = "별점은 0~5 사이여야 합니다.")
-    @DecimalMax(value = "5.0", message = "별점은 0~5 사이여야 합니다.")
+    @Column(length = 50)
+    private String adminPhoneNumber;
+
     @Column(nullable = false)
     private Double rating;
 
@@ -44,6 +46,9 @@ public class Shop extends BaseEntity{
 
     @Column(length = 50, nullable = false)
     private String address_spec;
+
+    @Column
+    private String businessNumber;
 
     private LocalDateTime inactiveDate;
 

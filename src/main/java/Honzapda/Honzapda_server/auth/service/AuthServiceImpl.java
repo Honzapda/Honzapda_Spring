@@ -35,7 +35,6 @@ import java.time.ZoneId;
 import java.util.*;
 
 @Service
-@Transactional
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
