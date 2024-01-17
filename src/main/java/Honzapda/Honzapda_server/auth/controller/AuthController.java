@@ -53,10 +53,11 @@ public class AuthController {
     }
 
     @PostMapping("/findPassword")
-    public ApiResult<String>
+    public ApiResult<Boolean>
     findPassword(@RequestBody @Valid FindPwDto request) {
 
-        return ApiResult.onSuccess(authService.patchUserPassword(request.getEmail()));
+        authService.sendTempPasswordByEmail(request.getEmail());
+        return ApiResult.onSuccess(true);
     }
 
     @PostMapping("/apple")

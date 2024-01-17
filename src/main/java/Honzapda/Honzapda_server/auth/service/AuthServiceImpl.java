@@ -45,13 +45,16 @@ public class AuthServiceImpl implements AuthService {
     private final AppleProperties appleProperties;
     @Autowired
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private final EmailService emailService;
 
 
-    public AuthServiceImpl(UserRepository userRepository, AppleAuthClient appleAuthClient, AppleProperties appleProperties, PasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(UserRepository userRepository, AppleAuthClient appleAuthClient, AppleProperties appleProperties, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.appleAuthClient = appleAuthClient;
         this.appleProperties = appleProperties;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @Override
@@ -100,14 +103,14 @@ public class AuthServiceImpl implements AuthService {
     }
  */
     @Override
-    public String patchUserPassword(String email) {
+    public void sendTempPasswordByEmail(String email) {
 
         User findUser = getUserByEMail(email);
-        String newPassword = PasswordGenerator.generateRandomPassword(8);
-        findUser.setPassword(passwordEncoder.encode(newPassword));
+        String tempPassword = PasswordGenerator.generateRandomPassword(8);
+        emailService.sendTempPassword(email, tempPassword);
+        findUser.setPassword(passwordEncoder.encode(tempPassword));
         userRepository.save(findUser);
 
-        return newPassword;
     }
 
     @Override
