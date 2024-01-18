@@ -1,10 +1,10 @@
 package Honzapda.Honzapda_server.shop.controller;
 
+import Honzapda.Honzapda_server.apiPayload.ApiResult;
+import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.service.ShopService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
@@ -17,15 +17,15 @@ public class ShopController {
     private final ShopService shopService;
 
     @GetMapping("/{shopId}")
-    public ResponseEntity<?> searchShop(@PathVariable(name = "shopId") Long shopId){
+    public ApiResult<?> searchShop(@PathVariable(name = "shopId") Long shopId){
 
         try {
             ShopResponseDto.searchDto responseDto = shopService.findShop(shopId);
-            return new ResponseEntity<>(responseDto, HttpStatus.OK);
+            return ApiResult.onSuccess(responseDto);
         } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ApiResult.onFailure(ErrorStatus._BAD_REQUEST.getCode(), e.getMessage(), null);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ApiResult.onFailure(ErrorStatus._INTERNAL_SERVER_ERROR.getCode(), e.getMessage(), null);
         }
     }
 }
