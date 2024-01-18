@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -41,4 +43,6 @@ public class User extends BaseEntity {
         LOCAL, APPLE, GOOGLE, KAKAO
     }
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserPrefer> userPrefers = new HashSet<>();
 }

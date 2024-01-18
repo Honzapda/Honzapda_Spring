@@ -1,6 +1,5 @@
 package Honzapda.Honzapda_server.shop.data.entity;
 
-import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.data.entity.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -51,8 +50,4 @@ public class Shop extends BaseEntity{
     private String businessNumber;
 
     private LocalDateTime inactiveDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    private User user;
 }

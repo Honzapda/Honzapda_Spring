@@ -3,13 +3,12 @@ package Honzapda.Honzapda_server.shop.data;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
-import Honzapda.Honzapda_server.user.data.entity.User;
 
 import java.time.LocalDateTime;
 
 public class ShopConverter {
 
-    public static Shop toShop(ShopRequestDto.registerDto request, User user) {
+    public static Shop toShop(ShopRequestDto.registerDto request) {
         return Shop.builder()
                 .shopName(request.getShopName())
                 .adminName(request.getAdminName())
@@ -22,7 +21,6 @@ public class ShopConverter {
                 .address_spec(request.getAddress_spec())
                 .businessNumber(request.getBusinessNumber())
                 .inactiveDate(LocalDateTime.now())
-                .user(user)
                 .build();
     }
 

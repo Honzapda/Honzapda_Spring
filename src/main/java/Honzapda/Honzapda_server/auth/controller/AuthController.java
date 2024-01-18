@@ -1,10 +1,11 @@
 package Honzapda.Honzapda_server.auth.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
-import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.auth.data.dto.AuthRequestDto;
-import Honzapda.Honzapda_server.auth.data.dto.AuthResponseDto;
 import Honzapda.Honzapda_server.auth.service.AuthService;
+import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
+import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
+import Honzapda.Honzapda_server.shop.service.ShopService;
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
@@ -20,6 +21,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
+
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+
+    private final ShopService shopService;
 
     /**
      * id 중복 검사 api
@@ -96,6 +101,20 @@ public class AuthController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    @PostMapping("/register/shop")
+    public ResponseEntity<?> registerShop(
+            @RequestBody @Valid ShopRequestDto.registerDto request)
+    {
+        try {
+            ShopResponseDto.searchDto responseDto = shopService.registerShop(request);
+            return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/login")
