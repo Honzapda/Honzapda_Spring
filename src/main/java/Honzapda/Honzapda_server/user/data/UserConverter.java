@@ -1,10 +1,12 @@
 package Honzapda.Honzapda_server.user.data;
 
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserPreferResDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /*
 1. post api 요청 -> to + '엔티티 명' ex) toUser
@@ -34,6 +36,12 @@ public class UserConverter {
                 .name(user.getName())
                 .email(user.getEmail())
                 .signUpType(user.getSignUpType())
+                .build();
+    }
+
+    public static UserPreferResDto toUserPreferResponse(List<String> preferNameList){
+        return UserPreferResDto.builder()
+                .preferNameList(preferNameList)
                 .build();
     }
 }

@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.user.service;
 
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserPreferResDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface UserService {
 
     boolean registerUserPrefer(Long userId, List<String> preferNameList);
 
-    List<String> searchUserPrefer(Long userId);
+    UserPreferResDto searchUserPrefer(Long userId);
 
     boolean updateUserPrefer(Long userId, List<String> preferNameList);
 }

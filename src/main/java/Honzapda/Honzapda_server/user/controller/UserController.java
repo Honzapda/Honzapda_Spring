@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.user.controller;
 
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserPreferResDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.dto.UserPreferJoinDto;
 import Honzapda.Honzapda_server.user.service.UserService;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -58,7 +58,7 @@ public class UserController {
     public ResponseEntity<?> searchUserPrefer(@SessionAttribute UserResDto user){
 
         try {
-            List<String> preferNameList = userService.searchUserPrefer(user.getId());
+            UserPreferResDto preferNameList = userService.searchUserPrefer(user.getId());
             return new ResponseEntity<>(preferNameList, HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

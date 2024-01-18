@@ -2,6 +2,7 @@ package Honzapda.Honzapda_server.user.service;
 
 import Honzapda.Honzapda_server.user.data.UserConverter;
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserPreferResDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.Prefer;
 import Honzapda.Honzapda_server.user.data.entity.User;
@@ -79,15 +80,15 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-    public List<String> searchUserPrefer(Long userId) {
+    public UserPreferResDto searchUserPrefer(Long userId) {
 
         Optional<User> user = userRepository.findById(userId);
 
         if(user.isPresent()){
 
             Set<UserPrefer> userPreferList = user.get().getUserPrefers();
-
-            return getPreferNameListByUserPreferList(userPreferList);
+            List<String> preferNameList = getPreferNameListByUserPreferList(userPreferList);
+            return UserConverter.toUserPreferResponse(preferNameList);
 
         } else{
             throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
