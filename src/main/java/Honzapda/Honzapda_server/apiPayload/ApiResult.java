@@ -28,6 +28,9 @@ public class ApiResult<T> {
     1. 일반 200번대 성공 응답
     2. 커스텀 성공 응답 - 추가
      */
+    public static<Void> ApiResult<Void> onSuccess() {
+        return new ApiResult<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), null);
+    }
     public static <T> ApiResult<T> onSuccess(T result){
         return new ApiResult<>(true, SuccessStatus._OK.getCode() , SuccessStatus._OK.getMessage(), result);
     }
