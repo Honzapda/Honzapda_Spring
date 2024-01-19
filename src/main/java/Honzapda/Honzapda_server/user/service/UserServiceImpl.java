@@ -24,6 +24,7 @@ import Honzapda.Honzapda_server.user.repository.UserPreferRepository;
 import Honzapda.Honzapda_server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -71,12 +72,12 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-    public UserResDto updateUser(UserJoinDto request, Long userId){
+    public UserResDto updateUser(UserJoinDto userJoinDto, Long userId){
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            user.setName(request.getName());
+            user.setName(userJoinDto.getName());
 
             User savedUser = userRepository.save(user);
             return UserConverter.toUserResponse(savedUser);

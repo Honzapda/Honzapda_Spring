@@ -32,8 +32,8 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ApiResult<?> updateUser(@RequestBody @Valid UserRequestDto.updateDto request, @SessionAttribute UserResDto user){
-        return ApiResult.onSuccess(userService.updateUser(request, user.getId()));
+    public ApiResult<?> updateUser(@RequestBody @Valid UserJoinDto userJoinDto, @SessionAttribute UserResDto user){
+        return ApiResult.onSuccess(userService.updateUser(userJoinDto, user.getId()));
     }
 
 
@@ -47,9 +47,9 @@ public class UserController {
         return ApiResult.onSuccess(userService.likeShop(shopId, userResDto.getId()));
     }
     @DeleteMapping("/likes")
-    public ApiResult<LikeResDto> deleteLikeShop(@RequestParam Long shopId,@SessionAttribute("user") UserResDto userResDto){
+    public ApiResult<LikeResDto> deleteLikeShop(@RequestParam Long shopId,@SessionAttribute("user") UserResDto userResDto) {
         return ApiResult.onSuccess(userService.deleteLikeShop(shopId, userResDto.getId()));
-      
+    }
     @GetMapping("/prefer")
     public ApiResult<?> searchUserPrefer(@SessionAttribute UserResDto user){
         UserPreferResDto preferNameList = userService.searchUserPrefer(user.getId());

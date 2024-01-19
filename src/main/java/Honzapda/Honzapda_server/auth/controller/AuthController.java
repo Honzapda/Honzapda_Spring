@@ -1,16 +1,11 @@
 package Honzapda.Honzapda_server.auth.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
-import Honzapda.Honzapda_server.auth.data.dto.AuthRequestDto;
+import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.auth.service.AuthService;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.service.ShopService;
-import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
-import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
-import Honzapda.Honzapda_server.user.data.dto.UserResDto;
-import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
-import Honzapda.Honzapda_server.auth.service.AuthService;
 import Honzapda.Honzapda_server.user.data.dto.*;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import io.swagger.v3.oas.annotations.media.Content;
