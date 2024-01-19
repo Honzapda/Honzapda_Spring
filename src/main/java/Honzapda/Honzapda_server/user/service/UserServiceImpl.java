@@ -122,10 +122,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<ShopResponseDto.searchDto> getLikeShops(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
-        List<LikeData> likes = user.getLikes();
         List<ShopResponseDto.searchDto> likeshops = new ArrayList<>();
-        likes.forEach(likeData ->
-                likeshops.add(ShopConverter.toShopResponse(likeData.getShop()))
+        List<LikeData> likeDatas = likeRepository.findAllByUser(user).orElseThrow(() -> new RuntimeException("user가 좋아하는 shop이 존재하지 않습니다."));
+        likeDatas.forEach(
+                likeData ->
+                        likeshops.add(ShopConverter.toShopResponse(likeData.getShop()))
         );
         return likeshops;
     }
@@ -134,35 +135,22 @@ public class UserServiceImpl implements UserService{
     public LikeResDto likeShop(Long shopId, Long userId) {
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new RuntimeException("shop이 존재하지 않습니다."));
         User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user가 존재하지 않습니다"));
-        Optional<LikeData> byShopAndUser = likeRepository.findByShopAndUser(shop, user);
-        if(byShopAndUser.isEmpty()){
-            LikeData likeData = new LikeData();
-            user.getLikes().add(likeData);
-            System.out.println(user.getLikes().size());
-            likeData.setShop(shop);
-            likeData.setUser(user);
-            likeRepository.save(likeData);
-            return LikeResDto.toDTO(likeData);
-        }
-        else{
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이미 찜을 눌렀습니다.");
-        }
+        LikeData likeData = likeRepository.findByShopAndUser(shop, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이미 찜을 눌렀습니다."));
+        likeData.setShop(shop);
+        likeData.setUser(user);
+        likeRepository.save(likeData);
+        return LikeResDto.toDTO(likeData);
     }
 
     @Override
     public LikeResDto deleteLikeShop(Long shopId, Long userId) {
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new RuntimeException("shop이 존재하지 않습니다."));
         User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user가 존재하지 않습니다"));
-        Optional<LikeData> byShopAndUser = likeRepository.findByShopAndUser(shop, user);
-        if (byShopAndUser.isPresent()){
-            user.getLikes().removeIf(data ->
-                    data.getShop().equals(shop)
-            );
-            return LikeResDto.toDTO(byShopAndUser.get());
-        }
-        else{
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "찜을 누른 적이 없습니다");
-        }
+        LikeData likeData = likeRepository.findByShopAndUser(shop, user).orElseThrow(() -> new ResponseStatusException((HttpStatus.UNAUTHORIZED), "찜을 누른 적이 없습니다."));
+
+        likeRepository.deleteById(likeData.getId());
+
+        return LikeResDto.toDTO(likeData);
     }
 
 
