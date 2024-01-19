@@ -5,9 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
@@ -17,8 +14,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginCheckInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns(
+                        "/auth/checkId",
+                        "/auth/findId",
+                        "/auth/findPassword",
                         "/auth/register",
-                        "/auth/login",
                         "/auth/login",
                         "/swagger-ui/**",
                         "/api-docs/**",

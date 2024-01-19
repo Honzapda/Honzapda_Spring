@@ -8,8 +8,9 @@ import java.util.List;
 
 public interface UserService {
 
-    UserResDto registerUser(UserJoinDto request);
-
+    boolean isEMail(String email);
+    boolean isNickName(String name);
+  
     UserResDto searchUser(Long userId);
 
     UserResDto updateUser(UserJoinDto request, Long userId);
@@ -17,6 +18,6 @@ public interface UserService {
     boolean registerUserPrefer(Long userId, List<String> preferNameList);
 
     UserPreferResDto searchUserPrefer(Long userId);
-
+  
     boolean updateUserPrefer(Long userId, List<String> preferNameList);
 }

@@ -1,11 +1,10 @@
 package Honzapda.Honzapda_server.user.data.dto;
 
 import jakarta.validation.constraints.Email;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-public class UserLoginDto {
+@Getter
+public class FindPwDto {
     @Email
     private String email;
-    private String password;
 }

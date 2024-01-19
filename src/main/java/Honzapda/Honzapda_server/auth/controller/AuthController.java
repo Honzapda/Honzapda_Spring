@@ -9,14 +9,20 @@ import Honzapda.Honzapda_server.shop.service.ShopService;
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
+import Honzapda.Honzapda_server.auth.service.AuthService;
+import Honzapda.Honzapda_server.user.data.dto.*;
+import Honzapda.Honzapda_server.user.data.entity.User;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +36,6 @@ import java.util.NoSuchElementException;
 public class AuthController {
 
     private final AuthService authService;
-
     private final ShopService shopService;
 
     /**
@@ -40,35 +45,46 @@ public class AuthController {
      */
     @PostMapping("/checkId")
     public ApiResult<Boolean>
-    checkId(@RequestBody @Valid AuthRequestDto.GetEmail request) {
+    checkId(@RequestBody @Valid UserEmailDto request) {
         return ApiResult.onSuccess(true);
     }
-    /**
-     * 회원가입 api
-     * 실패 : 에러
-     * 성공 : True
-     */
-//    @PostMapping("/register")
-//    public ApiResult<Boolean>
-//    register(@RequestBody @Valid AuthRequestDto.Register request) {
-//        authService.registerUser(request);
-//        return ApiResult.onSuccess(SuccessStatus._CREATED,true);
-//    }
-//    /**
-//     * 로그인 api
-//     * 실패 : 에러
-//     * 성공 : True
-//     */
-//    @PostMapping("/login")
-//    public ApiResult<AuthResponseDto.Login>
-//    register(@RequestBody @Valid AuthRequestDto.Login request) {
-//
-//        return ApiResult.onSuccess(authService.loginUser(request));
-//    }
+
+    @PostMapping("/register")
+    public ApiResult<UserResDto>
+    register(@RequestBody @Valid UserJoinDto request) {
+        User newUser = authService.registerUser(request);
+        return ApiResult.onSuccess(SuccessStatus._CREATED, UserResDto.toDTO(newUser));
+    }
+
+    @PostMapping("/login")
+    public ApiResult<UserResDto>
+    login(HttpServletRequest httpRequest, @RequestBody @Valid UserLoginDto request) {
+
+        UserResDto userResDto = UserResDto.toDTO(authService.loginUser(request));
+        HttpSession session = httpRequest.getSession(true);
+        session.setAttribute("user", userResDto);
+        session.setMaxInactiveInterval(60 * 30);
+
+        return ApiResult.onSuccess(userResDto);
+    }
+
+    @PostMapping("/findPassword")
+    public ApiResult<Boolean>
+    findPassword(@RequestBody @Valid FindPwDto request) {
+
+        authService.sendTempPasswordByEmail(request.getEmail());
+        return ApiResult.onSuccess(true);
+    }
 
     @PostMapping("/apple")
-    public ResponseEntity<?> appleLogin(HttpServletRequest request, @RequestParam("code") String authorizationCode){
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Created", content = @Content(schema = @Schema(implementation = UserResDto.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",content = @Content(schema = @Schema(implementation = AppleJoinDto.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    public ResponseEntity<?> appleLogin(HttpServletRequest request){
         try{
+            String authorizationCode = request.getParameter("code");
             ResponseEntity<?> responseEntity = authService.appleLogin(authorizationCode);
             if(responseEntity.getStatusCode().equals(HttpStatus.OK)){
                 UserResDto userResDto = (UserResDto) responseEntity.getBody();
@@ -86,24 +102,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> join(@RequestBody UserJoinDto userJoinDto){
-
-        try{
-            UserResDto userResDto = authService.join(userJoinDto);
-            return new ResponseEntity<>(userResDto, HttpStatus.CREATED);
-
-        }
-        catch (DataIntegrityViolationException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-        }
-        catch(Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
-
-    @PostMapping("/register/shop")
+  @PostMapping("/register/shop")
     public ResponseEntity<?> registerShop(
             @RequestBody @Valid ShopRequestDto.registerDto request)
     {
@@ -116,27 +115,12 @@ public class AuthController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(HttpServletRequest request,@RequestBody UserLoginDto userLoginDto){
-        try {
-            UserResDto userResDto = authService.login(userLoginDto);
-            HttpSession session = request.getSession(true);
-            session.setAttribute("user", userResDto);
-            session.setMaxInactiveInterval(60 * 30);
-            return new ResponseEntity<>(userResDto, HttpStatus.OK);
-        }
-        catch (UsernameNotFoundException | BadCredentialsException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        }
-        catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-
-    }
-
+  
     @GetMapping("/logout")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",content = @Content(schema = @Schema(implementation = String.class)))
+    })
     public ResponseEntity<?> logout(HttpSession session)
     {
         try{
@@ -149,6 +133,11 @@ public class AuthController {
     }
 
     @DeleteMapping("/revoke")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",content = @Content(schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",content = @Content(schema = @Schema(implementation = String.class)))
+    })
     public ResponseEntity<?> revoke(@SessionAttribute UserResDto user){
 
         try{

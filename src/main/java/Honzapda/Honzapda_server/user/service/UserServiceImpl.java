@@ -11,6 +11,7 @@ import Honzapda.Honzapda_server.user.repository.PreferRepository;
 import Honzapda.Honzapda_server.user.repository.UserPreferRepository;
 import Honzapda.Honzapda_server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,17 +24,18 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
-
+    private final PasswordEncoder encoder;
     private final PreferRepository preferRepository;
-
     private final UserPreferRepository userPreferRepository;
 
-    public UserResDto registerUser(UserJoinDto request){
-        User user = UserConverter.toUser(request);
+    @Override
+    public boolean isEMail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
-        userRepository.save(user);
-
-        return UserConverter.toUserResponse(user);
+    @Override
+    public boolean isNickName(String name) {
+        return userRepository.existsByName(name);
     }
 
     public UserResDto searchUser(Long userId){
