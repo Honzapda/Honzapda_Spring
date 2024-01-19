@@ -15,6 +15,5 @@ public class ShopRequestDto {
         String address;
         String address_spec;
         String businessNumber;
-        Long userId;
     }
 }

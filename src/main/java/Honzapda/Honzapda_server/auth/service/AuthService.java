@@ -12,7 +12,7 @@ public interface AuthService {
 
     //User getUserByNickName(String nickname);
 
-    String patchUserPassword(String email);
+    void sendTempPasswordByEmail(String email);
 
     User registerUser(UserJoinDto request);
 

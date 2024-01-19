@@ -1,6 +1,14 @@
 package Honzapda.Honzapda_server.auth.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
+import Honzapda.Honzapda_server.auth.data.dto.AuthRequestDto;
+import Honzapda.Honzapda_server.auth.service.AuthService;
+import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
+import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
+import Honzapda.Honzapda_server.shop.service.ShopService;
+import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
+import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.auth.service.AuthService;
 import Honzapda.Honzapda_server.user.data.dto.*;
@@ -19,6 +27,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
+
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -26,7 +36,13 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final ShopService shopService;
 
+    /**
+     * id 중복 검사 api
+     * 실패 : 에러
+     * 성공 : True
+     */
     @PostMapping("/checkId")
     public ApiResult<Boolean>
     checkId(@RequestBody @Valid UserEmailDto request) {
@@ -53,10 +69,11 @@ public class AuthController {
     }
 
     @PostMapping("/findPassword")
-    public ApiResult<String>
+    public ApiResult<Boolean>
     findPassword(@RequestBody @Valid FindPwDto request) {
 
-        return ApiResult.onSuccess(authService.patchUserPassword(request.getEmail()));
+        authService.sendTempPasswordByEmail(request.getEmail());
+        return ApiResult.onSuccess(true);
     }
 
     @PostMapping("/apple")
@@ -84,41 +101,21 @@ public class AuthController {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-/*
-    @PostMapping("/register")
-    public ResponseEntity<?> join(@RequestBody UserJoinDto userJoinDto){
 
-        try{
-            UserResDto userResDto = authService.join(userJoinDto);
-            return new ResponseEntity<>(userResDto, HttpStatus.CREATED);
-
-        }
-        catch (DataIntegrityViolationException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-        }
-        catch(Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(HttpServletRequest request,@RequestBody UserLoginDto userLoginDto){
+  @PostMapping("/register/shop")
+    public ResponseEntity<?> registerShop(
+            @RequestBody @Valid ShopRequestDto.registerDto request)
+    {
         try {
-            UserResDto userResDto = authService.login(userLoginDto);
-            HttpSession session = request.getSession(true);
-            session.setAttribute("user", userResDto);
-            session.setMaxInactiveInterval(60 * 30);
-            return new ResponseEntity<>(userResDto, HttpStatus.OK);
-        }
-        catch (UsernameNotFoundException | BadCredentialsException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        }
-        catch (Exception e){
+            ShopResponseDto.searchDto responseDto = shopService.registerShop(request);
+            return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
- */
+  
     @GetMapping("/logout")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",content = @Content(schema = @Schema(implementation = String.class))),
