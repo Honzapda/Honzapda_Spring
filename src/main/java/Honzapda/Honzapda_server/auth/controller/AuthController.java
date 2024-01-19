@@ -5,7 +5,7 @@ import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.auth.service.AuthService;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
-import Honzapda.Honzapda_server.shop.service.ShopService;
+import Honzapda.Honzapda_server.shop.service.facade.ShopFacadeService;
 import Honzapda.Honzapda_server.user.data.dto.*;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,7 +31,7 @@ import java.util.NoSuchElementException;
 public class AuthController {
 
     private final AuthService authService;
-    private final ShopService shopService;
+    private final ShopFacadeService shopFacadeService;
 
     /**
      * id 중복 검사 api
@@ -99,10 +99,10 @@ public class AuthController {
 
   @PostMapping("/register/shop")
     public ResponseEntity<?> registerShop(
-            @RequestBody @Valid ShopRequestDto.registerDto request)
+            @RequestBody @Valid ShopRequestDto.RegisterDto request)
     {
         try {
-            ShopResponseDto.searchDto responseDto = shopService.registerShop(request);
+            ShopResponseDto.SearchDto responseDto = shopFacadeService.registerShop(request);
             return new ResponseEntity<>(responseDto, HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

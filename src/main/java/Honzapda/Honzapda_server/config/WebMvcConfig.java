@@ -1,4 +1,4 @@
-package Honzapda.Honzapda_server;
+package Honzapda.Honzapda_server.config;
 
 import Honzapda.Honzapda_server.intercepter.LoginCheckInterceptor;
 import org.springframework.context.annotation.Configuration;

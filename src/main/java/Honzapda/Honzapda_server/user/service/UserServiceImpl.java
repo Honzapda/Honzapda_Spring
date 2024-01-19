@@ -3,7 +3,7 @@ package Honzapda.Honzapda_server.user.service;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
-import Honzapda.Honzapda_server.shop.repository.ShopRepository;
+import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.UserConverter;
 
 import Honzapda.Honzapda_server.user.data.dto.LikeResDto;
@@ -21,7 +21,7 @@ import Honzapda.Honzapda_server.user.data.entity.UserPrefer;
 import Honzapda.Honzapda_server.user.repository.PreferRepository;
 import Honzapda.Honzapda_server.user.repository.UserPreferRepository;
 
-import Honzapda.Honzapda_server.user.repository.UserRepository;
+import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -120,9 +120,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<ShopResponseDto.searchDto> getLikeShops(Long id) {
+    public List<ShopResponseDto.SearchDto> getLikeShops(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
-        List<ShopResponseDto.searchDto> likeshops = new ArrayList<>();
+        List<ShopResponseDto.SearchDto> likeshops = new ArrayList<>();
         List<LikeData> likeDatas = likeRepository.findAllByUser(user).orElseThrow(() -> new RuntimeException("user가 좋아하는 shop이 존재하지 않습니다."));
         likeDatas.forEach(
                 likeData ->

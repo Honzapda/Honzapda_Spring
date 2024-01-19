@@ -8,9 +8,6 @@ import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 
 import java.util.List;
 
-
-import java.util.List;
-
 public interface UserService {
 
     boolean isEMail(String email);
@@ -24,7 +21,7 @@ public interface UserService {
 
     LikeResDto deleteLikeShop(Long shopId, Long userId);
 
-    List<ShopResponseDto.searchDto> getLikeShops(Long id);
+    List<ShopResponseDto.SearchDto> getLikeShops(Long id);
 
     boolean registerUserPrefer(Long userId, List<String> preferNameList);
 

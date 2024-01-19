@@ -1,4 +1,4 @@
-package Honzapda.Honzapda_server;
+package Honzapda.Honzapda_server.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

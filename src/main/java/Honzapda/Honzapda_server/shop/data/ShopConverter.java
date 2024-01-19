@@ -3,12 +3,16 @@ package Honzapda.Honzapda_server.shop.data;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.user.data.entity.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ShopConverter {
 
-    public static Shop toShop(ShopRequestDto.registerDto request) {
+    public static Shop toShop(ShopRequestDto.RegisterDto request) {
         return Shop.builder()
                 .shopName(request.getShopName())
                 .adminName(request.getAdminName())
@@ -24,8 +28,8 @@ public class ShopConverter {
                 .build();
     }
 
-    public static ShopResponseDto.searchDto toShopResponse(Shop shop){
-        return ShopResponseDto.searchDto.builder()
+    public static ShopResponseDto.SearchDto toShopResponse(Shop shop){
+        return ShopResponseDto.SearchDto.builder()
                 .shopId(shop.getId())
                 .shopName(shop.getShopName())
                 .adminName(shop.getAdminName())
@@ -42,4 +46,11 @@ public class ShopConverter {
                 .build();
     }
 
+    public static Map<Long, ShopResponseDto.SearchDto> toShopResponseMap(List<ShopResponseDto.SearchDto> searchDtos) {
+        return searchDtos.stream()
+                .collect(Collectors.toMap(
+                        ShopResponseDto.SearchDto::getShopId,
+                        searchDto -> searchDto)
+                );
+    }
 }

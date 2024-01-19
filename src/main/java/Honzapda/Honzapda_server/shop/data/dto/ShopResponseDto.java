@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.shop.data.dto;
 
 import Honzapda.Honzapda_server.review.data.entity.Review;
+import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ public class ShopResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class searchDto {
+    public static class SearchDto {
         Long shopId;
         String shopName;
         String adminName;
@@ -30,8 +31,17 @@ public class ShopResponseDto {
         LocalDateTime inactiveDate;
         List<Review> reviewList;
 
+        // 위도 경도
+        Double latitude;
+        Double longitude;
+
         public void setRating(double rating){
             this.rating = rating;
+        }
+
+        public void addCoordinates(ShopCoordinates shopCoordinates) {
+            this.latitude = shopCoordinates.getLocation().getY();
+            this.longitude = shopCoordinates.getLocation().getX();
         }
     }
 }
