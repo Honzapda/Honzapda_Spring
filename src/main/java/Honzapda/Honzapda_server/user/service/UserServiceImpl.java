@@ -1,25 +1,22 @@
 package Honzapda.Honzapda_server.user.service;
 
+import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
+import Honzapda.Honzapda_server.apiPayload.exception.handler.UserHandler;
+
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.repository.ShopRepository;
+
 import Honzapda.Honzapda_server.user.data.UserConverter;
-
-import Honzapda.Honzapda_server.user.data.dto.LikeResDto;
-
+import Honzapda.Honzapda_server.user.data.dto.*;
 import Honzapda.Honzapda_server.user.data.entity.LikeData;
 import Honzapda.Honzapda_server.user.data.entity.User;
-import Honzapda.Honzapda_server.user.repository.LikeRepository;
-
-import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
-import Honzapda.Honzapda_server.user.data.dto.UserPreferResDto;
-import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.Prefer;
-import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.data.entity.UserPrefer;
 import Honzapda.Honzapda_server.user.repository.PreferRepository;
 import Honzapda.Honzapda_server.user.repository.UserPreferRepository;
+import Honzapda.Honzapda_server.user.repository.LikeRepository;
 
 import Honzapda.Honzapda_server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +25,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,6 +52,21 @@ public class UserServiceImpl implements UserService{
         return userRepository.existsByName(name);
     }
 
+    @Override
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElseThrow(()->new UserHandler(ErrorStatus.USER_NOT_FOUND));
+    }
+
+    @Override
+    public UserResDto patchPassword(PatchUserPwDto request, Long userId) {
+
+        User getUser = getUser(userId);
+        getUser.setPassword(encoder.encode(request.getPassword()));
+        userRepository.save(getUser);
+
+        return UserConverter.toUserResponse(getUser);
+    }
+    @Override
     public UserResDto searchUser(Long userId){
 
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -71,7 +78,7 @@ public class UserServiceImpl implements UserService{
             throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
         }
     }
-
+    @Override
     public UserResDto updateUser(UserJoinDto userJoinDto, Long userId){
         Optional<User> optionalUser = userRepository.findById(userId);
 
@@ -85,7 +92,7 @@ public class UserServiceImpl implements UserService{
             throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
         }
     }
-
+    @Override
     public boolean registerUserPrefer(Long userId, List<String> preferNameList){
 
         Optional<User> userOptional = userRepository.findById(userId);
@@ -103,7 +110,7 @@ public class UserServiceImpl implements UserService{
             throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
         }
     }
-
+    @Override
     public UserPreferResDto searchUserPrefer(Long userId) {
 
         Optional<User> user = userRepository.findById(userId);
@@ -165,7 +172,7 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-
+    @Override
     public boolean updateUserPrefer(Long userId, List<String> preferNameList) {
         Optional<User> userOptional = userRepository.findById(userId);
 
