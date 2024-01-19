@@ -31,7 +31,7 @@ public class FileServiceImpl implements FileService{
         this.storage = storage;
     }
     @Override
-    public List<String> uploadObject(List<MultipartFile> multipartFiles) throws Exception{
+    public List<String> uploadObject(List<MultipartFile> multipartFiles) throws IOException{
 
         List<String> uuids = new ArrayList<>();
         for(MultipartFile image : multipartFiles){
@@ -46,7 +46,7 @@ public class FileServiceImpl implements FileService{
                     image.getInputStream()
             );
 
-            uuids.add(uuid);
+            uuids.add("https://storage.googleapis.com/"+bucketName+"/"+uuid);
         }
 
         return uuids;
