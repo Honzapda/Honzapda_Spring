@@ -21,10 +21,9 @@ public enum ErrorStatus implements BaseErrorCode {
     // 로그인 응답
     ID_NOT_EXIST(HttpStatus.NOT_FOUND,"LOGIN"+HttpStatus.NOT_FOUND.value(),"ID를 잘못 입력하셨습니다."),
     NICKNAME_NOT_EXIST(HttpStatus.NOT_FOUND,"LOGIN"+HttpStatus.NOT_FOUND.value(),"닉네임을 잘못 입력하셨습니다."),
-    PW_NOT_MATCH(HttpStatus.FORBIDDEN,"LOGIN"+HttpStatus.FORBIDDEN.value(),"PW를 잘못 입력하셨습니다.");
-
+    PW_NOT_MATCH(HttpStatus.FORBIDDEN,"LOGIN"+HttpStatus.FORBIDDEN.value(),"PW를 잘못 입력하셨습니다."),
     // 유저 응답
-
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND,"USER"+HttpStatus.NOT_FOUND.value(),"존재하지 않는 유저입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
