@@ -1,20 +1,11 @@
 package Honzapda.Honzapda_server.user.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
-
-import Honzapda.Honzapda_server.shop.data.ShopConverter;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
-import Honzapda.Honzapda_server.user.data.dto.LikeResDto;
-
-import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
-import Honzapda.Honzapda_server.user.data.dto.UserPreferResDto;
-import Honzapda.Honzapda_server.user.data.dto.UserPreferJoinDto;
-
-import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import Honzapda.Honzapda_server.user.data.dto.*;
 import Honzapda.Honzapda_server.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +26,14 @@ public class UserController {
     public ApiResult<?> updateUser(@RequestBody @Valid UserJoinDto userJoinDto, @SessionAttribute UserResDto user){
         return ApiResult.onSuccess(userService.updateUser(userJoinDto, user.getId()));
     }
-
+    @PostMapping("/password")
+    public ApiResult<?> patchPassword(@RequestBody @Valid PatchUserPwDto userPwDto, @SessionAttribute("user") UserResDto user){
+        /*
+         * flow : 1. 기존 비밀번호 재확인 -> 동일하면, 2.신규 비밀번호 입력으로 변경
+         * 일단, MY에 없어서, 2번만 구현하였습니다.
+         */
+        return ApiResult.onSuccess(userService.patchPassword(userPwDto, user.getId()));
+    }
 
     @GetMapping("/likeshops")
     public ApiResult<List<ShopResponseDto.searchDto>> getLikeshops(@SessionAttribute("user") UserResDto userResDto) {
