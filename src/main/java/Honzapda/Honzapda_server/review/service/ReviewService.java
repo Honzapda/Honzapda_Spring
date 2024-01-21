@@ -33,7 +33,6 @@ public class ReviewService {
     private final ReviewImageRepository reviewImageRepository;
     private final ReviewRepository reviewRepository;
     private final ShopRepository shopRepository;
-    private final FileService fileService;
 
     @Transactional
     public ReviewResponseDto.ReviewDto registerReview(Long userId, Long shopId, ReviewRequestDto.ReviewRegisterDto requestDto) {
