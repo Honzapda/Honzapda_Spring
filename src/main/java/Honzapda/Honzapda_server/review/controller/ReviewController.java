@@ -4,17 +4,12 @@ import Honzapda.Honzapda_server.apiPayload.ApiResult;
 import Honzapda.Honzapda_server.review.data.dto.ReviewRequestDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.service.ReviewService;
-import Honzapda.Honzapda_server.shop.data.dto.MapRequestDto;
-import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
-import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
-import Honzapda.Honzapda_server.shop.service.facade.ShopFacadeService;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,5 +25,15 @@ public class ReviewController {
             @PathVariable(name = "shopId") Long shopId,
             @RequestBody @Valid ReviewRequestDto.ReviewRegisterDto requestDto){
         return ApiResult.onSuccess(reviewService.registerReview(userResDto.getId(), shopId, requestDto));
+    }
+
+
+    @GetMapping("/{shopId}")
+    public ApiResult<ReviewResponseDto.ReviewListDto> getReviews(
+            @PathVariable(name = "shopId") Long shopId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return ApiResult.onSuccess(reviewService.getReviewListDto(shopId, PageRequest.of(page, size)));
     }
 }
