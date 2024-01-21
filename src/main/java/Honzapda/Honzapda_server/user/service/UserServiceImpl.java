@@ -3,7 +3,9 @@ package Honzapda.Honzapda_server.user.service;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
+import Honzapda.Honzapda_server.shop.repository.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.ShopPhotoRepository;
 import Honzapda.Honzapda_server.shop.repository.ShopRepository;
 import Honzapda.Honzapda_server.user.data.UserConverter;
@@ -51,6 +53,8 @@ public class UserServiceImpl implements UserService{
     private final UserPreferRepository userPreferRepository;
 
     private final ShopPhotoRepository shopPhotoRepository;
+
+    private final ShopBusinessHourRepository shopBusinessHourRepository;
 
 
     @Override
@@ -130,9 +134,12 @@ public class UserServiceImpl implements UserService{
         likes.forEach(likeData ->{
             Shop shop = likeData.getShop();
             List<String> photoUrls = getShopPhotoUrls(shop);
+            List<ShopResponseDto.BusinessHoursResDTO> businessHours = getShopBusinessHours(shop);
 
             ShopResponseDto.searchDto shopResponseDto = ShopConverter.toShopResponse(shop);
             shopResponseDto.setPhotoUrls(photoUrls);
+            shopResponseDto.setBusinessHours(businessHours);
+
             likeshops.add(shopResponseDto);
         });
         return likeshops;
@@ -236,5 +243,13 @@ public class UserServiceImpl implements UserService{
                 .collect(Collectors.toList());
 
         return photoUrls;
+    }
+
+    public List<ShopResponseDto.BusinessHoursResDTO> getShopBusinessHours(Shop shop) {
+        List<ShopBusinessHour> businessHours = shopBusinessHourRepository.findShopBusinessHourByShop(shop);
+
+        return businessHours.stream()
+                .map(ShopConverter::toShopBusinessHourDto)
+                .collect(Collectors.toList());
     }
 }
