@@ -3,9 +3,9 @@ package Honzapda.Honzapda_server.shop.data;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class ShopConverter {
 
@@ -25,7 +25,7 @@ public class ShopConverter {
                 .build();
     }
 
-    public static ShopResponseDto.searchDto toShopResponse(Shop shop, List<String> photoUrls){
+    public static ShopResponseDto.searchDto toShopResponse(Shop shop){
         return ShopResponseDto.searchDto.builder()
                 .shopId(shop.getId())
                 .shopName(shop.getShopName())
@@ -39,9 +39,16 @@ public class ShopConverter {
                 .address_spec(shop.getAddress_spec())
                 .inactiveDate(shop.getInactiveDate())
                 .businessNumber(shop.getBusinessNumber())
-                .photoUrls(photoUrls)
                 .reviewList(null)
                 .build();
     }
 
+    public static ShopResponseDto.BusinessHoursResDTO toShopBusinessHourDto(ShopBusinessHour shopBusinessHour) {
+        return ShopResponseDto.BusinessHoursResDTO.builder()
+                .isOpen(shopBusinessHour.isOpen())
+                .dayOfWeek(shopBusinessHour.getDayOfWeek())
+                .openHours(shopBusinessHour.getOpenHours())
+                .closeHours(shopBusinessHour.getCloseHours())
+                .build();
+    }
 }

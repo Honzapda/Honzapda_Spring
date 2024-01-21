@@ -6,7 +6,9 @@ import Honzapda.Honzapda_server.shop.data.ShopConverter;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
+import Honzapda.Honzapda_server.shop.repository.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.ShopPhotoRepository;
 import Honzapda.Honzapda_server.shop.repository.ShopRepository;
 import Honzapda.Honzapda_server.user.repository.UserRepository;
@@ -32,6 +34,9 @@ public class ShopServiceImpl implements ShopService {
 
     private final ShopPhotoRepository shopPhotoRepository;
 
+    private final ShopBusinessHourRepository shopBusinessHourRepository;
+
+
     public boolean registerShop(ShopRequestDto.registerDto request){
 
         Shop shop = ShopConverter.toShop(request);
@@ -39,6 +44,9 @@ public class ShopServiceImpl implements ShopService {
 
         List<String> photoUrls = request.getPhotoUrls();
         saveShopPhoto(shop.getId(), photoUrls);
+
+        List<ShopRequestDto.BusinessHoursReqDTO> businessHours = request.getBusinessHours();
+        saveShopBusinessHours(shop.getId(), businessHours);
 
         return true;
     }
@@ -50,8 +58,12 @@ public class ShopServiceImpl implements ShopService {
 
             Shop shop = optionalShop.get();
             List<String> photoUrls = getShopPhotoUrls(shop);
-            ShopResponseDto.searchDto resultDto = ShopConverter.toShopResponse(shop, photoUrls);
+            List<ShopResponseDto.BusinessHoursResDTO> businessHours = getShopBusinessHours(shop);
+
+            ShopResponseDto.searchDto resultDto = ShopConverter.toShopResponse(shop);
             resultDto.setRating(getRating(shopId));
+            resultDto.setPhotoUrls(photoUrls);
+            resultDto.setBusinessHours(businessHours);
 
             return resultDto;
         } else {
@@ -82,6 +94,32 @@ public class ShopServiceImpl implements ShopService {
         }
     }
 
+    public boolean saveShopBusinessHours(Long shopId, List<ShopRequestDto.BusinessHoursReqDTO> businessHours){
+
+        Optional<Shop> optionalShop = shopRepository.findById(shopId);
+        if (optionalShop.isPresent()) {
+            Shop shop = optionalShop.get();
+
+            businessHours.stream()
+                    .forEach(businessHour -> {
+                        boolean isOpen = businessHour.isOpen();
+                        ShopBusinessHour shopBusinessHour = ShopBusinessHour.builder()
+                                .shop(shop)
+                                .isOpen(isOpen)
+                                .openHours(isOpen ? businessHour.getOpenHours() : null)
+                                .closeHours(isOpen ? businessHour.getCloseHours() : null)
+                                .dayOfWeek(businessHour.getDayOfWeek())
+                                .build();
+
+                        shopBusinessHourRepository.save(shopBusinessHour);
+                    });
+
+            return true;
+        } else {
+            throw new NoSuchElementException("해당 가게가 존재하지 않습니다.");
+        }
+    }
+
     public List<String> getShopPhotoUrls(Shop shop) {
         List<ShopPhoto> shopPhotoList = shopPhotoRepository.findShopPhotosByShop(shop);
 
@@ -90,6 +128,14 @@ public class ShopServiceImpl implements ShopService {
                 .collect(Collectors.toList());
 
         return photoUrls;
+    }
+
+    public List<ShopResponseDto.BusinessHoursResDTO> getShopBusinessHours(Shop shop) {
+        List<ShopBusinessHour> businessHours = shopBusinessHourRepository.findShopBusinessHourByShop(shop);
+
+        return businessHours.stream()
+                .map(ShopConverter::toShopBusinessHourDto)
+                .collect(Collectors.toList());
     }
 
     public double getRating(Long shopId){

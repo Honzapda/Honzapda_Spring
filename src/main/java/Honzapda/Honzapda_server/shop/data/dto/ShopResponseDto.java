@@ -30,9 +30,27 @@ public class ShopResponseDto {
         LocalDateTime inactiveDate;
         List<Review> reviewList;
         List<String> photoUrls;
+        List<BusinessHoursResDTO> businessHours;
 
         public void setRating(double rating){
             this.rating = rating;
         }
+
+        public void setPhotoUrls(List<String> photoUrls){this.photoUrls = photoUrls;}
+
+        public void setBusinessHours(List<BusinessHoursResDTO> businessHours){
+            this.businessHours = businessHours;
+        }
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BusinessHoursResDTO {
+        private String dayOfWeek;
+        private boolean isOpen;
+        private String openHours;
+        private String closeHours;
     }
 }

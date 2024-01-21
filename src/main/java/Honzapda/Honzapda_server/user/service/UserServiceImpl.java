@@ -129,8 +129,11 @@ public class UserServiceImpl implements UserService{
         List<ShopResponseDto.searchDto> likeshops = new ArrayList<>();
         likes.forEach(likeData ->{
             Shop shop = likeData.getShop();
-            List<String> shopPhotoUrls = getShopPhotoUrls(shop);
-            likeshops.add(ShopConverter.toShopResponse(shop, shopPhotoUrls));
+            List<String> photoUrls = getShopPhotoUrls(shop);
+
+            ShopResponseDto.searchDto shopResponseDto = ShopConverter.toShopResponse(shop);
+            shopResponseDto.setPhotoUrls(photoUrls);
+            likeshops.add(shopResponseDto);
         });
         return likeshops;
     }
