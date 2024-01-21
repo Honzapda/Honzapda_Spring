@@ -36,7 +36,8 @@ public enum ErrorStatus implements BaseErrorCode {
     BOOKMARK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "해당 북마크를 찾을 수 없습니다."),
 
     // 리뷰 응답
-    REVIEW_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "REVIEW4000", "리뷰는 가게당 하나입니다.");
+    REVIEW_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "REVIEW4000", "리뷰는 가게당 하나입니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND,"REVIEW4001","리뷰가 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
