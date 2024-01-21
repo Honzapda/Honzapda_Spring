@@ -4,7 +4,7 @@ import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 
 public interface ShopService {
-    ShopResponseDto.searchDto registerShop(ShopRequestDto.registerDto request);
+    boolean registerShop(ShopRequestDto.registerDto request);
 
     ShopResponseDto.searchDto findShop(Long shopId);
 }

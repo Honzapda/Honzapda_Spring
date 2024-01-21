@@ -3,6 +3,8 @@ package Honzapda.Honzapda_server.user.service;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
+import Honzapda.Honzapda_server.shop.repository.ShopPhotoRepository;
 import Honzapda.Honzapda_server.shop.repository.ShopRepository;
 import Honzapda.Honzapda_server.user.data.UserConverter;
 
@@ -16,7 +18,6 @@ import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserPreferResDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.Prefer;
-import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.data.entity.UserPrefer;
 import Honzapda.Honzapda_server.user.repository.PreferRepository;
 import Honzapda.Honzapda_server.user.repository.UserPreferRepository;
@@ -48,6 +49,8 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder encoder;
     private final PreferRepository preferRepository;
     private final UserPreferRepository userPreferRepository;
+
+    private final ShopPhotoRepository shopPhotoRepository;
 
 
     @Override
@@ -124,9 +127,11 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
         List<LikeData> likes = user.getLikes();
         List<ShopResponseDto.searchDto> likeshops = new ArrayList<>();
-        likes.forEach(likeData ->
-                likeshops.add(ShopConverter.toShopResponse(likeData.getShop()))
-        );
+        likes.forEach(likeData ->{
+            Shop shop = likeData.getShop();
+            List<String> shopPhotoUrls = getShopPhotoUrls(shop);
+            likeshops.add(ShopConverter.toShopResponse(shop, shopPhotoUrls));
+        });
         return likeshops;
     }
 
@@ -220,4 +225,13 @@ public class UserServiceImpl implements UserService{
         return preferNameList;
     }
 
+    public List<String> getShopPhotoUrls(Shop shop) {
+        List<ShopPhoto> shopPhotoList = shopPhotoRepository.findShopPhotosByShop(shop);
+
+        List<String> photoUrls = shopPhotoList.stream()
+                .map(ShopPhoto::getUrl)
+                .collect(Collectors.toList());
+
+        return photoUrls;
+    }
 }

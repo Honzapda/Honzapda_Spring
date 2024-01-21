@@ -29,6 +29,7 @@ public class ShopResponseDto {
         String businessNumber;
         LocalDateTime inactiveDate;
         List<Review> reviewList;
+        List<String> photoUrls;
 
         public void setRating(double rating){
             this.rating = rating;

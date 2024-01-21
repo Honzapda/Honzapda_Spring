@@ -5,6 +5,7 @@ import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ShopConverter {
 
@@ -24,7 +25,7 @@ public class ShopConverter {
                 .build();
     }
 
-    public static ShopResponseDto.searchDto toShopResponse(Shop shop){
+    public static ShopResponseDto.searchDto toShopResponse(Shop shop, List<String> photoUrls){
         return ShopResponseDto.searchDto.builder()
                 .shopId(shop.getId())
                 .shopName(shop.getShopName())
@@ -38,6 +39,7 @@ public class ShopConverter {
                 .address_spec(shop.getAddress_spec())
                 .inactiveDate(shop.getInactiveDate())
                 .businessNumber(shop.getBusinessNumber())
+                .photoUrls(photoUrls)
                 .reviewList(null)
                 .build();
     }
