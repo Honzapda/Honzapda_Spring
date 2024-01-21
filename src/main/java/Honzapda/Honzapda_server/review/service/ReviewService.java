@@ -2,7 +2,6 @@ package Honzapda.Honzapda_server.review.service;
 
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
-import Honzapda.Honzapda_server.file.service.FileService;
 import Honzapda.Honzapda_server.review.data.ReviewConverter;
 import Honzapda.Honzapda_server.review.data.dto.ReviewRequestDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
@@ -15,14 +14,10 @@ import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
