@@ -6,6 +6,8 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
+import java.util.List;
+
 public class ReviewRequestDto {
 
     @Getter
@@ -17,5 +19,7 @@ public class ReviewRequestDto {
 
         @Size(max = 200, message = "본문은 200자까지만  허용됩니다.") // 약 3줄
         private String body;
+
+        private List<String> reviewUrls;
     }
 }
