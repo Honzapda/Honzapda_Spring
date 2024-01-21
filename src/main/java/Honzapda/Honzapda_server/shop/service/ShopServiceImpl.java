@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -58,12 +60,14 @@ public class ShopServiceImpl implements ShopService {
 
             Shop shop = optionalShop.get();
             List<String> photoUrls = getShopPhotoUrls(shop);
-            List<ShopResponseDto.BusinessHoursResDTO> businessHours = getShopBusinessHours(shop);
+            List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
+            List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
 
             ShopResponseDto.searchDto resultDto = ShopConverter.toShopResponse(shop);
             resultDto.setRating(getRating(shopId));
+            resultDto.setOpenNow(getOpenNow(businessHours));
             resultDto.setPhotoUrls(photoUrls);
-            resultDto.setBusinessHours(businessHours);
+            resultDto.setBusinessHours(businessHoursResDTOS);
 
             return resultDto;
         } else {
@@ -130,9 +134,11 @@ public class ShopServiceImpl implements ShopService {
         return photoUrls;
     }
 
-    public List<ShopResponseDto.BusinessHoursResDTO> getShopBusinessHours(Shop shop) {
-        List<ShopBusinessHour> businessHours = shopBusinessHourRepository.findShopBusinessHourByShop(shop);
+    public List<ShopBusinessHour> getShopBusinessHours(Shop shop) {
+        return shopBusinessHourRepository.findShopBusinessHourByShop(shop);
+    }
 
+    public List<ShopResponseDto.BusinessHoursResDTO> getShopBusinessHoursResDTO(List<ShopBusinessHour> businessHours) {
         return businessHours.stream()
                 .map(ShopConverter::toShopBusinessHourDto)
                 .collect(Collectors.toList());
@@ -145,5 +151,24 @@ public class ShopServiceImpl implements ShopService {
                 .mapToDouble(Review::getScore)
                 .average()
                 .orElse(0.0);
+    }
+
+    public boolean getOpenNow(List<ShopBusinessHour> businessHours) {
+        return businessHours.stream()
+                .anyMatch(shopBusinessHour -> shopBusinessHour.getDayOfWeek().equalsIgnoreCase(getCurrentDayOfWeek())
+                        && shopBusinessHour.isOpen()
+                        && isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours()));
+    }
+
+    private boolean isCurrentTimeWithinOpenHours(String openHours, String closeHours) {
+        LocalTime currentTime = LocalTime.now();
+        LocalTime openTime = LocalTime.parse(openHours);
+        LocalTime closeTime = LocalTime.parse(closeHours);
+
+        return currentTime.isAfter(openTime) && currentTime.isBefore(closeTime);
+    }
+
+    private String getCurrentDayOfWeek() {
+        return LocalDateTime.now().getDayOfWeek().name();
     }
 }
