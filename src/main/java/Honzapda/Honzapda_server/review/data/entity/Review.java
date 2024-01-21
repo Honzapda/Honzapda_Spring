@@ -4,7 +4,6 @@ import Honzapda.Honzapda_server.review.data.entity.common.BaseEntity;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
