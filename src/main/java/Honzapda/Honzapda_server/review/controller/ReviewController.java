@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.review.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
+import Honzapda.Honzapda_server.review.data.dto.ReviewImageResponseDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewRequestDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.service.ReviewService;
@@ -35,5 +36,15 @@ public class ReviewController {
             @RequestParam(defaultValue = "10") int size) {
 
         return ApiResult.onSuccess(reviewService.getReviewListDto(shopId, PageRequest.of(page, size)));
+    }
+
+    @GetMapping("/image")
+    public ApiResult<ReviewImageResponseDto.ImageListDto> getReviewImages(
+            @RequestParam Long shopId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return ApiResult.onSuccess(reviewService.getReviewImageListDto(shopId,PageRequest.of(page,size)));
+
     }
 }
