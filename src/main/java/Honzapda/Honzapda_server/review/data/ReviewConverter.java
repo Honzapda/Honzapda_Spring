@@ -5,13 +5,28 @@ import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.data.entity.Review;
 import Honzapda.Honzapda_server.review.data.entity.ReviewImage;
 import org.springframework.data.domain.Page;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ReviewConverter {
 
+    public static ReviewResponseDto.ReviewDto toReviewDto(Review review) {
+
+        return ReviewResponseDto.ReviewDto.builder()
+                .images(null)
+                .reviewId(review.getId())
+                .shopId(review.getShop().getId())
+                .userId(review.getUser().getId())
+                .score(review.getScore())
+                .body(review.getBody())
+                .createdAt(review.getCreatedAt())
+                .build();
+    }
     public static ReviewResponseDto.ReviewDto toReviewDto(
             Review review, List<ReviewImage> reviewImages) {
+
         List<ReviewImageResponseDto.ImageDto> imageDtos = reviewImages.stream()
                 .map(ReviewImageConverter::toImageDto)
                 .collect(Collectors.toList());
