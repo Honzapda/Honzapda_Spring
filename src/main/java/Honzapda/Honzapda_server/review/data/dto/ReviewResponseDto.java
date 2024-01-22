@@ -1,6 +1,5 @@
 package Honzapda.Honzapda_server.review.data.dto;
 
-import Honzapda.Honzapda_server.review.data.entity.ReviewImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,20 +9,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReviewResponseDto {
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ImageDto{
-        private Long imageId;
-        private String url;
-    }
+
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ReviewDto {
-        private List<ImageDto> images;
+        private List<ReviewImageResponseDto.ImageDto> images;
         private Long reviewId;
         private Long shopId;
         private Long userId;
@@ -43,11 +35,6 @@ public class ReviewResponseDto {
         private Boolean isFirst;
         private Boolean isLast;
     }
-    public static ReviewResponseDto.ImageDto toImageDto(ReviewImage image){
-        return ReviewResponseDto.ImageDto.builder()
-                .imageId(image.getId())
-                .url(image.getUrl())
-                .build();
-    }
+
 
 }
