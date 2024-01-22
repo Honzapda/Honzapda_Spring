@@ -51,20 +51,31 @@ public class ReviewService {
 
         Review savedReview = reviewRepository.save(review);
 
-        //리뷰 이미지
-        requestDto.getReviewUrls().forEach(url->{
-            ReviewImage reviewImage = ReviewImage.builder()
-                    .url(url)
-                    .review(savedReview)
-                    .build();
-            reviewImageRepository.save(reviewImage);
-        });
+        //리뷰 이미지 있으면,
+        if(requestDto.getReviewUrls()!=null)
+            return includeReviewImageDto(requestDto,savedReview);
 
-        List<ReviewImage> reviewImages = reviewImageRepository.findAllByReview(savedReview).orElseThrow();
-
-        return ReviewConverter.toReviewDto(savedReview,reviewImages);
+        return ReviewConverter.toReviewDto(savedReview);
     }
 
+    private ReviewResponseDto.ReviewDto includeReviewImageDto(ReviewRequestDto.ReviewRegisterDto requestDto, Review savedReview){
+
+        requestDto.getReviewUrls().stream()
+                .filter(url -> url != null && !url.isEmpty())
+                .forEach(url -> {
+                    ReviewImage reviewImage = ReviewImage.builder()
+                            .url(url)
+                            .review(savedReview)
+                            .build();
+                    reviewImageRepository.save(reviewImage);
+                });
+
+        List<ReviewImage> reviewImages = reviewImageRepository.findAllByReview(savedReview)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.REVIEW_NOT_FOUND));
+
+        return ReviewConverter.toReviewDto(savedReview,reviewImages);
+
+    }
     private Shop findShopById(Long shopId) {
         return shopRepository.findById(shopId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
