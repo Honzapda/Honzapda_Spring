@@ -3,6 +3,8 @@ package Honzapda.Honzapda_server.review.service;
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.review.data.ReviewConverter;
+import Honzapda.Honzapda_server.review.data.ReviewImageConverter;
+import Honzapda.Honzapda_server.review.data.dto.ReviewImageResponseDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewRequestDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.data.entity.Review;
@@ -15,6 +17,7 @@ import Honzapda.Honzapda_server.user.data.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,4 +96,13 @@ public class ReviewService {
         return ReviewConverter.toReviewListDto(allByShopOrderByCreatedAtDesc, reviewDtos);
     }
 
+    public ReviewImageResponseDto.ImageListDto getReviewImageListDto(Long shopId, Pageable pageable){
+        // 어디 shop 리뷰인지 확인
+        Shop findShop = findShopById(shopId);
+        // Slice
+        Slice<ReviewImage> allByShopOrderByCreatedAtDesc =
+                reviewImageRepository.findAllByShopOrderByCreatedAtDesc(findShop, pageable);
+
+        return ReviewImageConverter.toImageListDto(allByShopOrderByCreatedAtDesc);
+    }
 }
