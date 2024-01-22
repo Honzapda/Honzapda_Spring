@@ -48,6 +48,10 @@ public class User extends BaseEntity {
         LOCAL, APPLE, GOOGLE, KAKAO
     }
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER,
+            orphanRemoval = true)
+    private List<LikeData> likes = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserPrefer> userPrefers = new HashSet<>();
 

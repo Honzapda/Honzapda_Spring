@@ -3,7 +3,10 @@ package Honzapda.Honzapda_server.shop.data.dto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+
+import java.util.List;
 
 public class ShopRequestDto {
 
@@ -22,6 +25,9 @@ public class ShopRequestDto {
         // 위도 경도
         Double latitude;
         Double longitude;
+
+        List<String> photoUrls;
+        List<BusinessHoursReqDTO> businessHours;
     }
 
     @Getter
@@ -42,5 +48,19 @@ public class ShopRequestDto {
         @Positive
         @Max(500)
         Double distance;
+
     }
+
+    @Getter
+    public static class BusinessHoursReqDTO {
+        String dayOfWeek;
+
+        @JsonProperty("isOpen")
+        boolean isOpen;
+
+        String openHours;
+
+        String closeHours;
+    }
+
 }

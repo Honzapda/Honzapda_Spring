@@ -97,18 +97,11 @@ public class AuthController {
         }
     }
 
-  @PostMapping("/register/shop")
-    public ResponseEntity<?> registerShop(
-            @RequestBody @Valid ShopRequestDto.RegisterDto request)
-    {
-        try {
-            ShopResponseDto.SearchDto responseDto = shopFacadeService.registerShop(request);
-            return new ResponseEntity<>(responseDto, HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping("/register/shop")
+    public ApiResult<?> registerShop(
+            @RequestBody @Valid ShopRequestDto.RegisterDto request) {
+        ShopResponseDto.SearchDto result = shopFacadeService.registerShop(request);
+        return ApiResult.onSuccess(result);
     }
   
     @GetMapping("/logout")

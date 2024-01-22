@@ -3,6 +3,10 @@ package Honzapda.Honzapda_server.user.service;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
+import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
+import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
+import Honzapda.Honzapda_server.shop.repository.mysql.ShopPhotoRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.UserConverter;
 
@@ -48,6 +52,10 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder encoder;
     private final PreferRepository preferRepository;
     private final UserPreferRepository userPreferRepository;
+
+    private final ShopPhotoRepository shopPhotoRepository;
+
+    private final ShopBusinessHourRepository shopBusinessHourRepository;
 
 
     @Override
@@ -122,12 +130,19 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<ShopResponseDto.SearchDto> getLikeShops(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
+        List<LikeData> likes = user.getLikes();
         List<ShopResponseDto.SearchDto> likeshops = new ArrayList<>();
-        List<LikeData> likeDatas = likeRepository.findAllByUser(user).orElseThrow(() -> new RuntimeException("user가 좋아하는 shop이 존재하지 않습니다."));
-        likeDatas.forEach(
-                likeData ->
-                        likeshops.add(ShopConverter.toShopResponse(likeData.getShop()))
-        );
+        likes.forEach(likeData ->{
+            Shop shop = likeData.getShop();
+            List<String> photoUrls = getShopPhotoUrls(shop);
+            List<ShopResponseDto.BusinessHoursResDTO> businessHours = getShopBusinessHours(shop);
+
+            ShopResponseDto.SearchDto shopResponseDto = ShopConverter.toShopResponse(shop);
+            shopResponseDto.setPhotoUrls(photoUrls);
+            shopResponseDto.setBusinessHours(businessHours);
+
+            likeshops.add(shopResponseDto);
+        });
         return likeshops;
     }
 
@@ -208,4 +223,21 @@ public class UserServiceImpl implements UserService{
         return preferNameList;
     }
 
+    public List<String> getShopPhotoUrls(Shop shop) {
+        List<ShopPhoto> shopPhotoList = shopPhotoRepository.findShopPhotosByShop(shop);
+
+        List<String> photoUrls = shopPhotoList.stream()
+                .map(ShopPhoto::getUrl)
+                .collect(Collectors.toList());
+
+        return photoUrls;
+    }
+
+    public List<ShopResponseDto.BusinessHoursResDTO> getShopBusinessHours(Shop shop) {
+        List<ShopBusinessHour> businessHours = shopBusinessHourRepository.findShopBusinessHourByShop(shop);
+
+        return businessHours.stream()
+                .map(ShopConverter::toShopBusinessHourDto)
+                .collect(Collectors.toList());
+    }
 }
