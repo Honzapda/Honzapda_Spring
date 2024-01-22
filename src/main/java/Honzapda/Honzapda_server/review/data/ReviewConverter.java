@@ -1,5 +1,6 @@
 package Honzapda.Honzapda_server.review.data;
 
+import Honzapda.Honzapda_server.review.data.dto.ReviewImageResponseDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.data.entity.Review;
 import Honzapda.Honzapda_server.review.data.entity.ReviewImage;
@@ -7,13 +8,12 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public class ReviewConverter {
 
     public static ReviewResponseDto.ReviewDto toReviewDto(
             Review review, List<ReviewImage> reviewImages) {
-        List<ReviewResponseDto.ImageDto> imageDtos = reviewImages.stream()
-                .map(ReviewResponseDto::toImageDto)
+        List<ReviewImageResponseDto.ImageDto> imageDtos = reviewImages.stream()
+                .map(ReviewImageConverter::toImageDto)
                 .collect(Collectors.toList());
 
         return ReviewResponseDto.ReviewDto.builder()
