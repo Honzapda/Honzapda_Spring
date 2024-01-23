@@ -26,7 +26,14 @@ public class UserController {
     public ApiResult<?> updateUser(@RequestBody @Valid UserJoinDto userJoinDto, @SessionAttribute UserResDto user){
         return ApiResult.onSuccess(userService.updateUser(userJoinDto, user.getId()));
     }
-
+    @PostMapping("/password")
+    public ApiResult<?> patchPassword(@RequestBody @Valid PatchUserPwDto userPwDto, @SessionAttribute("user") UserResDto user){
+        /*
+         * flow : 1. 기존 비밀번호 재확인 -> 동일하면, 2.신규 비밀번호 입력으로 변경
+         * 일단, MY에 없어서, 2번만 구현하였습니다.
+         */
+        return ApiResult.onSuccess(userService.patchPassword(userPwDto, user.getId()));
+    }
 
     @GetMapping("/likeshops")
     public ApiResult<List<ShopResponseDto.SearchDto>> getLikeshops(@SessionAttribute("user") UserResDto userResDto) {
