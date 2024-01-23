@@ -8,6 +8,7 @@ import Honzapda.Honzapda_server.auth.apple.AppleProperties;
 import Honzapda.Honzapda_server.auth.apple.AppleSocialTokenInfoResponse;
 import Honzapda.Honzapda_server.auth.apple.common.TokenDecoder;
 import Honzapda.Honzapda_server.auth.util.PasswordGenerator;
+import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
 import Honzapda.Honzapda_server.user.data.UserConverter;
 import Honzapda.Honzapda_server.user.data.dto.AppleJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
@@ -21,8 +22,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,14 +46,17 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private final EmailService emailService;
+    @Autowired
+    private final ReviewRepository reviewRepository;
 
 
-    public AuthServiceImpl(UserRepository userRepository, AppleAuthClient appleAuthClient, AppleProperties appleProperties, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public AuthServiceImpl(UserRepository userRepository, AppleAuthClient appleAuthClient, AppleProperties appleProperties, PasswordEncoder passwordEncoder, EmailService emailService, ReviewRepository reviewRepository) {
         this.userRepository = userRepository;
         this.appleAuthClient = appleAuthClient;
         this.appleProperties = appleProperties;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.reviewRepository = reviewRepository;
     }
 
     @Override
@@ -94,14 +96,7 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.findByEmail(email).orElseThrow(
                 ()->new UserHandler(ErrorStatus.ID_NOT_EXIST));
     }
-/*
-    @Override
-    public User getUserByNickName(String nickname) {
 
-        return userRepository.findByName(nickname).orElseThrow(
-                ()->new UserHandler(ErrorStatus.NICKNAME_NOT_EXIST));
-    }
- */
     @Override
     public void sendTempPasswordByEmail(String email) {
 
@@ -114,7 +109,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<?> appleLogin(String authorizationCode) {
+    public Object appleLogin(String authorizationCode) {
 
         AppleSocialTokenInfoResponse appleToken = appleAuthClient.findAppleToken(
                 appleProperties.getClientId(),
@@ -127,55 +122,16 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> user = userRepository.findByEmail(appleIdTokenPayload.getEmail());
 
         if (user.isPresent()) {
-            return new ResponseEntity<>(UserResDto.toDTO(user.get()), HttpStatus.OK);
+            return UserResDto.toDTO(user.get());
         } else {
-            AppleJoinDto appleJoinDto = AppleJoinDto.toDTO(appleIdTokenPayload.getEmail(), appleToken.getRefreshToken());
-            return new ResponseEntity<>(appleJoinDto, HttpStatus.UNAUTHORIZED);
+            return AppleJoinDto.toDTO(appleIdTokenPayload.getEmail(), appleToken.getRefreshToken());
         }
     }
-/*
-    @Override
-    public UserResDto join(UserJoinDto userJoinDto) {
-
-        // 중복 체크 하기
-        User user = new User();
-        user.setName(userJoinDto.getName());
-        userRepository.findByEmail(userJoinDto.getEmail()).ifPresent(u -> {
-            throw new DataIntegrityViolationException("이미 존재하는 회원입니다.");
-        });
-        user.setEmail(userJoinDto.getEmail());
-
-        if (userJoinDto.getSocialToken() == null) {
-            // 일반 회원
-            user.setPassword(passwordEncoder.encode(userJoinDto.getPassword()));
-            user.setSignUpType(User.SignUpType.LOCAL);
-        } else {
-            // 애플 회원
-            user.setSocialToken(userJoinDto.getSocialToken());
-            user.setSignUpType(User.SignUpType.APPLE);
-        }
-        userRepository.save(user);
-        return UserResDto.toDTO(user);
-    }
-
-    @Override
-    public UserResDto login(UserLoginDto userLoginDto) {
-
-        User user = userRepository.findByEmail(userLoginDto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("유저 정보 없음"));
-
-        boolean matches = passwordEncoder.matches(userLoginDto.getPassword(), user.getPassword());
-        if (!matches) throw new BadCredentialsException("아이디 혹은 비밀번호를 확인하세요.");
-
-        return UserResDto.toDTO(user);
-    }
-
- */
 
     @Override
     public void revoke(UserResDto userResDto) {
 
         User user = userRepository.findById(userResDto.getId()).orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
-        System.out.println(user.getId());
         if (user.getSignUpType() == User.SignUpType.APPLE) {
             String refreshToken = user.getSocialToken();
             if (refreshToken != null) {
@@ -193,6 +149,8 @@ public class AuthServiceImpl implements AuthService {
 
         }
         userRepository.deleteById(user.getId());
+        reviewRepository.deleteAllByUser(user);
+
     }
         private String generateClientSecret () {
 

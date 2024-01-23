@@ -34,9 +34,8 @@ public class FileController {
     }
 
     @DeleteMapping("/delete/{uuid}")
-    public ApiResult<Void> deleteObject(@PathVariable String uuid) {
-        fileService.deleteObject(uuid);
-        return ApiResult.onSuccess();
+    public ApiResult<String> deleteObject(@PathVariable String uuid) {
+        return ApiResult.onSuccess(fileService.deleteObject(uuid));
     }
 
 }
