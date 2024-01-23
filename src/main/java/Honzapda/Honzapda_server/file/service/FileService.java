@@ -9,5 +9,5 @@ public interface FileService {
 
     List<String> uploadObject(List<MultipartFile> multipartFiles) throws IOException, Exception;
 
-    void deleteObject(String objectName);
+    String deleteObject(String objectName);
 }

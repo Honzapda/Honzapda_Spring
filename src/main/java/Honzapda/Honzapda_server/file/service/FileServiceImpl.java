@@ -54,14 +54,13 @@ public class FileServiceImpl implements FileService{
     }
 
     @Override
-    public void deleteObject(String objectName) {
+    public String deleteObject(String objectName) {
 
         Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
 
         Blob blob = storage.get(bucketName, objectName);
         if (blob == null) {
-            System.out.println("The object " + objectName + " wasn't found in " + bucketName);
-            return;
+            throw new RuntimeException("The object " + objectName + " wasn't found in " + bucketName);
         }
 
         Storage.BlobSourceOption precondition =
@@ -69,7 +68,7 @@ public class FileServiceImpl implements FileService{
 
         storage.delete(bucketName, objectName,precondition);
 
-        System.out.println("Object " + objectName + " was deleted from " + bucketName);
+        return "Object " + objectName + " was deleted from " + bucketName;
     }
 
 
