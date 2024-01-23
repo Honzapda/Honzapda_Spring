@@ -4,7 +4,6 @@ import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
-import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
 
@@ -18,7 +17,7 @@ public interface AuthService {
 
     User loginUser(UserLoginDto request);
 
-    ResponseEntity<?> appleLogin(String authorizationCode);
+    Object appleLogin(String authorizationCode);
 
     void revoke(UserResDto userResDto);
 /*

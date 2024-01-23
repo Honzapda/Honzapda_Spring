@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.apiPayload;
 
 import Honzapda.Honzapda_server.apiPayload.code.BaseErrorCode;
+import Honzapda.Honzapda_server.user.data.dto.AppleJoinDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import Honzapda.Honzapda_server.apiPayload.code.BaseCode;
 import Honzapda.Honzapda_server.apiPayload.code.status.*;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
@@ -45,7 +47,10 @@ public class ApiResult<T> {
     public static <T> ApiResult<T> onFailure(String code, String message, T data){
         return new ApiResult<>(false, code, message, data);
     }
-     public static <T> ApiResult<T> of(BaseErrorCode code, T result){
+    public static <T> ApiResult<T> onFailure(BaseErrorCode code, T result){
+        return new ApiResult<>(false, code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
+    }
+    public static <T> ApiResult<T> of(BaseErrorCode code, T result){
         return new ApiResult<>(false, code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
     }
 
