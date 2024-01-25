@@ -1,6 +1,6 @@
 package Honzapda.Honzapda_server.shop.data.dto;
 
-import Honzapda.Honzapda_server.review.data.entity.Review;
+import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +32,7 @@ public class ShopResponseDto {
         String businessNumber;
         boolean openNow;
         LocalDateTime inactiveDate;
-        List<Review> reviewList;
+        List<ReviewResponseDto.ReviewDto> reviewList;
         List<String> photoUrls;
         List<BusinessHoursResDTO> businessHours;
 
@@ -58,6 +57,10 @@ public class ShopResponseDto {
 
         public void setBusinessHours(List<BusinessHoursResDTO> businessHours){
             this.businessHours = businessHours;
+        }
+
+        public void setReviewList(List<ReviewResponseDto.ReviewDto> reviewList){
+            this.reviewList = reviewList;
         }
     }
 
