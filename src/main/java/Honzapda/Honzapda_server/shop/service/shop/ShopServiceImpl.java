@@ -1,6 +1,12 @@
 package Honzapda.Honzapda_server.shop.service.shop;
 
+import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
+import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
+import Honzapda.Honzapda_server.review.data.ReviewConverter;
+import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.data.entity.Review;
+import Honzapda.Honzapda_server.review.data.entity.ReviewImage;
+import Honzapda.Honzapda_server.review.repository.mysql.ReviewImageRepository;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
@@ -39,6 +45,8 @@ public class ShopServiceImpl implements ShopService {
 
     private final ShopPhotoRepository shopPhotoRepository;
 
+    private final ReviewImageRepository reviewImageRepository;
+
     private final ShopBusinessHourRepository shopBusinessHourRepository;
 
     @Transactional
@@ -56,6 +64,7 @@ public class ShopServiceImpl implements ShopService {
         return ShopConverter.toShopResponse(shop);
     }
 
+    @Override
     public ShopResponseDto.SearchDto findShop(Long shopId){
         Optional<Shop> optionalShop = shopRepository.findById(shopId);
 
@@ -65,12 +74,14 @@ public class ShopServiceImpl implements ShopService {
             List<String> photoUrls = getShopPhotoUrls(shop);
             List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
             List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
+            List<ReviewResponseDto.ReviewDto> reviewDtos = getReviewListDto(shop);
 
             ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop);
             resultDto.setRating(getRating(shopId));
             resultDto.setOpenNow(getOpenNow(businessHours));
             resultDto.setPhotoUrls(photoUrls);
             resultDto.setBusinessHours(businessHoursResDTOS);
+            resultDto.setReviewList(reviewDtos);
 
             return resultDto;
         } else {
@@ -195,5 +206,20 @@ public class ShopServiceImpl implements ShopService {
 
     private String getCurrentDayOfWeek() {
         return LocalDateTime.now().getDayOfWeek().name();
+    }
+
+    private List<ReviewResponseDto.ReviewDto> getReviewListDto(Shop shop) {
+
+        List<Review> reviewList = reviewRepository.findTop3ByShopOrderByCreatedAtDesc(shop);
+
+        List<ReviewResponseDto.ReviewDto> reviewDtoList = reviewList.stream()
+                .map(review -> {
+                    List<ReviewImage> reviewImages = reviewImageRepository
+                            .findAllByReview(review).orElseThrow(()-> new GeneralException(ErrorStatus.REVIEW_NOT_FOUND));
+                    return ReviewConverter.toReviewDto(review, reviewImages);
+                })
+                .collect(Collectors.toList());
+
+        return reviewDtoList;
     }
 }
