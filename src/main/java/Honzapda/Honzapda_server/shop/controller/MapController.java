@@ -9,6 +9,7 @@ import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +23,7 @@ public class MapController {
     private final ShopFacadeService shopFacadeService;
 
     @GetMapping
-    public ApiResult<List<MapResponseDto.HomeDto>> fetchShops(@RequestBody @Valid MapRequestDto.LocationDto locationDto){
-        log.info("distance: {}", locationDto.getDistance());
+    public ApiResult<List<MapResponseDto.HomeDto>> fetchShops(@RequestBody @Validated MapRequestDto.LocationDto locationDto){
         return ApiResult.onSuccess(shopFacadeService.findShopsByLocation(locationDto));
     }
 
