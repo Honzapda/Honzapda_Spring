@@ -15,7 +15,9 @@ public interface ShopService {
 
     Map<Long, ShopResponseDto.SearchDto> findShopsByShopIds(List<Long> mysqlIds);
 
-    Slice<ShopResponseDto.SearchDto> searchShopByShopNameContainingSortByReview(ShopRequestDto.SearchDto request, Pageable pageable);
+    Map<Long, ShopResponseDto.SearchByNameDto> findShopsByShopIdsSorted(List<Long> mysqlIds);
 
-    Slice<ShopResponseDto.SearchDto> searchShopByShopNameContainingSortByBookmark(ShopRequestDto.SearchDto request, Pageable pageable);
+    Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContainingSortByReview(ShopRequestDto.SearchDto request, Pageable pageable);
+
+    Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContainingSortByBookmark(ShopRequestDto.SearchDto request, Pageable pageable);
 }

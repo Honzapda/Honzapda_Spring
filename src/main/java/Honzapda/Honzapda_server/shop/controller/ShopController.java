@@ -32,11 +32,10 @@ public class ShopController {
     }
 
     @GetMapping("/search")
-    public ApiResult<Slice<ShopResponseDto.SearchDto>> searchShopSlice(
-            @SessionAttribute(name = "user") UserResDto userResDto,
+    public ApiResult<Slice<ShopResponseDto.SearchByNameDto>> searchShopSlice(
             @RequestBody @Valid ShopRequestDto.SearchDto request,
             @PageableDefault() Pageable pageable)
     {
-        return ApiResult.onSuccess(shopFacadeService.searchShop(userResDto, request, pageable));
+        return ApiResult.onSuccess(shopFacadeService.searchShop(request, pageable));
     }
 }

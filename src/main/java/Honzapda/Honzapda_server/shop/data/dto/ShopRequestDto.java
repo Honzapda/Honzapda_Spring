@@ -2,9 +2,11 @@ package Honzapda.Honzapda_server.shop.data.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -33,6 +35,7 @@ public class ShopRequestDto {
     @Getter
     public static class SearchDto {
 
+        @NotBlank
         String keyword;
 
         SortColumn sortColumn;

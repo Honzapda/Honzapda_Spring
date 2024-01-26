@@ -108,8 +108,7 @@ public class ShopFacadeService {
                 .build();
     }
 
-    public Slice<ShopResponseDto.SearchDto> searchShop(UserResDto userResDto, ShopRequestDto.SearchDto request, Pageable pageable) {
-        User user = findUserById(userResDto.getId());
+    public Slice<ShopResponseDto.SearchByNameDto> searchShop(ShopRequestDto.SearchDto request, Pageable pageable) {
         SortColumn sortColumn = request.getSortColumn();
 
         if (sortColumn == SortColumn.DISTANCE) {
@@ -135,22 +134,15 @@ public class ShopFacadeService {
         return null;
     }
 
-    private SliceImpl<ShopResponseDto.SearchDto> searchSortByDistance(ShopRequestDto.SearchDto request, Pageable pageable) {
+    private Slice<ShopResponseDto.SearchByNameDto> searchSortByDistance(ShopRequestDto.SearchDto request, Pageable pageable) {
         Slice<ShopCoordinates> shopCoordinates = shopCoordinatesService.findByShopNameContainingAndLocationNear(request, pageable);
         List<Long> mysqlIds = shopCoordinates.getContent().stream()
                 .map(ShopCoordinates::getMysqlId)
                 .toList();
 
-        Map<Long, ShopResponseDto.SearchDto> shopMap = shopService.findShopsByShopIds(mysqlIds);
+        Map<Long, ShopResponseDto.SearchByNameDto> shopMap = shopService.findShopsByShopIdsSorted(mysqlIds);
 
-        shopCoordinates.getContent().forEach(coordinates -> {
-            ShopResponseDto.SearchDto shop = shopMap.get(coordinates.getMysqlId());
-            shop.addCoordinates(coordinates);
-        });
-
-        List<ShopResponseDto.SearchDto> searchDtos = shopMap.values().stream()
-                .toList();
-        return new SliceImpl<>(searchDtos, pageable, shopCoordinates.hasNext());
+        return shopCoordinates.map(shopCoordinate -> shopMap.get(shopCoordinate.getMysqlId()));
     }
 
     private User findUserById(Long userId) {

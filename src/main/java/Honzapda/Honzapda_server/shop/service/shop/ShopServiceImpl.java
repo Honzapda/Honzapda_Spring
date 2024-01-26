@@ -96,19 +96,28 @@ public class ShopServiceImpl implements ShopService {
                 .map(ShopConverter::toShopResponse)
                 .toList();
         searchDtos.forEach(dto -> dto.setRating(getRating(dto.getShopId())));
-        return ShopConverter.toShopResponseMap(searchDtos);
+        return ShopConverter.toShopResponseMap(mysqlIds, searchDtos);
     }
 
     @Override
-    public Slice<ShopResponseDto.SearchDto> searchShopByShopNameContainingSortByReview(ShopRequestDto.SearchDto request, Pageable pageable) {
-        return shopRepository.findByShopNameContainingOrderByReviewCountDesc(request.getKeyword(), pageable)
-                .map(ShopConverter::toShopResponse);
+    public Map<Long, ShopResponseDto.SearchByNameDto> findShopsByShopIdsSorted(List<Long> mysqlIds) {
+        List<ShopResponseDto.SearchByNameDto> searchByNameDtos = shopRepository.findSearchByNameDtoByMysqlIds(mysqlIds);
+        checkOpenNow(searchByNameDtos);
+        return ShopConverter.toSearchResponseMap(mysqlIds, searchByNameDtos);
     }
 
     @Override
-    public Slice<ShopResponseDto.SearchDto> searchShopByShopNameContainingSortByBookmark(ShopRequestDto.SearchDto request, Pageable pageable) {
-        return shopRepository.findByShopNameContainingOrderByBookmarkCountDesc(request.getKeyword(), pageable)
-                .map(ShopConverter::toShopResponse);
+    public Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContainingSortByReview(ShopRequestDto.SearchDto request, Pageable pageable) {
+        Slice<ShopResponseDto.SearchByNameDto> result = shopRepository.findByShopNameContainingOrderByReviewCountDesc(request.getKeyword(), pageable);
+        checkOpenNow(result.getContent());
+        return result;
+    }
+
+    @Override
+    public Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContainingSortByBookmark(ShopRequestDto.SearchDto request, Pageable pageable) {
+        Slice<ShopResponseDto.SearchByNameDto> result = shopRepository.findByShopNameContainingOrderByBookmarkCountDesc(request.getKeyword(), pageable);
+        checkOpenNow(result.getContent());
+        return result;
     }
 
     private double getRating(Long shopId){
@@ -221,5 +230,18 @@ public class ShopServiceImpl implements ShopService {
                 .collect(Collectors.toList());
 
         return reviewDtoList;
+    }
+
+    private void checkOpenNow(List<ShopResponseDto.SearchByNameDto> dtos) {
+        dtos.forEach(
+                dto -> {
+                    if (dto != null) {
+                        Optional.ofNullable(dto.getShopBusinessHour()).ifPresentOrElse(
+                                shopBusinessHour -> dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours())),
+                                () -> dto.setOpenNow(false)
+                        );
+                    }
+                }
+        );
     }
 }

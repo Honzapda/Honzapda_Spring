@@ -6,8 +6,10 @@ import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ShopConverter {
@@ -46,13 +48,27 @@ public class ShopConverter {
                 .build();
     }
 
-    public static Map<Long, ShopResponseDto.SearchDto> toShopResponseMap(List<ShopResponseDto.SearchDto> searchDtos) {
-        return searchDtos.stream()
+    public static Map<Long, ShopResponseDto.SearchDto> toShopResponseMap(List<Long> mysqlIds, List<ShopResponseDto.SearchDto> searchDtos) {
+        return mysqlIds.stream()
+                .flatMap(id -> searchDtos.stream().filter(dto -> dto.getShopId().equals(id)))
                 .collect(Collectors.toMap(
                         ShopResponseDto.SearchDto::getShopId,
-                        searchDto -> searchDto)
-                );
+                        Function.identity(),
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new
+                ));
     }
+    public static Map<Long, ShopResponseDto.SearchByNameDto> toSearchResponseMap(List<Long> mysqlIds, List<ShopResponseDto.SearchByNameDto> searchByNameDtos) {
+        return mysqlIds.stream()
+                .flatMap(id -> searchByNameDtos.stream().filter(dto -> dto.getShopId().equals(id)))
+                .collect(Collectors.toMap(
+                        ShopResponseDto.SearchByNameDto::getShopId,
+                        Function.identity(),
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new
+                ));
+    }
+
     public static ShopResponseDto.BusinessHoursResDTO toShopBusinessHourDto(ShopBusinessHour shopBusinessHour) {
         return ShopResponseDto.BusinessHoursResDTO.builder()
                 .isOpen(shopBusinessHour.isOpen())

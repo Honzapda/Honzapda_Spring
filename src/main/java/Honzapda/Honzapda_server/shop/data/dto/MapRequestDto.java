@@ -20,6 +20,6 @@ public class MapRequestDto {
 
         @Positive
         @Max(500)
-        Double distance = 500.0;
+        Double distance = 2.0;
     }
 }
