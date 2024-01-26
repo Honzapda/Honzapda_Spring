@@ -8,6 +8,7 @@ import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
 import Honzapda.Honzapda_server.shop.repository.mongo.ShopCoordinatesRepository;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.dto.ShopCoordinatesDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.geo.Distance;
@@ -42,7 +43,7 @@ public class ShopCoordinatesServiceImpl implements ShopCoordinatesService {
     }
 
     @Override
-    public Slice<ShopCoordinates> findByShopNameContainingAndLocationNear(ShopRequestDto.SearchDto searchDto, Pageable pageable) {
+    public Page<ShopCoordinates> findByShopNameContainingAndLocationNear(ShopRequestDto.SearchDto searchDto, Pageable pageable) {
         Point point = new Point(searchDto.getLongitude(), searchDto.getLatitude());
         Distance distance = new Distance(searchDto.getDistance(), Metrics.KILOMETERS);
         return shopCoordinatesRepository.findByShopNameContainingAndLocationNear(searchDto.getKeyword(), point, distance, pageable);

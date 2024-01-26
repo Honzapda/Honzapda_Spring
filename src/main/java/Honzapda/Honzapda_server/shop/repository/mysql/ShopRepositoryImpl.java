@@ -32,6 +32,27 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public Slice<ShopResponseDto.SearchByNameDto> findByShopNameContaining(String keyword, Pageable pageable) {
+        List<Long> ids = queryFactory
+                .select(shop.id)
+                .from(shop)
+                .where(shopNameContaining(keyword))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        String todayOfWeek = LocalDateTime.now().getDayOfWeek().name();
+
+        List<ShopResponseDto.SearchByNameDto> searchByNameDtos = getSearchByNameDtos(ids, todayOfWeek);
+
+        List<ShopResponseDto.SearchByNameDto> shops = orderByIds(searchByNameDtos, ids);
+
+        Long totalCount = getTotalCount(keyword);
+
+        return new SliceTotal<>(shops, pageable, ids.size() == pageable.getPageSize(), totalCount);
+    }
+
+    @Override
     public Slice<ShopResponseDto.SearchByNameDto> findByShopNameContainingOrderByReviewCountDesc(String keyword, Pageable pageable) {
         List<Tuple> fetch = queryFactory
                 .select(shop.id, review.count())

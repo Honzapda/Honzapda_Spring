@@ -16,6 +16,7 @@ import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -130,19 +131,23 @@ public class ShopFacadeService {
 
         }
 
-        // TODO: SortColumn.EMPTY 처리 -> 그냥 모든 결과 or 에러 ?
-        return null;
+        return shopService.searchShopByShopNameContaining(request, pageable);
     }
 
     private Slice<ShopResponseDto.SearchByNameDto> searchSortByDistance(ShopRequestDto.SearchDto request, Pageable pageable) {
-        Slice<ShopCoordinates> shopCoordinates = shopCoordinatesService.findByShopNameContainingAndLocationNear(request, pageable);
+        Page<ShopCoordinates> shopCoordinates = shopCoordinatesService.findByShopNameContainingAndLocationNear(request, pageable);
         List<Long> mysqlIds = shopCoordinates.getContent().stream()
                 .map(ShopCoordinates::getMysqlId)
                 .toList();
 
         Map<Long, ShopResponseDto.SearchByNameDto> shopMap = shopService.findShopsByShopIdsSorted(mysqlIds);
 
-        return shopCoordinates.map(shopCoordinate -> shopMap.get(shopCoordinate.getMysqlId()));
+        return new SliceTotal<>(
+                shopCoordinates.map(shopCoordinate -> shopMap.get(shopCoordinate.getMysqlId())).getContent(),
+                shopCoordinates.getPageable(),
+                shopCoordinates.hasNext(),
+                shopCoordinates.getTotalElements()
+        );
     }
 
     private User findUserById(Long userId) {

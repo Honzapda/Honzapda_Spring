@@ -120,6 +120,13 @@ public class ShopServiceImpl implements ShopService {
         return result;
     }
 
+    @Override
+    public Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContaining(ShopRequestDto.SearchDto request, Pageable pageable) {
+        Slice<ShopResponseDto.SearchByNameDto> result = shopRepository.findByShopNameContaining(request.getKeyword(), pageable);
+        checkOpenNow(result.getContent());
+        return result;
+    }
+
     private double getRating(Long shopId){
         List<Review> reviewList = reviewRepository.findByShopId(shopId);
 

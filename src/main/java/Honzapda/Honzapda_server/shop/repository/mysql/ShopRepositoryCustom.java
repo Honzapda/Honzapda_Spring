@@ -14,4 +14,6 @@ public interface ShopRepositoryCustom {
     Slice<ShopResponseDto.SearchByNameDto> findByShopNameContainingOrderByBookmarkCountDesc(String keyword, Pageable pageable);
 
     List<ShopResponseDto.SearchByNameDto> findSearchByNameDtoByMysqlIds(List<Long> mysqlIds);
+
+    Slice<ShopResponseDto.SearchByNameDto> findByShopNameContaining(String keyword, Pageable pageable);
 }
