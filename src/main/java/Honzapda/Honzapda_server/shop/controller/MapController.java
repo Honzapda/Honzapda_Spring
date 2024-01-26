@@ -22,7 +22,8 @@ public class MapController {
     private final ShopFacadeService shopFacadeService;
 
     @GetMapping
-    public ApiResult<List<ShopResponseDto.SearchDto>> fetchShops(@RequestBody @Valid MapRequestDto.LocationDto locationDto){
+    public ApiResult<List<MapResponseDto.HomeDto>> fetchShops(@RequestBody @Valid MapRequestDto.LocationDto locationDto){
+        log.info("distance: {}", locationDto.getDistance());
         return ApiResult.onSuccess(shopFacadeService.findShopsByLocation(locationDto));
     }
 

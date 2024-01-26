@@ -8,7 +8,9 @@ import Honzapda.Honzapda_server.review.data.entity.Review;
 import Honzapda.Honzapda_server.review.data.entity.ReviewImage;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewImageRepository;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
+import Honzapda.Honzapda_server.shop.data.MapConverter;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
+import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
@@ -90,13 +92,10 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Map<Long, ShopResponseDto.SearchDto> findShopsByShopIds(List<Long> mysqlIds) {
-        List<Shop> shops = shopRepository.findByIdIn(mysqlIds);
-        List<ShopResponseDto.SearchDto> searchDtos = shops.stream()
-                .map(ShopConverter::toShopResponse)
-                .toList();
-        searchDtos.forEach(dto -> dto.setRating(getRating(dto.getShopId())));
-        return ShopConverter.toShopResponseMap(mysqlIds, searchDtos);
+    public Map<Long, MapResponseDto.HomeDto> findShopsByShopIds(List<Long> mysqlIds) {
+        List<MapResponseDto.HomeDto> homeDtos = shopRepository.findByMysqlIdIn(mysqlIds);
+        checkOpenNow2(homeDtos);
+        return MapConverter.toMapResponseHomeDtoMap(mysqlIds, homeDtos);
     }
 
     @Override
@@ -240,6 +239,19 @@ public class ShopServiceImpl implements ShopService {
     }
 
     private void checkOpenNow(List<ShopResponseDto.SearchByNameDto> dtos) {
+        dtos.forEach(
+                dto -> {
+                    if (dto != null) {
+                        Optional.ofNullable(dto.getShopBusinessHour()).ifPresentOrElse(
+                                shopBusinessHour -> dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours())),
+                                () -> dto.setOpenNow(false)
+                        );
+                    }
+                }
+        );
+    }
+
+    private void checkOpenNow2(List<MapResponseDto.HomeDto> dtos) {
         dtos.forEach(
                 dto -> {
                     if (dto != null) {

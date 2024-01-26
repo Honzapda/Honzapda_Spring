@@ -62,16 +62,16 @@ public class ShopFacadeService {
         return searchDto;
     }
 
-    public List<ShopResponseDto.SearchDto> findShopsByLocation(MapRequestDto.LocationDto locationDto) {
+    public List<MapResponseDto.HomeDto> findShopsByLocation(MapRequestDto.LocationDto locationDto) {
         List<ShopCoordinates> shopCoordinates = shopCoordinatesService.findShopsByLocation(locationDto);
         List<Long> mysqlIds = shopCoordinates.stream()
                 .map(ShopCoordinates::getMysqlId)
                 .toList();
 
-        Map<Long, ShopResponseDto.SearchDto> shopMap = shopService.findShopsByShopIds(mysqlIds);
+        Map<Long, MapResponseDto.HomeDto> shopMap = shopService.findShopsByShopIds(mysqlIds);
 
         shopCoordinates.forEach(coordinates -> {
-            ShopResponseDto.SearchDto shop = shopMap.get(coordinates.getMysqlId());
+            MapResponseDto.HomeDto shop = shopMap.get(coordinates.getMysqlId());
             shop.addCoordinates(coordinates);
         });
 

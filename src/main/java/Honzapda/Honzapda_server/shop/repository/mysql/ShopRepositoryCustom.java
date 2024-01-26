@@ -1,5 +1,6 @@
 package Honzapda.Honzapda_server.shop.repository.mysql;
 
+import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,6 @@ public interface ShopRepositoryCustom {
     List<ShopResponseDto.SearchByNameDto> findSearchByNameDtoByMysqlIds(List<Long> mysqlIds);
 
     Slice<ShopResponseDto.SearchByNameDto> findByShopNameContaining(String keyword, Pageable pageable);
+
+    List<MapResponseDto.HomeDto> findByMysqlIdIn(List<Long> mysqlIds);
 }

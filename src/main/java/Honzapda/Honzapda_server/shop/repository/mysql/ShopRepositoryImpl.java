@@ -1,8 +1,7 @@
 package Honzapda.Honzapda_server.shop.repository.mysql;
 
-import Honzapda.Honzapda_server.shop.data.dto.QShopResponseDto_SearchByNameDto;
-import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
-import Honzapda.Honzapda_server.shop.data.dto.SliceTotal;
+import Honzapda.Honzapda_server.review.data.entity.QReview;
+import Honzapda.Honzapda_server.shop.data.dto.*;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -30,6 +29,30 @@ import static Honzapda.Honzapda_server.shop.data.entity.QShopUserBookmark.shopUs
 public class ShopRepositoryImpl implements ShopRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+
+    @Override
+    public List<MapResponseDto.HomeDto> findByMysqlIdIn(List<Long> mysqlIds) {
+        List<MapResponseDto.HomeDto> homeDtos = queryFactory
+                .select(new QMapResponseDto_HomeDto(shop, review.score.avg().coalesce(0.0), review.count()))
+                .from(shop)
+                .leftJoin(review).on(review.shop.id.eq(shop.id))
+                .where(shop.id.in(mysqlIds))
+                .groupBy(shop)
+                .fetch();
+
+        String todayOfWeek = LocalDateTime.now().getDayOfWeek().name();
+
+        List<ShopResponseDto.SearchByNameDto> searchByNameDtos = getSearchByNameDtos(mysqlIds, todayOfWeek);
+
+        List<ShopResponseDto.SearchByNameDto> searchByNameDtosOrdered = orderByIds(searchByNameDtos, mysqlIds);
+
+        for (int i = 0; i < mysqlIds.size(); i++) {
+            homeDtos.get(i).setShopBusinessHour(searchByNameDtosOrdered.get(i).getShopBusinessHour());
+            homeDtos.get(i).setPhotoUrls(searchByNameDtosOrdered.get(i).getPhotoUrls());
+        }
+
+        return homeDtos;
+    }
 
     @Override
     public Slice<ShopResponseDto.SearchByNameDto> findByShopNameContaining(String keyword, Pageable pageable) {

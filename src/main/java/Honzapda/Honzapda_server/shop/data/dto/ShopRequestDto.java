@@ -50,7 +50,7 @@ public class ShopRequestDto {
 
         @Positive
         @Max(500)
-        Double distance;
+        Double distance = 2.0;
 
     }
 

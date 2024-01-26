@@ -106,6 +106,7 @@ public class ShopResponseDto {
             this.address = shop.getAddress();
             this.address_spec = shop.getAddress_spec();
             this.openNow = false;
+            this.photoUrls = new ArrayList<>();
             this.shopBusinessHour = shopBusinessHour;
         }
 
