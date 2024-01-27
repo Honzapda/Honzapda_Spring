@@ -1,8 +1,16 @@
 package Honzapda.Honzapda_server.shop.service.shop;
 
+import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
+import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
+import Honzapda.Honzapda_server.review.data.ReviewConverter;
+import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.data.entity.Review;
+import Honzapda.Honzapda_server.review.data.entity.ReviewImage;
+import Honzapda.Honzapda_server.review.repository.mysql.ReviewImageRepository;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
+import Honzapda.Honzapda_server.shop.data.MapConverter;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
+import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
@@ -39,6 +47,8 @@ public class ShopServiceImpl implements ShopService {
 
     private final ShopPhotoRepository shopPhotoRepository;
 
+    private final ReviewImageRepository reviewImageRepository;
+
     private final ShopBusinessHourRepository shopBusinessHourRepository;
     private final PasswordEncoder passwordEncoder;
     @Override
@@ -56,6 +66,7 @@ public class ShopServiceImpl implements ShopService {
 
         return ShopConverter.toShopResponse(shop);
     }
+    @Override
     public ShopResponseDto.SearchDto findShop(Long shopId){
         Optional<Shop> optionalShop = shopRepository.findById(shopId);
 
@@ -65,12 +76,14 @@ public class ShopServiceImpl implements ShopService {
             List<String> photoUrls = getShopPhotoUrls(shop);
             List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
             List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
+            List<ReviewResponseDto.ReviewDto> reviewDtos = getReviewListDto(shop);
 
             ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop);
             resultDto.setRating(getRating(shopId));
             resultDto.setOpenNow(getOpenNow(businessHours));
             resultDto.setPhotoUrls(photoUrls);
             resultDto.setBusinessHours(businessHoursResDTOS);
+            resultDto.setReviewList(reviewDtos);
 
             return resultDto;
         } else {
@@ -79,25 +92,38 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public Map<Long, ShopResponseDto.SearchDto> findShopsByShopIds(List<Long> mysqlIds) {
-        List<Shop> shops = shopRepository.findByIdIn(mysqlIds);
-        List<ShopResponseDto.SearchDto> searchDtos = shops.stream()
-                .map(ShopConverter::toShopResponse)
-                .toList();
-        searchDtos.forEach(dto -> dto.setRating(getRating(dto.getShopId())));
-        return ShopConverter.toShopResponseMap(searchDtos);
+    public Map<Long, MapResponseDto.HomeDto> findShopsByShopIds(List<Long> mysqlIds) {
+        List<MapResponseDto.HomeDto> homeDtos = shopRepository.findByMysqlIdIn(mysqlIds);
+        checkOpenNow2(homeDtos);
+        return MapConverter.toMapResponseHomeDtoMap(mysqlIds, homeDtos);
     }
 
     @Override
-    public Slice<ShopResponseDto.SearchDto> searchShopByShopNameContainingSortByReview(ShopRequestDto.SearchDto request, Pageable pageable) {
-        return shopRepository.findByShopNameContainingOrderByReviewCountDesc(request.getKeyword(), pageable)
-                .map(ShopConverter::toShopResponse);
+    public Map<Long, ShopResponseDto.SearchByNameDto> findShopsByShopIdsSorted(List<Long> mysqlIds) {
+        List<ShopResponseDto.SearchByNameDto> searchByNameDtos = shopRepository.findSearchByNameDtoByMysqlIds(mysqlIds);
+        checkOpenNow(searchByNameDtos);
+        return ShopConverter.toSearchResponseMap(mysqlIds, searchByNameDtos);
     }
 
     @Override
-    public Slice<ShopResponseDto.SearchDto> searchShopByShopNameContainingSortByBookmark(ShopRequestDto.SearchDto request, Pageable pageable) {
-        return shopRepository.findByShopNameContainingOrderByBookmarkCountDesc(request.getKeyword(), pageable)
-                .map(ShopConverter::toShopResponse);
+    public Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContainingSortByReview(ShopRequestDto.SearchDto request, Pageable pageable) {
+        Slice<ShopResponseDto.SearchByNameDto> result = shopRepository.findByShopNameContainingOrderByReviewCountDesc(request.getKeyword(), pageable);
+        checkOpenNow(result.getContent());
+        return result;
+    }
+
+    @Override
+    public Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContainingSortByBookmark(ShopRequestDto.SearchDto request, Pageable pageable) {
+        Slice<ShopResponseDto.SearchByNameDto> result = shopRepository.findByShopNameContainingOrderByBookmarkCountDesc(request.getKeyword(), pageable);
+        checkOpenNow(result.getContent());
+        return result;
+    }
+
+    @Override
+    public Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContaining(ShopRequestDto.SearchDto request, Pageable pageable) {
+        Slice<ShopResponseDto.SearchByNameDto> result = shopRepository.findByShopNameContaining(request.getKeyword(), pageable);
+        checkOpenNow(result.getContent());
+        return result;
     }
 
     private double getRating(Long shopId){
@@ -195,5 +221,46 @@ public class ShopServiceImpl implements ShopService {
 
     private String getCurrentDayOfWeek() {
         return LocalDateTime.now().getDayOfWeek().name();
+    }
+
+    private List<ReviewResponseDto.ReviewDto> getReviewListDto(Shop shop) {
+
+        List<Review> reviewList = reviewRepository.findTop3ByShopOrderByCreatedAtDesc(shop);
+
+        List<ReviewResponseDto.ReviewDto> reviewDtoList = reviewList.stream()
+                .map(review -> {
+                    List<ReviewImage> reviewImages = reviewImageRepository
+                            .findAllByReview(review).orElseThrow(()-> new GeneralException(ErrorStatus.REVIEW_NOT_FOUND));
+                    return ReviewConverter.toReviewDto(review, reviewImages);
+                })
+                .collect(Collectors.toList());
+
+        return reviewDtoList;
+    }
+
+    private void checkOpenNow(List<ShopResponseDto.SearchByNameDto> dtos) {
+        dtos.forEach(
+                dto -> {
+                    if (dto != null) {
+                        Optional.ofNullable(dto.getShopBusinessHour()).ifPresentOrElse(
+                                shopBusinessHour -> dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours())),
+                                () -> dto.setOpenNow(false)
+                        );
+                    }
+                }
+        );
+    }
+
+    private void checkOpenNow2(List<MapResponseDto.HomeDto> dtos) {
+        dtos.forEach(
+                dto -> {
+                    if (dto != null) {
+                        Optional.ofNullable(dto.getShopBusinessHour()).ifPresentOrElse(
+                                shopBusinessHour -> dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours())),
+                                () -> dto.setOpenNow(false)
+                        );
+                    }
+                }
+        );
     }
 }

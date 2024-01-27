@@ -16,6 +16,7 @@ import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -61,16 +62,16 @@ public class ShopFacadeService {
         return searchDto;
     }
 
-    public List<ShopResponseDto.SearchDto> findShopsByLocation(MapRequestDto.LocationDto locationDto) {
+    public List<MapResponseDto.HomeDto> findShopsByLocation(MapRequestDto.LocationDto locationDto) {
         List<ShopCoordinates> shopCoordinates = shopCoordinatesService.findShopsByLocation(locationDto);
         List<Long> mysqlIds = shopCoordinates.stream()
                 .map(ShopCoordinates::getMysqlId)
                 .toList();
 
-        Map<Long, ShopResponseDto.SearchDto> shopMap = shopService.findShopsByShopIds(mysqlIds);
+        Map<Long, MapResponseDto.HomeDto> shopMap = shopService.findShopsByShopIds(mysqlIds);
 
         shopCoordinates.forEach(coordinates -> {
-            ShopResponseDto.SearchDto shop = shopMap.get(coordinates.getMysqlId());
+            MapResponseDto.HomeDto shop = shopMap.get(coordinates.getMysqlId());
             shop.addCoordinates(coordinates);
         });
 
@@ -108,8 +109,7 @@ public class ShopFacadeService {
                 .build();
     }
 
-    public Slice<ShopResponseDto.SearchDto> searchShop(UserResDto userResDto, ShopRequestDto.SearchDto request, Pageable pageable) {
-        User user = findUserById(userResDto.getId());
+    public Slice<ShopResponseDto.SearchByNameDto> searchShop(ShopRequestDto.SearchDto request, Pageable pageable) {
         SortColumn sortColumn = request.getSortColumn();
 
         if (sortColumn == SortColumn.DISTANCE) {
@@ -131,26 +131,23 @@ public class ShopFacadeService {
 
         }
 
-        // TODO: SortColumn.EMPTY 처리 -> 그냥 모든 결과 or 에러 ?
-        return null;
+        return shopService.searchShopByShopNameContaining(request, pageable);
     }
 
-    private SliceImpl<ShopResponseDto.SearchDto> searchSortByDistance(ShopRequestDto.SearchDto request, Pageable pageable) {
-        Slice<ShopCoordinates> shopCoordinates = shopCoordinatesService.findByShopNameContainingAndLocationNear(request, pageable);
+    private Slice<ShopResponseDto.SearchByNameDto> searchSortByDistance(ShopRequestDto.SearchDto request, Pageable pageable) {
+        Page<ShopCoordinates> shopCoordinates = shopCoordinatesService.findByShopNameContainingAndLocationNear(request, pageable);
         List<Long> mysqlIds = shopCoordinates.getContent().stream()
                 .map(ShopCoordinates::getMysqlId)
                 .toList();
 
-        Map<Long, ShopResponseDto.SearchDto> shopMap = shopService.findShopsByShopIds(mysqlIds);
+        Map<Long, ShopResponseDto.SearchByNameDto> shopMap = shopService.findShopsByShopIdsSorted(mysqlIds);
 
-        shopCoordinates.getContent().forEach(coordinates -> {
-            ShopResponseDto.SearchDto shop = shopMap.get(coordinates.getMysqlId());
-            shop.addCoordinates(coordinates);
-        });
-
-        List<ShopResponseDto.SearchDto> searchDtos = shopMap.values().stream()
-                .toList();
-        return new SliceImpl<>(searchDtos, pageable, shopCoordinates.hasNext());
+        return new SliceTotal<>(
+                shopCoordinates.map(shopCoordinate -> shopMap.get(shopCoordinate.getMysqlId())).getContent(),
+                shopCoordinates.getPageable(),
+                shopCoordinates.hasNext(),
+                shopCoordinates.getTotalElements()
+        );
     }
 
     private User findUserById(Long userId) {

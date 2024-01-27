@@ -37,7 +37,18 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 리뷰 응답
     REVIEW_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "REVIEW4000", "리뷰는 가게당 하나입니다."),
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND,"REVIEW4001","리뷰가 없습니다.");
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND,"REVIEW4001","리뷰가 없습니다."),
+
+    // 유저 도움 정보 응답
+    INVALID_CONGESTION_EMPTY(HttpStatus.BAD_REQUEST, "USERHELPINFO4000", "혼잡도를 입력해주세요."),
+    INVALID_CONGESTION(HttpStatus.BAD_REQUEST, "USERHELPINFO4001", "혼잡도는 10, 20, 30, ... , 100으로 입력해주세요."),
+    INVALID_DESK_SIZE_EMPTY(HttpStatus.BAD_REQUEST, "USERHELPINFO4002", "책상의 넓이를 입력해주세요."),
+    INVALID_DESK_SIZE(HttpStatus.BAD_REQUEST, "USERHELPINFO4003", "책상의 넓이는 small, medium, large, none으로 입력해주세요."),
+    INVALID_LIGHT_EMPTY(HttpStatus.BAD_REQUEST, "USERHELPINFO4004", "조명을 입력해주세요."),
+    INVALID_LIGHT(HttpStatus.BAD_REQUEST, "USERHELPINFO4005", "조명은 bright, adequate, dark, none으로 입력해주세요."),
+    INVALID_OUTLET_COUNT_EMPTY(HttpStatus.BAD_REQUEST, "USERHELPINFO4006", "콘센트 개수를 입력해주세요."),
+    INVALID_OUTLET_COUNT(HttpStatus.BAD_REQUEST, "USERHELPINFO4007", "콘센트 개수는 enough, adequate, lack, none으로 입력해주세요.");
+
 
     private final HttpStatus httpStatus;
     private final String code;

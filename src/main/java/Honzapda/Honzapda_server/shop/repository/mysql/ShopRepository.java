@@ -8,5 +8,4 @@ import java.util.List;
 import java.util.Map;
 
 public interface ShopRepository extends JpaRepository<Shop, Long>, ShopRepositoryCustom {
-    List<Shop> findByIdIn(List<Long> mysqlIds);
 }

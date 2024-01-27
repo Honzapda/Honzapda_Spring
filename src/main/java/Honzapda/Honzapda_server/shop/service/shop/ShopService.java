@@ -1,5 +1,6 @@
 package Honzapda.Honzapda_server.shop.service.shop;
 
+import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +14,13 @@ public interface ShopService {
 
     ShopResponseDto.SearchDto findShop(Long shopId);
 
-    Map<Long, ShopResponseDto.SearchDto> findShopsByShopIds(List<Long> mysqlIds);
+    Map<Long, MapResponseDto.HomeDto> findShopsByShopIds(List<Long> mysqlIds);
 
-    Slice<ShopResponseDto.SearchDto> searchShopByShopNameContainingSortByReview(ShopRequestDto.SearchDto request, Pageable pageable);
+    Map<Long, ShopResponseDto.SearchByNameDto> findShopsByShopIdsSorted(List<Long> mysqlIds);
 
-    Slice<ShopResponseDto.SearchDto> searchShopByShopNameContainingSortByBookmark(ShopRequestDto.SearchDto request, Pageable pageable);
+    Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContainingSortByReview(ShopRequestDto.SearchDto request, Pageable pageable);
+
+    Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContainingSortByBookmark(ShopRequestDto.SearchDto request, Pageable pageable);
+
+    Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContaining(ShopRequestDto.SearchDto request, Pageable pageable);
 }

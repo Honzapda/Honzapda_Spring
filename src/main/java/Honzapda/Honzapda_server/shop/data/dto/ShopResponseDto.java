@@ -1,15 +1,19 @@
 package Honzapda.Honzapda_server.shop.data.dto;
 
-import Honzapda.Honzapda_server.review.data.entity.Review;
+import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
+import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShopResponseDto {
@@ -29,7 +33,7 @@ public class ShopResponseDto {
         String address_spec;
         boolean openNow;
         LocalDateTime inactiveDate;
-        List<Review> reviewList;
+        List<ReviewResponseDto.ReviewDto> reviewList;
         List<String> photoUrls;
         List<BusinessHoursResDTO> businessHours;
 
@@ -55,6 +59,10 @@ public class ShopResponseDto {
         public void setBusinessHours(List<BusinessHoursResDTO> businessHours){
             this.businessHours = businessHours;
         }
+
+        public void setReviewList(List<ReviewResponseDto.ReviewDto> reviewList){
+            this.reviewList = reviewList;
+        }
     }
 
     @Builder
@@ -70,5 +78,41 @@ public class ShopResponseDto {
 
         @JsonIgnore
         private boolean open;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SearchByNameDto {
+        private Long shopId;
+        private String shopName;
+        private String address;
+        private String address_spec;
+        private boolean openNow;
+        private List<String> photoUrls = new ArrayList<>();
+
+        @JsonIgnore
+        private ShopBusinessHour shopBusinessHour;
+
+        @QueryProjection
+        public SearchByNameDto(Shop shop, ShopBusinessHour shopBusinessHour) {
+            this.shopId = shop.getId();
+            this.shopName = shop.getShopName();
+            this.address = shop.getAddress();
+            this.address_spec = shop.getAddress_spec();
+            this.openNow = false;
+            this.photoUrls = new ArrayList<>();
+            this.shopBusinessHour = shopBusinessHour;
+        }
+
+        public void setOpenNow(boolean openNow) {
+            this.openNow = openNow;
+        }
+
+        public void setPhotoUrls(List<String> photoUrls) {
+            if(photoUrls != null) this.photoUrls = photoUrls;
+        }
+
     }
 }
