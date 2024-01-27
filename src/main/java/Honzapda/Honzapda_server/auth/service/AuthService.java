@@ -9,8 +9,6 @@ public interface AuthService {
 
     User getUserByEMail(String email);
 
-    //User getUserByNickName(String nickname);
-
     void sendTempPasswordByEmail(String email);
 
     User registerUser(UserJoinDto request);
@@ -20,10 +18,5 @@ public interface AuthService {
     Object appleLogin(String authorizationCode);
 
     void revoke(UserResDto userResDto);
-/*
-    UserResDto join(UserJoinDto userJoinDto);
-
-    UserResDto login(UserLoginDto userLoginDto);
- */
 }
 
