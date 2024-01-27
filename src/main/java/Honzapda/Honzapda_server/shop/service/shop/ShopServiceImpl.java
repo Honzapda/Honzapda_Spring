@@ -15,6 +15,7 @@ import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ShopServiceImpl implements ShopService {
 
-    private final UserRepository userRepository;
 
     private final ShopRepository shopRepository;
 
@@ -40,11 +40,12 @@ public class ShopServiceImpl implements ShopService {
     private final ShopPhotoRepository shopPhotoRepository;
 
     private final ShopBusinessHourRepository shopBusinessHourRepository;
-
+    private final PasswordEncoder passwordEncoder;
+    @Override
     @Transactional
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request){
 
-        Shop shop = ShopConverter.toShop(request);
+        Shop shop = ShopConverter.toShop(request,passwordEncoder);
         shopRepository.save(shop);
 
         List<String> photoUrls = request.getPhotoUrls();
@@ -55,7 +56,6 @@ public class ShopServiceImpl implements ShopService {
 
         return ShopConverter.toShopResponse(shop);
     }
-
     public ShopResponseDto.SearchDto findShop(Long shopId){
         Optional<Shop> optionalShop = shopRepository.findById(shopId);
 

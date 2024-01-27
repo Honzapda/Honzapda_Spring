@@ -49,6 +49,11 @@ public class Shop extends BaseEntity{
     @Column
     private String businessNumber;
 
+    @Column
+    private String loginId;
+    @Column
+    private String password;
+
     private LocalDateTime inactiveDate;
 
     // TODO: 영업 시간 및 휴무일 추가

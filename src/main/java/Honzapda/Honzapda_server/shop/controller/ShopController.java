@@ -24,7 +24,7 @@ public class ShopController {
         return ApiResult.onSuccess(shopFacadeService.findShop(shopId));
     }
 
-    @PostMapping("/")
+    @PostMapping("/register")
     public ApiResult<ShopResponseDto.SearchDto> registerShop(
             @RequestBody @Valid ShopRequestDto.RegisterDto request)
     {
