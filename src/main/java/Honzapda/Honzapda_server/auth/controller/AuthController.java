@@ -4,21 +4,14 @@ import Honzapda.Honzapda_server.apiPayload.ApiResult;
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.auth.service.AuthService;
-import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
-import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
-import Honzapda.Honzapda_server.shop.service.facade.ShopFacadeService;
 import Honzapda.Honzapda_server.user.data.dto.*;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.NoSuchElementException;
 
 @Validated
 @RestController
@@ -27,7 +20,6 @@ import java.util.NoSuchElementException;
 public class AuthController {
 
     private final AuthService authService;
-    private final ShopFacadeService shopFacadeService;
 
     /**
      * id 중복 검사 api
@@ -86,12 +78,6 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register/shop")
-    public ApiResult<?> registerShop(
-            @RequestBody @Valid ShopRequestDto.RegisterDto request) {
-        ShopResponseDto.SearchDto result = shopFacadeService.registerShop(request);
-        return ApiResult.onSuccess(result);
-    }
 
     @GetMapping("/logout")
     public ApiResult<String> logout(HttpSession session) {

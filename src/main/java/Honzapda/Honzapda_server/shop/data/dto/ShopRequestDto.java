@@ -23,7 +23,8 @@ public class ShopRequestDto {
         String address;
         String address_spec;
         String businessNumber;
-
+        String loginId;
+        String password;
         // 위도 경도
         Double latitude;
         Double longitude;

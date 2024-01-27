@@ -4,14 +4,13 @@ import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,15 +25,12 @@ public class ShopResponseDto {
     public static class SearchDto {
         Long shopId;
         String shopName;
-        String adminName;
         String description;
         String otherDetails;
         String shopPhoneNumber;
-        String adminPhoneNumber;
         Double rating;
         String address;
         String address_spec;
-        String businessNumber;
         boolean openNow;
         LocalDateTime inactiveDate;
         List<ReviewResponseDto.ReviewDto> reviewList;

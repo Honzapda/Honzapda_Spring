@@ -19,52 +19,40 @@ import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.PrivateKey;
 import java.security.Security;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    @Autowired
     private final UserRepository userRepository;
-    @Autowired
     private final AppleAuthClient appleAuthClient;
-    @Autowired
     private final AppleProperties appleProperties;
-    @Autowired
     private final PasswordEncoder passwordEncoder;
-    @Autowired
     private final EmailService emailService;
-    @Autowired
     private final ReviewRepository reviewRepository;
 
-
-    public AuthServiceImpl(UserRepository userRepository, AppleAuthClient appleAuthClient, AppleProperties appleProperties, PasswordEncoder passwordEncoder, EmailService emailService, ReviewRepository reviewRepository) {
-        this.userRepository = userRepository;
-        this.appleAuthClient = appleAuthClient;
-        this.appleProperties = appleProperties;
-        this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
-        this.reviewRepository = reviewRepository;
-    }
 
     @Override
     @Transactional
     public User registerUser(UserJoinDto request) {
         /*
         ** 이메일 중복체크는 어노테이션으로 이미 처리.
-        ** Converter : 이메일, 이름, 비밀버호까지 처리 (Auth -> User 변경)
+        ** Converter : 이메일, 이름, 비밀번호까지 처리 (Auth -> User 변경)
          */
         User newUser = UserConverter.toUser(request, passwordEncoder);
 
@@ -79,6 +67,9 @@ public class AuthServiceImpl implements AuthService {
 
         return userRepository.save(newUser);
     }
+
+
+
 
     @Override
     public User loginUser(UserLoginDto request) {

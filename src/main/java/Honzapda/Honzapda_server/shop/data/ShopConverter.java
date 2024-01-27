@@ -4,6 +4,7 @@ import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class ShopConverter {
 
-    public static Shop toShop(ShopRequestDto.RegisterDto request) {
+    public static Shop toShop(ShopRequestDto.RegisterDto request, PasswordEncoder encoder) {
         return Shop.builder()
                 .shopName(request.getShopName())
                 .adminName(request.getAdminName())
@@ -27,6 +28,8 @@ public class ShopConverter {
                 .address_spec(request.getAddress_spec())
                 .businessNumber(request.getBusinessNumber())
                 .inactiveDate(LocalDateTime.now())
+                .loginId(request.getLoginId())
+                .password(encoder.encode(request.getPassword()))
                 .build();
     }
 
@@ -34,16 +37,13 @@ public class ShopConverter {
         return ShopResponseDto.SearchDto.builder()
                 .shopId(shop.getId())
                 .shopName(shop.getShopName())
-                .adminName(shop.getAdminName())
                 .description(shop.getDescription())
                 .otherDetails(shop.getOtherDetails())
                 .shopPhoneNumber(shop.getShopPhoneNumber())
-                .adminPhoneNumber(shop.getAdminPhoneNumber())
                 .rating(shop.getRating())
                 .address(shop.getAddress())
                 .address_spec(shop.getAddress_spec())
                 .inactiveDate(shop.getInactiveDate())
-                .businessNumber(shop.getBusinessNumber())
                 .reviewList(null)
                 .build();
     }
