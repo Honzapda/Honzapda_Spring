@@ -4,15 +4,13 @@ import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.data.entity.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
-
+@Builder
 @Entity
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserHelpInfo extends BaseEntity {
 
@@ -59,18 +57,4 @@ public class UserHelpInfo extends BaseEntity {
     @JoinColumn(name = "shopId")
     private Shop shop;
 
-    @Builder
-    private UserHelpInfo(LocalDateTime visitDate, Congestion congestion, DeskSize deskSize, OutletCount outletCount, Light light, String outletLocation, String restroomLocation, String musicGenre, String atmosphere, User user, Shop shop) {
-        this.visitDate = visitDate;
-        this.congestion = congestion;
-        this.deskSize = deskSize;
-        this.outletCount = outletCount;
-        this.light = light;
-        this.outletLocation = outletLocation;
-        this.restroomLocation = restroomLocation;
-        this.musicGenre = musicGenre;
-        this.atmosphere = atmosphere;
-        this.user = user;
-        this.shop = shop;
-    }
 }
