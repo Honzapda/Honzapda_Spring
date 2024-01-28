@@ -2,18 +2,23 @@ package Honzapda.Honzapda_server.userHelpInfo.service;
 
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
-import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
+import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoImageConverter;
+import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoImageResponseDto;
+import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
+import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
+import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfoImage;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto.UserHelpInfoCreateRequest;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -25,22 +30,30 @@ public class UserHelpInfoService {
     private final UserHelpInfoImageRepository userHelpInfoImageRepository;
 
     @Transactional
-    public ReviewResponseDto.ReviewDto registerUserHelpInfo(Long userId, Long shopId, UserHelpInfoCreateRequest requestDto) {
+    public UserHelpInfoResponseDto.UserHelpInfoDto registerUserHelpInfo(
+            Long userId, Long shopId, UserHelpInfoRequestDto.CreateDto requestDto) {
 
         User user = User.builder().id(userId).build();
         Shop shop = findShopById(shopId);
 
         // 리뷰 중복 방지
-        validateDuplicate(user, shop);
+        // validateDuplicate(user, shop);
 
-        UserHelpInfo savedUserHelpInfo = userHelpInfoRepository.save(requestDto.toEntity(user, shop));
+        UserHelpInfo savedUserHelpInfo = userHelpInfoRepository.save(
+                UserHelpInfoConverter.toEntity(requestDto,user,shop));
 
         // TODO: url의 유효성 검증
         if (!requestDto.getImageUrls().isEmpty()) {
-            userHelpInfoImageRepository.saveAll(requestDto.toImageEntity(savedUserHelpInfo));
-        }
+            List<UserHelpInfoImage> userHelpInfoImages = userHelpInfoImageRepository.saveAll(
+                            UserHelpInfoImageConverter.toImages(requestDto,savedUserHelpInfo));
 
-        return null;
+            List<UserHelpInfoImageResponseDto.ImageDto> imageDtos = userHelpInfoImageRepository.findAllByUserHelpInfo(savedUserHelpInfo).stream()
+                            .map(UserHelpInfoImageConverter::toImageDto)
+                            .toList();
+
+            return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,imageDtos);
+        }
+        return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,null);
     }
 
     private Shop findShopById(Long shopId) {
