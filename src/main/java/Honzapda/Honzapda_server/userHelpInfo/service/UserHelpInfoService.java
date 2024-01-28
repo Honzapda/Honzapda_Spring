@@ -11,7 +11,6 @@ import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoImageResponseD
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
-import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfoImage;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +43,7 @@ public class UserHelpInfoService {
 
         // TODO: url의 유효성 검증
         if (!requestDto.getImageUrls().isEmpty()) {
-            List<UserHelpInfoImage> userHelpInfoImages = userHelpInfoImageRepository.saveAll(
+            userHelpInfoImageRepository.saveAll(
                             UserHelpInfoImageConverter.toImages(requestDto,savedUserHelpInfo));
 
             List<UserHelpInfoImageResponseDto.ImageDto> imageDtos = userHelpInfoImageRepository.findAllByUserHelpInfo(savedUserHelpInfo).stream()
