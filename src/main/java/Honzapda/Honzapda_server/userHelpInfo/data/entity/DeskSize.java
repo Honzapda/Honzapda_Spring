@@ -3,9 +3,12 @@ package Honzapda.Honzapda_server.userHelpInfo.data.entity;
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.StringUtils;
+
+import java.util.Arrays;
 
 /**
  * 앉았던 책상의 넓이: 넓었어요, 적당했어요, 좁았어요, 기억나지 않아요
@@ -24,17 +27,13 @@ public enum DeskSize {
 
     @JsonCreator
     public static DeskSize fromString(String source) {
-
         if (!StringUtils.hasText(source)) {
             throw new GeneralException(ErrorStatus.INVALID_DESK_SIZE_EMPTY);
         }
 
-        for (DeskSize deskSize : DeskSize.values()) {
-            if (deskSize.getRequestDescription().equals(source)) {
-                return deskSize;
-            }
-        }
-
-        throw new GeneralException(ErrorStatus.INVALID_DESK_SIZE);
+        return Arrays.stream(values())
+                .filter(deskSize -> deskSize.getRequestDescription().equals(source))
+                .findFirst()
+                .orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_DESK_SIZE));
     }
 }
