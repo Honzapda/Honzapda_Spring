@@ -5,6 +5,7 @@ import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import Honzapda.Honzapda_server.userHelpInfo.data.LikeUserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoImageConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoImageResponseDto;
@@ -12,6 +13,8 @@ import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfoImage;
+import Honzapda.Honzapda_server.userHelpInfo.data.entity.mapping.LikeUserHelpInfo;
+import Honzapda.Honzapda_server.userHelpInfo.repository.LikeUserHelpInfoRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,7 @@ public class UserHelpInfoService {
     private final ShopRepository shopRepository;
     private final UserHelpInfoRepository userHelpInfoRepository;
     private final UserHelpInfoImageRepository userHelpInfoImageRepository;
+    private final LikeUserHelpInfoRepository likeUserHelpInfoRepository;
 
     @Transactional
     public UserHelpInfoResponseDto.UserHelpInfoDto registerUserHelpInfo(
@@ -55,6 +59,29 @@ public class UserHelpInfoService {
         }
         return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,null);
     }
+    @Transactional
+    public void likeUserHelpInfo(Long userId, Long userHelpInfoId){
+        User user = User.builder().id(userId).build();
+        UserHelpInfo userHelpInfo = getLikeUserHelpInfo(userHelpInfoId);
+        // 이미 좋아요를 눌렀는지 검사
+        if(likeUserHelpInfoRepository.existsByUserAndUserHelpInfo(user,userHelpInfo))
+            throw new GeneralException(ErrorStatus.LIKE_ALREADY_LIKED);
+
+        likeUserHelpInfoRepository.save(
+                LikeUserHelpInfoConverter.toLikeUserHelpInfoEntity(user,userHelpInfo));
+    }
+    /*
+    @Transactional
+    public void deleteLikeUserHelpInfo(Long userId, Long userHelpInfoId){
+        User user = User.builder().id(userId).build();
+        UserHelpInfo userHelpInfo = getLikeUserHelpInfo(userHelpInfoId);
+        // 이미 좋아요를 눌렀는지 검사
+        LikeUserHelpInfo likeUserHelpInfo = likeUserHelpInfoRepository.findByUserAndUserHelpInfo(user, userHelpInfo)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND));
+
+        likeUserHelpInfoRepository.delete(likeUserHelpInfo);
+    }
+     */
 
     public UserHelpInfoResponseDto.UserHelpInfoListDto getUserHelpInfoListDto(Long shopId, Pageable pageable){
         // 어디 shop 도움 정보인지 확인
@@ -77,10 +104,16 @@ public class UserHelpInfoService {
 
         return UserHelpInfoImageConverter.toImageListDto(allByShop);
     }
+
     private Shop findShopById(Long shopId) {
         return shopRepository.findById(shopId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
     }
+    private UserHelpInfo getLikeUserHelpInfo(Long userHelpInfoId){
+        return userHelpInfoRepository.findById(userHelpInfoId)
+                .orElseThrow(()->new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND));
+    }
+
     private List<UserHelpInfoImage> getUserHelpInfoImageList(UserHelpInfo userHelpInfo){
         return userHelpInfoImageRepository
                 .findAllByUserHelpInfo(userHelpInfo)
@@ -93,4 +126,6 @@ public class UserHelpInfoService {
                     throw new GeneralException(ErrorStatus.REVIEW_ALREADY_EXIST);
                 });
     }
+
+
 }
