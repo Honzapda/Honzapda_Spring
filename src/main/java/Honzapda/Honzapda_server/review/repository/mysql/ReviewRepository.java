@@ -16,9 +16,16 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Optional<Review> findByUserAndShop(User user, Shop shop);
 
+    List<Review> findAllByUser(User user);
+
     void deleteAllByUser(User user);
 
-    Page<Review> findAllByShopOrderByCreatedAtDesc(Shop shop, Pageable pageable);
-    List<Review> findTop3ByShopOrderByCreatedAtDesc(Shop shop);
+    //Page<Review> findAllByShopOrderByCreatedAtDesc(Shop shop, Pageable pageable);
+    //List<Review> findTop3ByShopOrderByCreatedAtDesc(Shop shop);
 
+    Page<Review> findAllByShopOrderByVisitedAtDesc(Shop shop, Pageable pageable);
+
+    List<Review> findTop3ByShopOrderByVisitedAtDesc(Shop shop);
 }
+
+

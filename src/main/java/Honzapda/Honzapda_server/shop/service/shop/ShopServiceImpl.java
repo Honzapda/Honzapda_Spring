@@ -19,7 +19,6 @@ import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopPhotoRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
-import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -225,7 +224,7 @@ public class ShopServiceImpl implements ShopService {
 
     private List<ReviewResponseDto.ReviewDto> getReviewListDto(Shop shop) {
 
-        List<Review> reviewList = reviewRepository.findTop3ByShopOrderByCreatedAtDesc(shop);
+        List<Review> reviewList = reviewRepository.findTop3ByShopOrderByVisitedAtDesc(shop);
 
         List<ReviewResponseDto.ReviewDto> reviewDtoList = reviewList.stream()
                 .map(review -> {

@@ -21,6 +21,7 @@ public class ReviewResponseDto {
         private Long userId;
         private Double score;
         private String body;
+        private LocalDateTime visitedAt;
         private LocalDateTime createdAt;
     }
     @Builder

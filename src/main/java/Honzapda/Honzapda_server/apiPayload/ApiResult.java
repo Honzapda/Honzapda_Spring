@@ -1,7 +1,6 @@
 package Honzapda.Honzapda_server.apiPayload;
 
 import Honzapda.Honzapda_server.apiPayload.code.BaseErrorCode;
-import Honzapda.Honzapda_server.user.data.dto.AppleJoinDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -9,14 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import Honzapda.Honzapda_server.apiPayload.code.BaseCode;
 import Honzapda.Honzapda_server.apiPayload.code.status.*;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"isSuccess","code","message","result"})
 public class ApiResult<T> {
 
-    @JsonProperty("isSucess")
+    @JsonProperty("isSuccess")
     private final Boolean isSuccess;
 
     private final String code;

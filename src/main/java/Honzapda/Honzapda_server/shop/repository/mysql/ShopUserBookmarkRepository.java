@@ -9,4 +9,6 @@ import java.util.Optional;
 
 public interface ShopUserBookmarkRepository extends JpaRepository<ShopUserBookmark, Long> {
     Optional<ShopUserBookmark> findByUserAndShop(User user, Shop shop);
+
+    void deleteAllByUser(User user);
 }

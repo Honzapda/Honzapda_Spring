@@ -47,6 +47,7 @@ public class ReviewService {
                 .status(true)
                 .score(requestDto.getScore())
                 .body(requestDto.getBody())
+                .visitedAt(requestDto.getVisitedAt())
                 .build();
 
         Review savedReview = reviewRepository.save(review);
@@ -66,6 +67,7 @@ public class ReviewService {
                     ReviewImage reviewImage = ReviewImage.builder()
                             .url(url)
                             .review(savedReview)
+                            .shop(savedReview.getShop())
                             .build();
                     reviewImageRepository.save(reviewImage);
                 });
@@ -93,7 +95,7 @@ public class ReviewService {
         Shop findShop = findShopById(shopId);
 
         // 최신순으로 리뷰 페이징 조회
-        Page<Review> allByShopOrderByCreatedAtDesc = reviewRepository.findAllByShopOrderByCreatedAtDesc(findShop, pageable);
+        Page<Review> allByShopOrderByCreatedAtDesc = reviewRepository.findAllByShopOrderByVisitedAtDesc(findShop, pageable);
 
         // 리뷰와 이미지를 매핑하여 reviewDtos에 저장
         List<ReviewResponseDto.ReviewDto> reviewDtos = allByShopOrderByCreatedAtDesc.getContent().stream()

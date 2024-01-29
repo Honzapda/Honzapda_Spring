@@ -20,7 +20,8 @@ public enum ErrorStatus implements BaseErrorCode {
     // 로그인 응답
     ID_NOT_EXIST(HttpStatus.NOT_FOUND,"LOGIN"+HttpStatus.NOT_FOUND.value(),"ID를 잘못 입력하셨습니다."),
     NICKNAME_NOT_EXIST(HttpStatus.NOT_FOUND,"LOGIN"+HttpStatus.NOT_FOUND.value(),"닉네임을 잘못 입력하셨습니다."),
-    PW_NOT_MATCH(HttpStatus.FORBIDDEN,"LOGIN"+HttpStatus.FORBIDDEN.value(),"PW를 잘못 입력하셨습니다."),
+    //PW_NOT_MATCH(HttpStatus.FORBIDDEN,"LOGIN"+HttpStatus.FORBIDDEN.value(),"PW를 잘못 입력하셨습니다."),
+    PW_NOT_MATCH(HttpStatus.FORBIDDEN,"LOGIN"+HttpStatus.FORBIDDEN.value(),"입력하신 정보가 회원정보와 일치하지 않습니다."),
 
     // 유저 응답
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER4000", "해당 id의 유저를 찾을 수 없습니다."),
@@ -47,7 +48,13 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_LIGHT_EMPTY(HttpStatus.BAD_REQUEST, "USERHELPINFO4004", "조명을 입력해주세요."),
     INVALID_LIGHT(HttpStatus.BAD_REQUEST, "USERHELPINFO4005", "조명은 bright, adequate, dark, none으로 입력해주세요."),
     INVALID_OUTLET_COUNT_EMPTY(HttpStatus.BAD_REQUEST, "USERHELPINFO4006", "콘센트 개수를 입력해주세요."),
-    INVALID_OUTLET_COUNT(HttpStatus.BAD_REQUEST, "USERHELPINFO4007", "콘센트 개수는 enough, adequate, lack, none으로 입력해주세요.");
+    INVALID_OUTLET_COUNT(HttpStatus.BAD_REQUEST, "USERHELPINFO4007", "콘센트 개수는 enough, adequate, lack, none으로 입력해주세요."),
+
+    // 유저 가게 찜하기 응답
+    LIKE_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "LIKE4000", "이미 찜을 눌렀습니다."),
+
+    LIKE_NOT_EXIST(HttpStatus.BAD_REQUEST, "REVIEW4001", "찜을 누른 적이 없습니다.");
+
 
 
     private final HttpStatus httpStatus;

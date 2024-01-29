@@ -6,7 +6,6 @@ import Honzapda.Honzapda_server.review.data.entity.Review;
 import Honzapda.Honzapda_server.review.data.entity.ReviewImage;
 import org.springframework.data.domain.Page;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +20,7 @@ public class ReviewConverter {
                 .userId(review.getUser().getId())
                 .score(review.getScore())
                 .body(review.getBody())
+                .visitedAt(review.getVisitedAt())
                 .createdAt(review.getCreatedAt())
                 .build();
     }
@@ -38,6 +38,7 @@ public class ReviewConverter {
                 .userId(review.getUser().getId())
                 .score(review.getScore())
                 .body(review.getBody())
+                .visitedAt(review.getVisitedAt())
                 .createdAt(review.getCreatedAt())
                 .build();
     }
