@@ -52,4 +52,12 @@ public class UserHelpInfoController {
         return ApiResult.onSuccess(userHelpInfoService.getUserHelpInfoImageListDto(shopId,PageRequest.of(page,size)));
 
     }
+
+    @DeleteMapping("{userHelpInfoId}/like")
+    public ApiResult<?> deleteLikeUserHelpInfo(
+            @SessionAttribute(name = "user") UserResDto userResDto,
+            @PathVariable Long userHelpInfoId){
+        userHelpInfoService.deleteLikeUserHelpInfo(userResDto.getId(), userHelpInfoId);
+        return ApiResult.onSuccess("좋아요를 취소하였습니다.");
+    }
 }
