@@ -72,23 +72,22 @@ public class UserHelpInfoService {
         likeUserHelpInfoRepository.save(
                 LikeUserHelpInfoConverter.toLikeUserHelpInfoEntity(user,userHelpInfo));
     }
-    /*
+
     @Transactional
     public void deleteLikeUserHelpInfo(Long userId, Long userHelpInfoId){
         User user = User.builder().id(userId).build();
         UserHelpInfo userHelpInfo = getLikeUserHelpInfo(userHelpInfoId);
         // 이미 좋아요를 눌렀는지 검사
         LikeUserHelpInfo likeUserHelpInfo = likeUserHelpInfoRepository.findByUserAndUserHelpInfo(user, userHelpInfo)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.LIKE_NOT_FOUND));
 
         likeUserHelpInfoRepository.delete(likeUserHelpInfo);
     }
-     */
 
     public UserHelpInfoResponseDto.UserHelpInfoListDto getUserHelpInfoListDto(Long shopId, Pageable pageable){
         // 어디 shop 도움 정보인지 확인
         Shop findShop = findShopById(shopId);
-        // TODO: 좋아요로 바꿔야 함
+        // 정렬과 무관하게 shop을 기준으로 조회
         Page<UserHelpInfo> findAllByShop = userHelpInfoRepository.findAllByShop(findShop, pageable);
 
         // 도움정보와 이미지를 매핑하여 userHelpInfoDtos에 저장
