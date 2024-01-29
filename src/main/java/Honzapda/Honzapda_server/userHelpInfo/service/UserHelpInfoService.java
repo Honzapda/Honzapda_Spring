@@ -49,15 +49,17 @@ public class UserHelpInfoService {
         UserHelpInfo savedUserHelpInfo = userHelpInfoRepository.save(
                 UserHelpInfoConverter.toEntity(requestDto,user,shop));
 
+        Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(savedUserHelpInfo);
+
         // TODO: url의 유효성 검증
         if (!requestDto.getImageUrls().isEmpty()) {
             userHelpInfoImageRepository.saveAll(
                             UserHelpInfoImageConverter.toImages(requestDto,savedUserHelpInfo,shop));
 
             return UserHelpInfoConverter.toUserHelpInfoDto(
-                    savedUserHelpInfo, getUserHelpInfoImageList(savedUserHelpInfo));
+                    savedUserHelpInfo, getUserHelpInfoImageList(savedUserHelpInfo),likeCount);
         }
-        return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,null);
+        return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,null,likeCount);
     }
     @Transactional
     public void likeUserHelpInfo(Long userId, Long userHelpInfoId){
@@ -88,11 +90,21 @@ public class UserHelpInfoService {
         Shop findShop = findShopById(shopId);
         // TODO: 좋아요로 바꿔야 함
         Page<UserHelpInfo> findAllByShop = userHelpInfoRepository.findAllByShop(findShop, pageable);
+
         // 도움정보와 이미지를 매핑하여 userHelpInfoDtos에 저장
         List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtos =
-                findAllByShop.getContent().stream()
-                .map(userHelpInfo -> UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo, getUserHelpInfoImageList(userHelpInfo)))
-                .toList();
+                findAllByShop.getContent().stream().map(userHelpInfo -> {
+                        // 좋아요 갯수
+                        Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(userHelpInfo);
+
+                        return UserHelpInfoConverter.toUserHelpInfoDto(
+                            userHelpInfo, getUserHelpInfoImageList(userHelpInfo),likeCount);
+                        }).
+                        sorted((info1, info2) -> {
+                            // likeCount를 기준으로 내림차순으로 정렬
+                            return Long.compare(info2.getLikeCount(), info1.getLikeCount());
+                        })
+                        .toList();
 
         return UserHelpInfoConverter.toUserHelpInfoListDto(findAllByShop, userHelpInfoDtos);
     }
