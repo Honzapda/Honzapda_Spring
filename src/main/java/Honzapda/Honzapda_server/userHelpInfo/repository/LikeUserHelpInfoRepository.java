@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface LikeUserHelpInfoRepository extends JpaRepository<LikeUserHelpInfo,Long> {
     Boolean existsByUserAndUserHelpInfo(User user, UserHelpInfo userHelpInfo);
     Optional<LikeUserHelpInfo> findByUserAndUserHelpInfo(User user, UserHelpInfo userHelpInfo);
+    Long countByUserHelpInfo(UserHelpInfo userHelpInfo);
 }
