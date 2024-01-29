@@ -1,6 +1,5 @@
 package Honzapda.Honzapda_server.userHelpInfo.data.dto;
 
-import Honzapda.Honzapda_server.review.data.dto.ReviewImageResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +21,7 @@ public class UserHelpInfoImageResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ImageListDto{
-        private List<ReviewImageResponseDto.ImageDto> imageDtoList;
+        private List<ImageDto> imageDtoList;
         private Integer getNumberOfElements;
         private Boolean hasNext;
         private Boolean hasPrevious;
