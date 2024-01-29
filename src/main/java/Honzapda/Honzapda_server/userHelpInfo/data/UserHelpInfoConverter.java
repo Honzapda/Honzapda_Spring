@@ -32,7 +32,7 @@ public class UserHelpInfoConverter {
     }
 
     public  static UserHelpInfoResponseDto.UserHelpInfoDto toUserHelpInfoDto(
-            UserHelpInfo entity, List<UserHelpInfoImage> imageList){
+            UserHelpInfo entity, List<UserHelpInfoImage> imageList, Long likeCount){
 
         List<UserHelpInfoImageResponseDto.ImageDto> imageDtoList = imageList.stream().
                 map(UserHelpInfoImageConverter::toImageDto).toList();
@@ -49,6 +49,8 @@ public class UserHelpInfoConverter {
                 .visitDateTime(entity.getVisitDate())
                 .imageDtoList(imageDtoList)
                 .createdAt(entity.getCreatedAt())
+                .likeCount(likeCount)
+                .userHelpInfId(entity.getId())
                 .build();
     }
     public static UserHelpInfoResponseDto.UserHelpInfoListDto toUserHelpInfoListDto(
