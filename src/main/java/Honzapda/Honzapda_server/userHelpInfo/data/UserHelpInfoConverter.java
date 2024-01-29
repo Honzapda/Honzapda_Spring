@@ -6,6 +6,8 @@ import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoImageResponseD
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
+import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfoImage;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,15 +31,36 @@ public class UserHelpInfoConverter {
                 .build();
     }
 
-
     public  static UserHelpInfoResponseDto.UserHelpInfoDto toUserHelpInfoDto(
-            UserHelpInfo entity, List<UserHelpInfoImageResponseDto.ImageDto> imageListDto){
+            UserHelpInfo entity, List<UserHelpInfoImage> imageList){
+
+        List<UserHelpInfoImageResponseDto.ImageDto> imageDtoList = imageList.stream().
+                map(UserHelpInfoImageConverter::toImageDto).toList();
 
         return UserHelpInfoResponseDto.UserHelpInfoDto.builder()
                 .congestion(entity.getCongestion().getResponseDescription())
+                .light(entity.getLight().getResponseDescription())
+                .deskSize(entity.getDeskSize().getResponseDescription())
+                .outletCount(entity.getOutletCount().getResponseDescription())
+                .outletLocation(entity.getOutletLocation())
+                .atmosphere(entity.getAtmosphere())
+                .restroomLocation(entity.getRestroomLocation())
+                .musicGenre(entity.getMusicGenre())
                 .visitDateTime(entity.getVisitDate())
-                .imageDtoList(imageListDto)
+                .imageDtoList(imageDtoList)
                 .createdAt(entity.getCreatedAt())
+                .build();
+    }
+    public static UserHelpInfoResponseDto.UserHelpInfoListDto toUserHelpInfoListDto(
+            Page<UserHelpInfo> userHelpInfoPage, List<UserHelpInfoResponseDto.UserHelpInfoDto>userHelpInfoDtos){
+
+        return UserHelpInfoResponseDto.UserHelpInfoListDto.builder()
+                .userHelpInfoDtoList(userHelpInfoDtos)
+                .isFirst(userHelpInfoPage.isFirst())
+                .isLast(userHelpInfoPage.isLast())
+                .listSize(userHelpInfoPage.getSize())
+                .totalElements(userHelpInfoPage.getTotalElements())
+                .totalPage(userHelpInfoPage.getTotalPages())
                 .build();
     }
 }
