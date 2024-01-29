@@ -1,5 +1,6 @@
 package Honzapda.Honzapda_server.userHelpInfo.data.entity;
 
+import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.user.data.entity.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,8 +18,12 @@ public class UserHelpInfoImage extends BaseEntity {
 
     private String url;
 
-    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userHelpInfoId")
     private UserHelpInfo userHelpInfo;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shopId")
+    private Shop shop;
+
 }
