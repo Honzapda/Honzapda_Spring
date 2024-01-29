@@ -7,6 +7,7 @@ import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoImageConverter;
+import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoImageResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
@@ -16,6 +17,7 @@ import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +48,7 @@ public class UserHelpInfoService {
         // TODO: url의 유효성 검증
         if (!requestDto.getImageUrls().isEmpty()) {
             userHelpInfoImageRepository.saveAll(
-                            UserHelpInfoImageConverter.toImages(requestDto,savedUserHelpInfo));
+                            UserHelpInfoImageConverter.toImages(requestDto,savedUserHelpInfo,shop));
 
             return UserHelpInfoConverter.toUserHelpInfoDto(
                     savedUserHelpInfo, getUserHelpInfoImageList(savedUserHelpInfo));
@@ -58,14 +60,22 @@ public class UserHelpInfoService {
         // 어디 shop 도움 정보인지 확인
         Shop findShop = findShopById(shopId);
         // TODO: 좋아요로 바꿔야 함
-        Page<UserHelpInfo> findAllByshop = userHelpInfoRepository.findAllByShop(findShop, pageable);
+        Page<UserHelpInfo> findAllByShop = userHelpInfoRepository.findAllByShop(findShop, pageable);
         // 도움정보와 이미지를 매핑하여 userHelpInfoDtos에 저장
         List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtos =
-                findAllByshop.getContent().stream()
+                findAllByShop.getContent().stream()
                 .map(userHelpInfo -> UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo, getUserHelpInfoImageList(userHelpInfo)))
                 .toList();
 
-        return UserHelpInfoConverter.toUserHelpInfoListDto(findAllByshop, userHelpInfoDtos);
+        return UserHelpInfoConverter.toUserHelpInfoListDto(findAllByShop, userHelpInfoDtos);
+    }
+
+    public UserHelpInfoImageResponseDto.ImageListDto getUserHelpInfoImageListDto(Long shopId, Pageable pageable){
+
+        Shop findshop = findShopById(shopId);
+        Slice<UserHelpInfoImage> allByShop = userHelpInfoImageRepository.findAllByShopOrderByIdDesc(findshop,pageable);
+
+        return UserHelpInfoImageConverter.toImageListDto(allByShop);
     }
     private Shop findShopById(Long shopId) {
         return shopRepository.findById(shopId)
