@@ -28,12 +28,15 @@ public enum DeskSize {
     @JsonCreator
     public static DeskSize fromString(String source) {
         if (!StringUtils.hasText(source)) {
-            throw new GeneralException(ErrorStatus.INVALID_DESK_SIZE_EMPTY);
+            //throw new GeneralException(ErrorStatus.INVALID_DESK_SIZE_EMPTY);
+            return null;
         }
 
         return Arrays.stream(values())
                 .filter(deskSize -> deskSize.getRequestDescription().equals(source))
                 .findFirst()
-                .orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_DESK_SIZE));
+                //.orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_DESK_SIZE));
+                .orElse(null);
     }
+
 }

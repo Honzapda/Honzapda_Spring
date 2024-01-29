@@ -28,12 +28,15 @@ public enum OutletCount {
     @JsonCreator
     public static OutletCount fromString(String source) {
         if (!StringUtils.hasText(source)) {
-            throw new GeneralException(ErrorStatus.INVALID_OUTLET_COUNT_EMPTY);
+            //throw new GeneralException(ErrorStatus.INVALID_OUTLET_COUNT_EMPTY);
+            return null;
         }
 
         return Arrays.stream(values())
                 .filter(outletCount -> outletCount.getRequestDescription().equals(source))
                 .findFirst()
-                .orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_OUTLET_COUNT));
+                //.orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_OUTLET_COUNT));
+                .orElse(null);
     }
+
 }

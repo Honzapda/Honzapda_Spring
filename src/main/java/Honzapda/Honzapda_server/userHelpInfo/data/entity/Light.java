@@ -34,6 +34,7 @@ public enum Light {
         return Arrays.stream(values())
                 .filter(light -> light.getRequestDescription().equals(source))
                 .findFirst()
-                .orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_LIGHT));
+                //.orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_LIGHT));
+                .orElse(null);
     }
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -15,7 +16,9 @@ import java.util.Arrays;
  */
 @RequiredArgsConstructor
 @Getter
+@Slf4j
 public enum Congestion {
+
 
     TEN("10", "10%"),
     TWENTY("20", "20%"),
@@ -33,13 +36,16 @@ public enum Congestion {
 
     @JsonCreator
     public static Congestion fromString(String source) {
+
         if (!StringUtils.hasText(source)) {
-            throw new GeneralException(ErrorStatus.INVALID_CONGESTION_EMPTY);
+            //throw new GeneralException(ErrorStatus.INVALID_CONGESTION_EMPTY);
+            return null;
         }
 
         return Arrays.stream(Congestion.values())
                 .filter(congestion -> congestion.requestDescription.equals(source))
                 .findFirst()
-                .orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_CONGESTION));
+                //.orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_CONGESTION));
+                .orElse(null);
     }
 }
