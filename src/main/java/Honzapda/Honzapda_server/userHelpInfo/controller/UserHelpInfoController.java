@@ -25,6 +25,14 @@ public class UserHelpInfoController {
             @RequestBody @Valid UserHelpInfoRequestDto.CreateDto requestDto){
         return ApiResult.onSuccess(userHelpInfoService.registerUserHelpInfo(userResDto.getId(), shopId, requestDto));
     }
+    @PostMapping("/like")
+    public ApiResult<?> likeUserHelpInfo(
+            @SessionAttribute(name = "user") UserResDto userResDto,
+            @RequestParam Long userHelpInfoId){
+        userHelpInfoService.likeUserHelpInfo(userResDto.getId(), userHelpInfoId);
+        return ApiResult.onSuccess("좋아요를 눌렀습니다.");
+    }
+
 
     @GetMapping("/")
     public ApiResult<?> getUserHelpInfos(
