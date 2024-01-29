@@ -27,21 +27,21 @@ public class UserHelpInfoController {
     }
 
     @GetMapping("/")
-    public ApiResult<?> getUserHelpInfoList(
+    public ApiResult<?> getUserHelpInfos(
             @RequestParam Long shopId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         return ApiResult.onSuccess(userHelpInfoService.getUserHelpInfoListDto(shopId, PageRequest.of(page, size)));
     }
-/*@GetMapping("/image")
-    public ApiResult<?> getReviewImages(
+
+    @GetMapping("/image")
+    public ApiResult<?> getUserHelpInfoImages(
             @RequestParam Long shopId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        return ApiResult.onSuccess(reviewService.getReviewImageListDto(shopId,PageRequest.of(page,size)));
+        return ApiResult.onSuccess(userHelpInfoService.getUserHelpInfoImageListDto(shopId,PageRequest.of(page,size)));
 
     }
- */
 }
