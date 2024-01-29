@@ -7,6 +7,7 @@ import Honzapda.Honzapda_server.userHelpInfo.service.UserHelpInfoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,18 +26,16 @@ public class UserHelpInfoController {
         return ApiResult.onSuccess(userHelpInfoService.registerUserHelpInfo(userResDto.getId(), shopId, requestDto));
     }
 
-/*
     @GetMapping("/")
-    public ApiResult<ReviewResponseDto.ReviewListDto> getReviews(
+    public ApiResult<?> getUserHelpInfoList(
             @RequestParam Long shopId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        return ApiResult.onSuccess(reviewService.getReviewListDto(shopId, PageRequest.of(page, size)));
+        return ApiResult.onSuccess(userHelpInfoService.getUserHelpInfoListDto(shopId, PageRequest.of(page, size)));
     }
-
-    @GetMapping("/image")
-    public ApiResult<ReviewImageResponseDto.ImageListDto> getReviewImages(
+/*@GetMapping("/image")
+    public ApiResult<?> getReviewImages(
             @RequestParam Long shopId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -44,6 +43,5 @@ public class UserHelpInfoController {
         return ApiResult.onSuccess(reviewService.getReviewImageListDto(shopId,PageRequest.of(page,size)));
 
     }
-
  */
 }
