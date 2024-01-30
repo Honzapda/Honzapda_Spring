@@ -25,7 +25,7 @@ public class UserHelpInfoController {
             @RequestBody @Valid UserHelpInfoRequestDto.CreateDto requestDto){
         return ApiResult.onSuccess(userHelpInfoService.registerUserHelpInfo(userResDto.getId(), shopId, requestDto));
     }
-    @PostMapping("{userHelpInfoId}/like")
+    @PostMapping("/{userHelpInfoId}/like")
     public ApiResult<?> likeUserHelpInfo(
             @SessionAttribute(name = "user") UserResDto userResDto,
             @PathVariable Long userHelpInfoId){
@@ -53,11 +53,20 @@ public class UserHelpInfoController {
 
     }
 
-    @DeleteMapping("{userHelpInfoId}/like")
+    @DeleteMapping("/{userHelpInfoId}/like")
     public ApiResult<?> deleteLikeUserHelpInfo(
             @SessionAttribute(name = "user") UserResDto userResDto,
             @PathVariable Long userHelpInfoId){
+
         userHelpInfoService.deleteLikeUserHelpInfo(userResDto.getId(), userHelpInfoId);
         return ApiResult.onSuccess("좋아요를 취소하였습니다.");
+    }
+    @DeleteMapping("/{userHelpInfoId}")
+    public ApiResult<?> DeleteUserHelpInfo(
+            @SessionAttribute(name = "user") UserResDto userResDto,
+            @PathVariable Long userHelpInfoId){
+
+        userHelpInfoService.deleteUserHelpInfo(userResDto.getId(),userHelpInfoId);
+        return ApiResult.onSuccess("댓글을 삭제하였습니다.");
     }
 }
