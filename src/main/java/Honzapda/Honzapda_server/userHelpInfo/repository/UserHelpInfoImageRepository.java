@@ -14,4 +14,5 @@ public interface UserHelpInfoImageRepository extends JpaRepository<UserHelpInfoI
     //TODO:좋아요 추가해서, 좋아요 수로 변경해야함
     Optional<List<UserHelpInfoImage>> findAllByUserHelpInfo(UserHelpInfo userHelpInfo);
     Slice<UserHelpInfoImage> findAllByShopOrderByIdDesc(Shop shop, Pageable pageable);
+    void deleteAllByUserHelpInfo(UserHelpInfo userHelpInfo);
 }

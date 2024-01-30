@@ -11,4 +11,5 @@ public interface LikeUserHelpInfoRepository extends JpaRepository<LikeUserHelpIn
     Boolean existsByUserAndUserHelpInfo(User user, UserHelpInfo userHelpInfo);
     Optional<LikeUserHelpInfo> findByUserAndUserHelpInfo(User user, UserHelpInfo userHelpInfo);
     Long countByUserHelpInfo(UserHelpInfo userHelpInfo);
+    void deleteAllByUserHelpInfo(UserHelpInfo userHelpInfo);
 }
