@@ -4,11 +4,9 @@ import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.user.data.entity.User;
-import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoImageResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
-import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfoImage;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -43,10 +41,7 @@ public class UserHelpInfoConverter {
     }
 
     public  static UserHelpInfoResponseDto.UserHelpInfoDto toUserHelpInfoDto(
-            UserHelpInfo entity, List<UserHelpInfoImage> imageList, Long likeCount){
-
-        List<UserHelpInfoImageResponseDto.ImageDto> imageDtoList = imageList.stream().
-                map(UserHelpInfoImageConverter::toImageDto).toList();
+            UserHelpInfo entity, Long likeCount){
 
         return UserHelpInfoResponseDto.UserHelpInfoDto.builder()
                 .congestion(entity.getCongestion().getResponseDescription())
@@ -58,7 +53,6 @@ public class UserHelpInfoConverter {
                 .restroomLocation(entity.getRestroomLocation())
                 .musicGenre(entity.getMusicGenre())
                 .visitDateTime(entity.getVisitDate())
-                .imageDtoList(imageDtoList)
                 .createdAt(entity.getCreatedAt())
                 .likeCount(likeCount)
                 .userHelpInfId(entity.getId())

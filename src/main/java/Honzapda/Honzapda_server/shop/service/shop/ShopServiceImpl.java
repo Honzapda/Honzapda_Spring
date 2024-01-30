@@ -256,23 +256,15 @@ public class ShopServiceImpl implements ShopService {
     }
     private List<UserHelpInfoResponseDto.UserHelpInfoDto> getUserHelpInfoListDtoTop2(Shop shop) {
 
-        return userHelpInfoRepository.findAllByShop(shop).orElseThrow(()->new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND))
+        return userHelpInfoRepository.findAllByShop(shop)
+                .orElseThrow(()->new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND))
                 .stream()
                 .map(userHelpInfo->{
                     Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(userHelpInfo);
-
-                    List<UserHelpInfoImage> userHelpInfoImages = userHelpInfoImageRepository
-                            .findAllByUserHelpInfo(userHelpInfo)
-                            .orElseThrow(() -> new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND));
-
-                    return UserHelpInfoConverter.toUserHelpInfoDto(
-                            userHelpInfo, userHelpInfoImages,likeCount);
-
+                    return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount);
                 })
-                .sorted((info1, info2) -> {
-                    // likeCount를 기준으로 내림차순으로 정렬
-                    return Long.compare(info2.getLikeCount(), info1.getLikeCount());
-                })
+                // likeCount를 기준으로 내림차순으로 정렬
+                .sorted((info1, info2) -> Long.compare(info2.getLikeCount(), info1.getLikeCount()))
                 .limit(2)
                 .toList();
     }

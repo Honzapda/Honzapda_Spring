@@ -24,6 +24,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -43,23 +45,20 @@ public class UserHelpInfoService {
         User user = User.builder().id(userId).build();
         Shop shop = findShopById(shopId);
 
-        // 리뷰 중복 방지
+        // TODO: 3시간 이내 작성 제한 (데모데이까지는 안쓰는 기능)
         // validateDuplicate(user, shop);
 
-        UserHelpInfo savedUserHelpInfo = userHelpInfoRepository.save(
-                UserHelpInfoConverter.toEntity(requestDto,user,shop));
+        UserHelpInfo savedUserHelpInfo =
+                userHelpInfoRepository.save(UserHelpInfoConverter.toEntity(requestDto,user,shop));
 
         Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(savedUserHelpInfo);
 
         // TODO: url의 유효성 검증
-        if (!requestDto.getImageUrls().isEmpty()) {
+        if (!requestDto.getImageUrls().isEmpty())
             userHelpInfoImageRepository.saveAll(
                             UserHelpInfoImageConverter.toImages(requestDto,savedUserHelpInfo,shop));
 
-            return UserHelpInfoConverter.toUserHelpInfoDto(
-                    savedUserHelpInfo, getUserHelpInfoImageList(savedUserHelpInfo),likeCount);
-        }
-        return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,null,likeCount);
+        return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,likeCount);
     }
     @Transactional
     public void deleteUserHelpInfo(Long userId, Long userHelpInfoId){
@@ -106,21 +105,16 @@ public class UserHelpInfoService {
         Shop findShop = findShopById(shopId);
         // 정렬과 무관하게 shop을 기준으로 조회
         Page<UserHelpInfo> findAllByShop = userHelpInfoRepository.findAllByShop(findShop, pageable);
-
-        // 도움정보와 이미지를 매핑하여 userHelpInfoDtos에 저장
-        List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtos =
-                findAllByShop.getContent().stream().map(userHelpInfo -> {
+        // 도움정보와 좋아요를 매핑해 userHelpInfoDtos에 저장
+        List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtos = findAllByShop.getContent().stream()
+                .map(userHelpInfo -> {
                         // 좋아요 갯수
                         Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(userHelpInfo);
-
-                        return UserHelpInfoConverter.toUserHelpInfoDto(
-                            userHelpInfo, getUserHelpInfoImageList(userHelpInfo),likeCount);
-                        }).
-                        sorted((info1, info2) -> {
-                            // likeCount를 기준으로 내림차순으로 정렬
-                            return Long.compare(info2.getLikeCount(), info1.getLikeCount());
-                        })
-                        .toList();
+                        return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount);
+                })
+                // likeCount를 기준으로 내림차순으로 정렬
+                .sorted((info1, info2) -> Long.compare(info2.getLikeCount(), info1.getLikeCount()))
+                .toList();
 
         return UserHelpInfoConverter.toUserHelpInfoListDto(findAllByShop, userHelpInfoDtos);
     }
@@ -133,12 +127,11 @@ public class UserHelpInfoService {
         return UserHelpInfoImageConverter.toImageListDto(allByShop);
     }
 
-
-
     private Shop findShopById(Long shopId) {
         return shopRepository.findById(shopId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
     }
+
     private UserHelpInfo getUserHelpInfoById(Long userHelpInfoId){
         return userHelpInfoRepository.findById(userHelpInfoId)
                 .orElseThrow(()->new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND));
@@ -151,11 +144,16 @@ public class UserHelpInfoService {
     }
 
     private void validateDuplicate(User user, Shop shop) {
-        userHelpInfoRepository.findByUserAndShop(user, shop)
-                .ifPresent(review -> {
-                    throw new GeneralException(ErrorStatus.REVIEW_ALREADY_EXIST);
+        // 마지막 작성시간이 3시간 이내면, 에러 발생
+        userHelpInfoRepository.findFirstByUserAndShopOrderByIdDesc(user,shop)
+                .ifPresent(first -> {
+                    LocalDateTime currentTime = LocalDateTime.now();
+                    LocalDateTime createdAt = first.getCreatedAt();
+                    long hoursDifference = ChronoUnit.HOURS.between(createdAt, currentTime);
+
+                    if (hoursDifference <= 3)
+                        throw new GeneralException(ErrorStatus._TOO_MANY_REQUEST);
                 });
     }
-
 
 }
