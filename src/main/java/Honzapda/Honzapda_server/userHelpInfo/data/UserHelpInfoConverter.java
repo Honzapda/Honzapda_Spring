@@ -1,5 +1,7 @@
 package Honzapda.Honzapda_server.userHelpInfo.data;
 
+import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
+import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoImageResponseDto;
@@ -10,14 +12,23 @@ import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfoImage;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class UserHelpInfoConverter {
     public static UserHelpInfo toEntity(UserHelpInfoRequestDto.CreateDto requestDto,User user, Shop shop) {
 
+        LocalDateTime dateTime = null;
+        try {
+            dateTime = LocalDateTime.parse(requestDto.getVisitDateTime());
+            // 성공적으로 파싱된 경우에 수행할 작업
+        } catch (DateTimeParseException ex) {
+            // 커스텀 예외로 감싸서 throw
+            throw new GeneralException(ErrorStatus.INVALID_DATE_TIME_FORMAT);
+        }
 
         return UserHelpInfo.builder()
-                .visitDate(LocalDateTime.parse(requestDto.getVisitDateTime()))
+                .visitDate(dateTime)
                 .congestion(requestDto.getCongestion())
                 .deskSize(requestDto.getDeskSize())
                 .outletCount(requestDto.getOutletCount())
