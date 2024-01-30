@@ -137,12 +137,6 @@ public class UserHelpInfoService {
                 .orElseThrow(()->new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND));
     }
 
-    private List<UserHelpInfoImage> getUserHelpInfoImageList(UserHelpInfo userHelpInfo){
-        return userHelpInfoImageRepository
-                .findAllByUserHelpInfo(userHelpInfo)
-                .orElseThrow(()-> new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND));
-    }
-
     private void validateDuplicate(User user, Shop shop) {
         // 마지막 작성시간이 3시간 이내면, 에러 발생
         userHelpInfoRepository.findFirstByUserAndShopOrderByIdDesc(user,shop)
