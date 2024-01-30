@@ -7,9 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserHelpInfoRepository extends JpaRepository<UserHelpInfo, Long> {
     Optional<UserHelpInfo> findByUserAndShop(User user, Shop shop);
     Page<UserHelpInfo> findAllByShop(Shop shop, Pageable pageable);
+    Optional<List<UserHelpInfo>> findAllByShop(Shop shop);
 }
