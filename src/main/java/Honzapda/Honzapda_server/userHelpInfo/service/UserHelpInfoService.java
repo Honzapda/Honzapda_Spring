@@ -62,9 +62,21 @@ public class UserHelpInfoService {
         return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,null,likeCount);
     }
     @Transactional
+    public void deleteUserHelpInfo(Long userId, Long userHelpInfoId){
+
+        UserHelpInfo userHelpInfo = getUserHelpInfoById(userHelpInfoId);
+
+        if(userHelpInfo.getUser().getId().equals(userId)) {
+            userHelpInfoImageRepository.deleteAllByUserHelpInfo(userHelpInfo);
+            likeUserHelpInfoRepository.deleteAllByUserHelpInfo(userHelpInfo);
+            userHelpInfoRepository.delete(userHelpInfo);
+        }
+        else throw new GeneralException(ErrorStatus.INVALID_USER_HELP_INFO);
+    }
+    @Transactional
     public void likeUserHelpInfo(Long userId, Long userHelpInfoId){
         User user = User.builder().id(userId).build();
-        UserHelpInfo userHelpInfo = getLikeUserHelpInfo(userHelpInfoId);
+        UserHelpInfo userHelpInfo = getUserHelpInfoById(userHelpInfoId);
         // 이미 좋아요를 눌렀는지 검사
         if(likeUserHelpInfoRepository.existsByUserAndUserHelpInfo(user,userHelpInfo))
             throw new GeneralException(ErrorStatus.LIKE_ALREADY_LIKED);
@@ -76,13 +88,15 @@ public class UserHelpInfoService {
     @Transactional
     public void deleteLikeUserHelpInfo(Long userId, Long userHelpInfoId){
         User user = User.builder().id(userId).build();
-        UserHelpInfo userHelpInfo = getLikeUserHelpInfo(userHelpInfoId);
+        UserHelpInfo userHelpInfo = getUserHelpInfoById(userHelpInfoId);
         // 이미 좋아요를 눌렀는지 검사
         LikeUserHelpInfo likeUserHelpInfo = likeUserHelpInfoRepository.findByUserAndUserHelpInfo(user, userHelpInfo)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.LIKE_NOT_FOUND));
 
         likeUserHelpInfoRepository.delete(likeUserHelpInfo);
     }
+
+
 
     public UserHelpInfoResponseDto.UserHelpInfoListDto getUserHelpInfoListDto(Long shopId, Pageable pageable){
         // 어디 shop 도움 정보인지 확인
@@ -116,11 +130,13 @@ public class UserHelpInfoService {
         return UserHelpInfoImageConverter.toImageListDto(allByShop);
     }
 
+
+
     private Shop findShopById(Long shopId) {
         return shopRepository.findById(shopId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
     }
-    private UserHelpInfo getLikeUserHelpInfo(Long userHelpInfoId){
+    private UserHelpInfo getUserHelpInfoById(Long userHelpInfoId){
         return userHelpInfoRepository.findById(userHelpInfoId)
                 .orElseThrow(()->new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND));
     }
