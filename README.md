@@ -11,83 +11,29 @@
 <div align=center>
 
 # 🌱 Team Server Members 🌱
-  
-| <img width="200px" src="https://avatars.githubusercontent.com/u/113610239?v=4"/> 김관주 (웅이) | <img width="200px" src="https://avatars.githubusercontent.com/u/93821377?v=4"/> 최준영 (제로) | <img width="200px" src="https://avatars.githubusercontent.com/u/67568824?v=4"/> 기승민 (휘리릭) | <img width="200px" src="https://avatars.githubusercontent.com/u/137385615?v=4"/> 윤성문 (로딩) |
+
+| <img width="200px" src="https://avatars.githubusercontent.com/u/113610239?v=4"/> | <img width="200px" src="https://avatars.githubusercontent.com/u/93821377?v=4"/> | <img width="200px" src="https://avatars.githubusercontent.com/u/67568824?v=4"/> | <img width="200px" src="https://avatars.githubusercontent.com/u/137385615?v=4"/> |
 |:-----:|:-----:|:-----:|:-----:|
+|[김관주 (웅이)](https://github.com/kkj6235)|[최준영 (제로)](https://github.com/CJY512)|[기승민 (휘리릭)](https://github.com/KiSeungMin)|[윤성문 (로딩)](https://github.com/loading1031)|
 |리드 개발자 🧑‍💻|리드 개발자 🧑‍💻|팀원 🧑‍💻|팀원 🧑‍💻|
 
 
 <br>
 
-# 📄 Rules 📄
+# 📄 Document 📄 
 
 </div>
 
 ## Navigation
-1. [Branch Rules](#branch-rules)
-2. [Commit Rules](#commit-rules)
-3. [Pull Request Rules](#pull-request-rules)
-4. [Issue Rules](#issue-rules)
+1. [Introduce](#introduce)
+2. [Pull Request Rules](#pull-request-rules)
 
-## Branch Rules
-[참고자료](https://www.inbogi.com/bok/2020/04/1/) <br><br>
-효율적인 버전관리와 충돌을 방지하기 위해 팀원은 목적에 따른 브랜치를 분기해 그 안에서만 작업해야 합니다.
+## Service Introduce
+다들 한 번쯤, 붐비는 카페에 갔다가 돌아가는 경험이 있으셨을 겁니다.  <br>
+저희는 이 붐비는 정도를 유저들에게 제공하고자 카페 혼잡도 서비스를 개발하였습니다. 🎉
 
-### Main Branch
-#### 브랜치 이름 : `Main` <br>
-최종 배포가 가능한 상태만을 관리하는 브랜치입니다. <br>
-배포 이력을 관리하기 위한 브랜치이므로 배포 이전까지는 병합하지 않을 예정입니다.
-
-### Develop Branch
-#### 브랜치 이름 : `Develop` <br>
-배포 버전을 개발하는 브랜치입니다. <br>
-이 브랜치를 기반으로 기능을 추가하고 버그 없이 안정적으로 배포가 가능한 상태인 경우만 `Main branch`에 병합합니다.
-
-### ⭐️ Feature Branch
-#### 브랜치 이름 : `Feature/<이슈번호>-<기능명>` <br> 브랜치 이름 예시 : `Feature/1-login`, `Feature/2-main-library-list` <br>
-개발 시 가장 많이 사용하게 될 브랜치입니다. 기능을 개발하는 브랜치로, `Develop Branch`에서 분기합니다. <br>
-개발이 완료되면 `Develop Branch`로 병합해 다른 사람과 공유하고, 개발이 완료되어 더이상 필요하지 않은 `Feature Branch`는 삭제합니다.
-
-### Release Branch
-#### 브랜치 이름 : `Release/<버전명>` <br>
-버전 출시 직전 이용하게 될 브랜치입니다. <br>
-기능 수정 없이 테스트를 통한 최종적인 버그 수정이나 문서 추가 등의 단계를 수행할 때 사용합니다.
-
-## Commit Rules
-[참고자료](https://beomseok95.tistory.com/328) <br><br>
-일관성 없는 커밋 메시지는 어떤 작업을 했는지 명확하게 알아볼 수 없거나 추후 커밋 히스토리를 파악하는 데 어려움을 줄 수 있습니다. <br>
-반대로 네이밍(naming)을 명시적이고 규칙적으로 작성하고 해당 커밋에 대한 내용을 잘 작성한다면 코드를 일일히 분석하지 않아도 해당 커밋의 내용을 알아볼 수 있어요! 👀
-
-1. 제목과 본문을 `빈 행으로 구분` 합니다.
-2. 제목을 `50글자 이내` 로 제한합니다.
-3. 제목의 첫 글자는 `대문자` 로 작성합니다.
-4. 제목의 끝에는 `마침표를 넣지 않습니다`.
-5. 제목은 `명령문` 으로 작성하고 `과거형을 사용하지 않습니다`.
-6. 본문의 `각 행은 72글자 내로 제한`합니다.
-7. 어떻게 보다는 `무엇` 과 `왜` 를 설명합니다.
-
-### Commit Message 구조
-헤더는 필수이며, 범위(scope), 본문(body), 바닥글(footer)은 선택사항입니다.
-```
-<type>(<scope>): <subject>          -- 헤더
-<BLANK LINE>
-<body>                              -- 본문
-<BLANK LINE>
-<footer>                            -- 바닥글
-```
-
-`type`은 해당 커밋의 성격을 나타내며 아래 중 하나여야 합니다.
-```
-Feat : 새로운 기능에 대한 커밋
-Fix : 버그 수정에 대한 커밋
-Build : 빌드 관련 파일 수정에 대한 커밋
-Chore : 그 외 자잘한 수정에 대한 커밋
-Ci : CI관련 설정 수정에 대한 커밋
-Docs : 문서 수정에 대한 커밋
-Style : 코드 스타일 혹은 포맷 등에 관한 커밋
-Refactor :  코드 리팩토링에 대한 커밋
-Test : 테스트 코드 수정에 대한 커밋
-```
+## Project Period
+- 2023.12.28 ~ 진행중
 
 `body`는 본문으로 헤더로 표현할 수 없는 상세한 내용을 적습니다.
 헤더로 표현이 가능하다면 생략 가능합니다.
