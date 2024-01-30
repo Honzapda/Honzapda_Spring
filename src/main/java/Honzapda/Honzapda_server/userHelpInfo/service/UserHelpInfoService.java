@@ -77,8 +77,11 @@ public class UserHelpInfoService {
     public void likeUserHelpInfo(Long userId, Long userHelpInfoId){
         User user = User.builder().id(userId).build();
         UserHelpInfo userHelpInfo = getUserHelpInfoById(userHelpInfoId);
+        // 내 글인지 검사
+        if(userHelpInfo.getUser().getId().equals(userId))
+            throw new GeneralException(ErrorStatus.INVALID_USER_HELP_INFO);
         // 이미 좋아요를 눌렀는지 검사
-        if(likeUserHelpInfoRepository.existsByUserAndUserHelpInfo(user,userHelpInfo))
+        else if(likeUserHelpInfoRepository.existsByUserAndUserHelpInfo(user,userHelpInfo))
             throw new GeneralException(ErrorStatus.LIKE_ALREADY_LIKED);
 
         likeUserHelpInfoRepository.save(
