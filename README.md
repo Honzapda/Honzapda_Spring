@@ -3,8 +3,12 @@
 ![header](https://capsule-render.vercel.app/api?type=venom&color=008000&height=280&section=header&text=Honzapda-Server&fontSize=90&fontColor=ffff)
   <br><br>
   <img src="https://img.shields.io/badge/IntelliJ-14.3.1-red?logo=intellij-idea"/>
-  <img src="https://img.shields.io/badge/SpringBoot-3.2.1-green?logo=springBoot"/>
-  <img src="https://img.shields.io/badge/iOS-15.0+-white?logo=apple"/>  
+  <img src="https://img.shields.io/badge/SpringBoot-3.2.1-green?logo=springBoot"/> 
+  <img src="https://img.shields.io/badge/MySQL-15.0+-white?logo=apple"/>
+  <img src="https://img.shields.io/badge/MongoDB-15.0+-white?logo=apple"/>  
+  <img src="https://img.shields.io/badge/Python-15.0+-white?logo=apple"/>
+  <img src="https://img.shields.io/badge/VsCode-15.0+-white?logo=apple"/>
+  <img src="https://img.shields.io/badge/YOLO-15.0+-white?logo=apple"/><br>
   [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FBookJamm%2FFE&count_bg=%23FF4343&title_bg=%23FFC8C8&icon=swift.svg&icon_color=%23FF4F4F&title=total+hits&edge_flat=false)](https://hits.seeyoufarm.com)
 </div>
 
@@ -26,7 +30,7 @@
 
 ## Navigation
 1. [Introduce](#introduce)
-2. [Pull Request Rules](#pull-request-rules)
+2. [Project Period](#project-preiod)
 
 ## Service Introduce
 다들 한 번쯤, 붐비는 카페에 갔다가 돌아가는 경험이 있으셨을 겁니다.  <br>
