@@ -19,6 +19,14 @@ import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopPhotoRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
+import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
+import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
+import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
+import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
+import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfoImage;
+import Honzapda.Honzapda_server.userHelpInfo.repository.LikeUserHelpInfoRepository;
+import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
+import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -49,6 +57,13 @@ public class ShopServiceImpl implements ShopService {
     private final ReviewImageRepository reviewImageRepository;
 
     private final ShopBusinessHourRepository shopBusinessHourRepository;
+
+    private final UserHelpInfoRepository userHelpInfoRepository;
+
+    private final UserHelpInfoImageRepository userHelpInfoImageRepository;
+
+    private final LikeUserHelpInfoRepository likeUserHelpInfoRepository;
+
     private final PasswordEncoder passwordEncoder;
     @Override
     @Transactional
@@ -76,12 +91,15 @@ public class ShopServiceImpl implements ShopService {
             List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
             List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
             List<ReviewResponseDto.ReviewDto> reviewDtos = getReviewListDto(shop);
-
+            //TODO: Dto에 추가해야함
+            List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(shop);
             ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop);
+
             resultDto.setRating(getRating(shopId));
             resultDto.setOpenNow(getOpenNow(businessHours));
             resultDto.setPhotoUrls(photoUrls);
             resultDto.setBusinessHours(businessHoursResDTOS);
+            resultDto.setUserHelpInfoDtoList(userHelpInfoListDtoTop2);
             resultDto.setReviewList(reviewDtos);
 
             return resultDto;
@@ -236,6 +254,22 @@ public class ShopServiceImpl implements ShopService {
 
         return reviewDtoList;
     }
+    private List<UserHelpInfoResponseDto.UserHelpInfoDto> getUserHelpInfoListDtoTop2(Shop shop) {
+
+        return userHelpInfoRepository.findAllByShop(shop)
+                .orElseThrow(()->new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND))
+                .stream()
+                .map(userHelpInfo->{
+                    Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(userHelpInfo);
+                    return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount);
+                })
+                // likeCount를 기준으로 내림차순으로 정렬
+                .sorted((info1, info2) -> Long.compare(info2.getLikeCount(), info1.getLikeCount()))
+                .limit(2)
+                .toList();
+    }
+
+
 
     private void checkOpenNow(List<ShopResponseDto.SearchByNameDto> dtos) {
         dtos.forEach(

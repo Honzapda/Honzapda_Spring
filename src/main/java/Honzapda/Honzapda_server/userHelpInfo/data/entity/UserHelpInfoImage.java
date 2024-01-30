@@ -1,15 +1,16 @@
 package Honzapda.Honzapda_server.userHelpInfo.data.entity;
 
+import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.user.data.entity.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-public class UserHelpInfoImage {
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class UserHelpInfoImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
@@ -17,20 +18,12 @@ public class UserHelpInfoImage {
 
     private String url;
 
-    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userHelpInfoId")
     private UserHelpInfo userHelpInfo;
 
-    @Builder
-    private UserHelpInfoImage(String url, UserHelpInfo userHelpInfo) {
-        this.url = url;
-        this.userHelpInfo = userHelpInfo;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shopId")
+    private Shop shop;
 
-    public static UserHelpInfoImage createImage(String url, UserHelpInfo userHelpInfo) {
-        return UserHelpInfoImage.builder()
-                .url(url)
-                .userHelpInfo(userHelpInfo)
-                .build();
-    }
 }

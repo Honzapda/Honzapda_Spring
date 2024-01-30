@@ -14,6 +14,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _BAD_REQUEST(HttpStatus.BAD_REQUEST,"COMMON400","잘못된 요청입니다."),
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"COMMON401","인증이 필요합니다."),
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
+    _TOO_MANY_REQUEST(HttpStatus.TOO_MANY_REQUESTS,"COMMON429","3시간 이후에 작성해주세요."),
     // 회원가입 응답
     EMAIL_NOT_UNIQUE(HttpStatus.CONFLICT,"JOIN"+HttpStatus.CONFLICT.value(),"이미 존재하는 계정입니다."),
     NICKNAME_NOT_UNIQUE(HttpStatus.CONFLICT,"JOIN"+HttpStatus.CONFLICT.value(),"이미 존재하는 닉네임입니다."),
@@ -50,11 +51,20 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_OUTLET_COUNT_EMPTY(HttpStatus.BAD_REQUEST, "USERHELPINFO4006", "콘센트 개수를 입력해주세요."),
     INVALID_OUTLET_COUNT(HttpStatus.BAD_REQUEST, "USERHELPINFO4007", "콘센트 개수는 enough, adequate, lack, none으로 입력해주세요."),
 
+    USER_HELP_INFO_NOT_FOUND(HttpStatus.NOT_FOUND,"USERHELPINFO4008","해당하는 유저 도움 정보가 없습니다."),
+    INVALID_USER_HELP_INFO(HttpStatus.FORBIDDEN,"USERHELPINFO4009","해당 유저 도움 정보에 접근 권한이 없습니다."),
+
+    // 유저 도움 정보 좋아요
+    LIKE_ALREADY_LIKED(HttpStatus.CONFLICT,"LIKE4000","이미 좋아요를 누르셨습니다."),
+    LIKE_NOT_FOUND(HttpStatus.NOT_FOUND,"LKE4001","좋아요를 안누른 유저 도움 정보입니다."),
+
+    // 일시 응답
+    INVALID_DATE_TIME_FORMAT(HttpStatus.BAD_REQUEST,"DATETIME4000","일시 형식이 올바르지 않습니다."),
+  
     // 유저 가게 찜하기 응답
     LIKE_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "LIKE4000", "이미 찜을 눌렀습니다."),
 
     LIKE_NOT_EXIST(HttpStatus.BAD_REQUEST, "REVIEW4001", "찜을 누른 적이 없습니다.");
-
 
 
     private final HttpStatus httpStatus;

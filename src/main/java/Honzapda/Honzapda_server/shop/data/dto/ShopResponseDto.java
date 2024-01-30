@@ -4,6 +4,7 @@ import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
+import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.querydsl.core.annotations.QueryProjection;
@@ -33,6 +34,7 @@ public class ShopResponseDto {
         String address_spec;
         boolean openNow;
         LocalDateTime inactiveDate;
+        List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList;
         List<ReviewResponseDto.ReviewDto> reviewList;
         List<String> photoUrls;
         List<BusinessHoursResDTO> businessHours;
@@ -62,6 +64,9 @@ public class ShopResponseDto {
 
         public void setReviewList(List<ReviewResponseDto.ReviewDto> reviewList){
             this.reviewList = reviewList;
+        }
+        public void setUserHelpInfoDtoList(List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList){
+            this.userHelpInfoDtoList = userHelpInfoDtoList;
         }
     }
 
