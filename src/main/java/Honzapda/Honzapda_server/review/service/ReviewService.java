@@ -52,7 +52,7 @@ public class ReviewService {
         Review savedReview = reviewRepository.save(review);
 
         //리뷰 이미지 있으면,
-        if(requestDto.getReviewUrls()!=null)
+        if(!requestDto.getReviewUrls().isEmpty())
             return includeReviewImageDto(requestDto,savedReview);
 
         return ReviewConverter.toReviewDto(savedReview);
@@ -60,9 +60,7 @@ public class ReviewService {
 
     private ReviewResponseDto.ReviewDto includeReviewImageDto(ReviewRequestDto.ReviewRegisterDto requestDto, Review savedReview){
 
-        requestDto.getReviewUrls().stream()
-                .filter(url -> url != null && !url.isEmpty())
-                .forEach(url -> {
+        requestDto.getReviewUrls().forEach(url -> {
                     ReviewImage reviewImage = ReviewImage.builder()
                             .url(url)
                             .review(savedReview)
