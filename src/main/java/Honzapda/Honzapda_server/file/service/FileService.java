@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface FileService {
 
-    List<String> uploadObject(List<MultipartFile> multipartFiles) throws IOException, Exception;
+    List<String> uploadObjects(List<MultipartFile> multipartFiles) throws IOException, Exception;
+
+    String uploadObject(MultipartFile multipartFile) throws IOException, Exception;
 
     String deleteObject(String objectName);
 }
