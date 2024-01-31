@@ -56,7 +56,6 @@ public class ShopFacadeService {
         // 좌표 등록 없는 반환 객체
         ShopResponseDto.SearchDto searchDto = shopService.findShop(shopId);
 
-        // TODO: 에러 있음, 좌표 등록한 반환 객체
         searchDto.addCoordinates(shopCoordinatesService.findShopCoordinates(shopId));
 
         return searchDto;

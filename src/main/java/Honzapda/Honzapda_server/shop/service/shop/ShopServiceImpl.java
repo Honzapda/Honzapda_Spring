@@ -17,13 +17,9 @@ import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
-import Honzapda.Honzapda_server.shop.repository.mysql.ShopPhotoRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
-import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
-import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
-import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfoImage;
 import Honzapda.Honzapda_server.userHelpInfo.repository.LikeUserHelpInfoRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
@@ -52,8 +48,6 @@ public class ShopServiceImpl implements ShopService {
 
     private final ReviewRepository reviewRepository;
 
-    private final ShopPhotoRepository shopPhotoRepository;
-
     private final ReviewImageRepository reviewImageRepository;
 
     private final ShopBusinessHourRepository shopBusinessHourRepository;
@@ -69,11 +63,12 @@ public class ShopServiceImpl implements ShopService {
     @Transactional
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request){
 
+        if(shopRepository.existsByLoginId(request.getLoginId())){
+            throw new RuntimeException("아이디가 중복되었습니다");
+        }
+
         Shop shop = ShopConverter.toShop(request,passwordEncoder);
         shopRepository.save(shop);
-
-        List<String> photoUrls = request.getPhotoUrls();
-        saveShopPhoto(shop.getId(), photoUrls);
 
         List<ShopRequestDto.BusinessHoursReqDTO> businessHours = request.getBusinessHours();
         saveShopBusinessHours(shop.getId(), businessHours);
@@ -82,30 +77,24 @@ public class ShopServiceImpl implements ShopService {
     }
     @Override
     public ShopResponseDto.SearchDto findShop(Long shopId){
-        Optional<Shop> optionalShop = shopRepository.findById(shopId);
+        Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new NoSuchElementException("해당 가게가 존재하지 않습니다."));
 
-        if (optionalShop.isPresent()) {
+        List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
+        List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
+        List<ReviewResponseDto.ReviewDto> reviewDtos = getReviewListDto(shop);
 
-            Shop shop = optionalShop.get();
-            List<String> photoUrls = getShopPhotoUrls(shop);
-            List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
-            List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
-            List<ReviewResponseDto.ReviewDto> reviewDtos = getReviewListDto(shop);
-            //TODO: Dto에 추가해야함
-            List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(shop);
-            ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop);
+        //TODO: Dto에 추가해야함
+        List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(shop);
+        ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop);
 
-            resultDto.setRating(getRating(shopId));
-            resultDto.setOpenNow(getOpenNow(businessHours));
-            resultDto.setPhotoUrls(photoUrls);
-            resultDto.setBusinessHours(businessHoursResDTOS);
-            resultDto.setUserHelpInfoDtoList(userHelpInfoListDtoTop2);
-            resultDto.setReviewList(reviewDtos);
+        resultDto.setRating(getRating(shopId));
+        resultDto.setOpenNow(getOpenNow(businessHours));
+        resultDto.setBusinessHours(businessHoursResDTOS);
+        resultDto.setUserHelpInfoDtoList(userHelpInfoListDtoTop2);
+        resultDto.setReviewList(reviewDtos);
 
-            return resultDto;
-        } else {
-            throw new NoSuchElementException("해당 가게가 존재하지 않습니다.");
-        }
+        return resultDto;
+
     }
 
     @Override
@@ -152,28 +141,6 @@ public class ShopServiceImpl implements ShopService {
                 .orElse(0.0);
     }
 
-    public boolean saveShopPhoto(Long shopId, List<String> photoUrls){
-
-        Optional<Shop> optionalShop = shopRepository.findById(shopId);
-
-        if (optionalShop.isPresent()) {
-            Shop shop = optionalShop.get();
-
-            photoUrls.stream()
-                    .forEach(photoUrl ->{
-                        ShopPhoto shopPhoto = ShopPhoto.builder()
-                                .url(photoUrl)
-                                .shop(shop)
-                                .build();
-
-                        shopPhotoRepository.save(shopPhoto);
-                    });
-
-            return true;
-        } else {
-            throw new NoSuchElementException("해당 가게가 존재하지 않습니다.");
-        }
-    }
 
     public boolean saveShopBusinessHours(Long shopId, List<ShopRequestDto.BusinessHoursReqDTO> businessHours){
 
@@ -199,16 +166,6 @@ public class ShopServiceImpl implements ShopService {
         } else {
             throw new NoSuchElementException("해당 가게가 존재하지 않습니다.");
         }
-    }
-
-    public List<String> getShopPhotoUrls(Shop shop) {
-        List<ShopPhoto> shopPhotoList = shopPhotoRepository.findShopPhotosByShop(shop);
-
-        List<String> photoUrls = shopPhotoList.stream()
-                .map(ShopPhoto::getUrl)
-                .collect(Collectors.toList());
-
-        return photoUrls;
     }
 
     public List<ShopBusinessHour> getShopBusinessHours(Shop shop) {

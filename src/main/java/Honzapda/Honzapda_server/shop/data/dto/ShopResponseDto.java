@@ -36,7 +36,7 @@ public class ShopResponseDto {
         LocalDateTime inactiveDate;
         List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList;
         List<ReviewResponseDto.ReviewDto> reviewList;
-        List<String> photoUrls;
+        String photoUrl;
         List<BusinessHoursResDTO> businessHours;
 
         // 위도 경도
@@ -56,7 +56,7 @@ public class ShopResponseDto {
             this.openNow = openNow;
         }
 
-        public void setPhotoUrls(List<String> photoUrls){this.photoUrls = photoUrls;}
+        public void setPhotoUrls(String photoUrl){this.photoUrl = photoUrl;}
 
         public void setBusinessHours(List<BusinessHoursResDTO> businessHours){
             this.businessHours = businessHours;
@@ -119,5 +119,13 @@ public class ShopResponseDto {
             if(photoUrls != null) this.photoUrls = photoUrls;
         }
 
+    }
+
+    @Builder
+    @Getter
+    public static class SimpleSearchDto{
+        Long shopId;
+        String shopName;
+        String shopMainImage;
     }
 }

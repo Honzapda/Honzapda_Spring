@@ -30,6 +30,7 @@ public class ShopConverter {
                 .inactiveDate(LocalDateTime.now())
                 .loginId(request.getLoginId())
                 .password(encoder.encode(request.getPassword()))
+                .shopMainImage(request.getShopMainImage())
                 .build();
     }
 
@@ -44,10 +45,18 @@ public class ShopConverter {
                 .address(shop.getAddress())
                 .address_spec(shop.getAddress_spec())
                 .inactiveDate(shop.getInactiveDate())
+                .photoUrl(shop.getShopMainImage())
                 .reviewList(null)
                 .build();
     }
 
+    public static ShopResponseDto.SimpleSearchDto toShopSimpleResponse(Shop shop){
+        return ShopResponseDto.SimpleSearchDto.builder()
+                .shopId(shop.getId())
+                .shopName(shop.getShopName())
+                .shopMainImage(shop.getShopMainImage())
+                .build();
+    }
     public static Map<Long, ShopResponseDto.SearchDto> toShopResponseMap(List<Long> mysqlIds, List<ShopResponseDto.SearchDto> searchDtos) {
         return mysqlIds.stream()
                 .flatMap(id -> searchDtos.stream().filter(dto -> dto.getShopId().equals(id)))
