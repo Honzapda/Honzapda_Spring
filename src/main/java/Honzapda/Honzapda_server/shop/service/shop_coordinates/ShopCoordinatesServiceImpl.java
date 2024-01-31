@@ -53,4 +53,9 @@ public class ShopCoordinatesServiceImpl implements ShopCoordinatesService {
         Distance distance = new Distance(searchDto.getDistance(), Metrics.KILOMETERS);
         return shopCoordinatesRepository.findByShopNameContainingAndLocationNear(searchDto.getKeyword(), point, distance, pageable);
     }
+
+    @Override
+    public List<ShopCoordinates> findShopsCoordiates(List<Long> mysqlIds) {
+        return shopCoordinatesRepository.findAllByMysqlIdIn(mysqlIds);
+    }
 }

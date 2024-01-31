@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.user.service;
 
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
+import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.apiPayload.exception.handler.UserHandler;
 import Honzapda.Honzapda_server.file.service.FileService;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
@@ -23,6 +24,7 @@ import Honzapda.Honzapda_server.user.repository.PreferRepository;
 import Honzapda.Honzapda_server.user.repository.UserPreferRepository;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +32,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -134,13 +141,14 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<ShopResponseDto.SearchDto> getLikeShops(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
-
         List<LikeData> likes = likeRepository.findAllByUser(user).orElseThrow(() -> new NoSuchElementException("찜한 가게가 없습니다."));
+
         List<ShopResponseDto.SearchDto> likeshops = new ArrayList<>();
 
         likes.forEach(likeData ->{
             Shop shop = likeData.getShop();
             List<ShopResponseDto.BusinessHoursResDTO> businessHours = getShopBusinessHours(shop);
+
 
             ShopResponseDto.SearchDto shopResponseDto = ShopConverter.toShopResponse(shop);
             shopResponseDto.setBusinessHours(businessHours);
@@ -162,14 +170,17 @@ public class UserServiceImpl implements UserService{
         likeRepository.save(likeData);
 
         return LikeResDto.toDTO(likeData);
+
     }
 
     @Override
+    @Transactional
     public LikeResDto deleteLikeShop(Long shopId, Long userId) {
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new RuntimeException("shop이 존재하지 않습니다."));
         User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user가 존재하지 않습니다"));
-        LikeData likeData = likeRepository.findByShopAndUser(shop, user).orElseThrow(() -> new ResponseStatusException((HttpStatus.UNAUTHORIZED), "찜을 누른 적이 없습니다."));
+        LikeData likeData = likeRepository.findByShopAndUser(shop, user).orElseThrow(() -> new GeneralException(ErrorStatus.LIKE_NOT_EXIST));
 
+        //user.getLikes().remove(likeData);
         likeRepository.deleteById(likeData.getId());
 
         return LikeResDto.toDTO(likeData);

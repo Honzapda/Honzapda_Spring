@@ -6,6 +6,8 @@ import Honzapda.Honzapda_server.user.data.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -24,6 +26,9 @@ public class Review extends BaseEntity {
 
     @Column(name = "status")
     private boolean status = true;
+
+    @Column(nullable = false)
+    private LocalDateTime visitedAt;
 
     //FK
     @ManyToOne(fetch = FetchType.LAZY)

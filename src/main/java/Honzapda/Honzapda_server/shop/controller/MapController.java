@@ -9,6 +9,8 @@ import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,17 +25,23 @@ public class MapController {
     private final ShopFacadeService shopFacadeService;
 
     @GetMapping
-    public ApiResult<List<MapResponseDto.HomeDto>> fetchShops(@RequestBody @Validated MapRequestDto.LocationDto locationDto){
+    public ApiResult<List<MapResponseDto.HomeDto>> fetchShops(@RequestBody @Validated MapRequestDto.LocationDto locationDto) {
         return ApiResult.onSuccess(shopFacadeService.findShopsByLocation(locationDto));
     }
 
-    @PostMapping("/{shopId}")
-    public ApiResult<MapResponseDto.BookmarkResponseDto> addBookmark(@SessionAttribute(name = "user") UserResDto.InfoDto userResDto, @PathVariable(name = "shopId") Long shopId){
+
+    @PostMapping("/shop/{shopId}")
+    public ApiResult<MapResponseDto.BookmarkResponseDto> addBookmark(@SessionAttribute(name = "user") UserResDto.InfoDto userResDto, @PathVariable(name = "shopId") Long shopId) {
         return ApiResult.onSuccess(shopFacadeService.addBookmark(userResDto.getId(), shopId));
     }
 
-    @DeleteMapping("/{shopId}")
-    public ApiResult<MapResponseDto.BookmarkResponseDto> deleteBookmark(@SessionAttribute(name = "user") UserResDto.InfoDto userResDto, @PathVariable(name = "shopId") Long shopId){
+    @DeleteMapping("/shop/{shopId}")
+    public ApiResult<MapResponseDto.BookmarkResponseDto> deleteBookmark(@SessionAttribute(name = "user") UserResDto.InfoDto userResDto, @PathVariable(name = "shopId") Long shopId) {
         return ApiResult.onSuccess(shopFacadeService.deleteBookmark(userResDto.getId(), shopId));
+    }
+
+    @GetMapping("/shop")
+    public ApiResult<Slice<MapResponseDto.UserBookmarkShopResponseDto>> fetchBookmarks(@SessionAttribute(name = "user") UserResDto userResDto, Pageable pageable) {
+        return ApiResult.onSuccess(shopFacadeService.findBookmarks(userResDto.getId(), pageable));
     }
 }

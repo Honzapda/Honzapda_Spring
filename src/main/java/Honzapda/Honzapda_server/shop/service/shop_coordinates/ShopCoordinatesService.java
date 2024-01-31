@@ -18,4 +18,6 @@ public interface ShopCoordinatesService {
     List<ShopCoordinates> findShopsByLocation(MapRequestDto.LocationDto locationDto);
 
     Page<ShopCoordinates> findByShopNameContainingAndLocationNear(ShopRequestDto.SearchDto searchDto, Pageable pageable);
+
+    List<ShopCoordinates> findShopsCoordiates(List<Long> mysqlIds);
 }

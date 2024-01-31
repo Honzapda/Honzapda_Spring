@@ -8,13 +8,21 @@ import Honzapda.Honzapda_server.auth.apple.AppleProperties;
 import Honzapda.Honzapda_server.auth.apple.AppleSocialTokenInfoResponse;
 import Honzapda.Honzapda_server.auth.apple.common.TokenDecoder;
 import Honzapda.Honzapda_server.auth.util.PasswordGenerator;
+import Honzapda.Honzapda_server.review.data.entity.Review;
+import Honzapda.Honzapda_server.review.repository.mysql.ReviewImageRepository;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
+import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository;
 import Honzapda.Honzapda_server.user.data.UserConverter;
 import Honzapda.Honzapda_server.user.data.dto.AppleJoinDto;
 import Honzapda.Honzapda_server.user.data.dto.UserDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import Honzapda.Honzapda_server.user.repository.LikeRepository;
+import Honzapda.Honzapda_server.user.repository.UserPreferRepository;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
+import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
+import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
+import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -32,6 +40,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,6 +53,14 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final ReviewRepository reviewRepository;
+    private final ReviewImageRepository reviewImageRepository;
+    private final UserHelpInfoRepository userHelpInfoRepository;
+    private final UserHelpInfoImageRepository userHelpInfoImageRepository;
+    private final LikeRepository likeRepository;
+
+    private final UserPreferRepository userPreferRepository;
+
+    private final ShopUserBookmarkRepository shopUserBookmarkRepository;
 
 
     @Override
@@ -119,15 +136,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void revoke(UserResDto.InfoDto userResDto) {
-
         User user = userRepository.findById(userResDto.getId()).orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
         if (user.getSignUpType() == User.SignUpType.APPLE) {
             String refreshToken = user.getSocialToken();
             if (refreshToken != null) {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+                //HttpHeaders headers = new HttpHeaders();
+                //headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                //headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
                 appleAuthClient.revokeToken(
                         appleProperties.getClientId(),
@@ -138,15 +155,57 @@ public class AuthServiceImpl implements AuthService {
             }
 
         }
-        userRepository.deleteById(user.getId());
-        reviewRepository.deleteAllByUser(user);
 
+        deleteUserLikes(user);
+        deleteUserHelpInfos(user);
+        deleteUserReviews(user);
+        deleteUserPrefers(user);
+        deleteUserBookmarks(user);
+
+        userRepository.delete(user);
     }
-        private String generateClientSecret () {
 
-            LocalDateTime expiration = LocalDateTime.now().plusMinutes(5);
+    private void deleteUserLikes(User user) {
+        likeRepository.deleteAllByUser(user);
+    }
 
-            return Jwts.builder()
+    private void deleteUserHelpInfos(User user) {
+
+        List<UserHelpInfo> userHelpInfoList = userHelpInfoRepository.findAllByUser(user);
+
+        userHelpInfoList.stream()
+                .forEach(userHelpInfo -> {
+                    userHelpInfoImageRepository.deleteAllByUserHelpInfo(userHelpInfo);
+                });
+
+        userHelpInfoRepository.deleteAllByUser(user);
+    }
+
+    private void deleteUserReviews(User user) {
+
+        List<Review> reviewList = reviewRepository.findAllByUser(user);
+
+        reviewList.stream()
+                .forEach(review -> {
+                    reviewImageRepository.deleteAllByReview(review);
+                });
+
+        reviewRepository.deleteAllByUser(user);
+    }
+
+    private void deleteUserPrefers(User user) {
+        userPreferRepository.deleteAllByUser(user);
+    }
+
+    private void deleteUserBookmarks(User user) {
+        shopUserBookmarkRepository.deleteAllByUser(user);
+    }
+
+    private String generateClientSecret () {
+
+        LocalDateTime expiration = LocalDateTime.now().plusMinutes(5);
+
+        return Jwts.builder()
                     .setHeaderParam(JwsHeader.KEY_ID, appleProperties.getKeyId())
                     .setIssuer(appleProperties.getTeamId())
                     .setAudience(appleProperties.getAudience())
@@ -155,23 +214,23 @@ public class AuthServiceImpl implements AuthService {
                     .setIssuedAt(new Date())
                     .signWith(getPrivateKey(), SignatureAlgorithm.ES256)
                     .compact();
-        }
-
-        private PrivateKey getPrivateKey(){
-
-            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-            JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
-
-            try {
-                byte[] privateKeyBytes = Base64.getDecoder().decode(appleProperties.getPrivateKey());
-
-                PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
-                return converter.getPrivateKey(privateKeyInfo);
-            } catch (Exception e) {
-                throw new RuntimeException("Error converting private key from String", e);
-            }
-        }
-
-
     }
+
+    private PrivateKey getPrivateKey(){
+
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
+
+        try {
+            byte[] privateKeyBytes = Base64.getDecoder().decode(appleProperties.getPrivateKey());
+
+            PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(privateKeyBytes);
+            return converter.getPrivateKey(privateKeyInfo);
+        } catch (Exception e) {
+            throw new RuntimeException("Error converting private key from String", e);
+        }
+    }
+
+
+}
 

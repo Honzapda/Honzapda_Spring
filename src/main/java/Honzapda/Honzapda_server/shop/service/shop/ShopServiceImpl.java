@@ -199,7 +199,7 @@ public class ShopServiceImpl implements ShopService {
 
     private List<ReviewResponseDto.ReviewDto> getReviewListDto(Shop shop) {
 
-        List<Review> reviewList = reviewRepository.findTop3ByShopOrderByCreatedAtDesc(shop);
+        List<Review> reviewList = reviewRepository.findTop3ByShopOrderByVisitedAtDesc(shop);
 
         List<ReviewResponseDto.ReviewDto> reviewDtoList = reviewList.stream()
                 .map(review -> {

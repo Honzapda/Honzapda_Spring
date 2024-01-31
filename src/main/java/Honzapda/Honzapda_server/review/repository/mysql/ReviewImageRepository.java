@@ -14,4 +14,5 @@ public interface ReviewImageRepository extends JpaRepository<ReviewImage,Long> {
     Optional<List<ReviewImage>> findAllByReview(Review review);
     Slice<ReviewImage> findAllByShopOrderByCreatedAtDesc(Shop shop, Pageable pageable);
 
+    void deleteAllByReview(Review review);
 }
