@@ -2,7 +2,11 @@ package Honzapda.Honzapda_server.shop.repository.mysql;
 
 import Honzapda.Honzapda_server.review.data.entity.QReview;
 import Honzapda.Honzapda_server.shop.data.dto.*;
+import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
+import Honzapda.Honzapda_server.user.data.entity.User;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +19,7 @@ import org.springframework.data.domain.SliceImpl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,6 +28,9 @@ import static Honzapda.Honzapda_server.shop.data.entity.QShop.shop;
 import static Honzapda.Honzapda_server.shop.data.entity.QShopBusinessHour.*;
 import static Honzapda.Honzapda_server.shop.data.entity.QShopPhoto.*;
 import static Honzapda.Honzapda_server.shop.data.entity.QShopUserBookmark.shopUserBookmark;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -52,6 +60,43 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
         }
 
         return homeDtos;
+    }
+
+    @Override
+    public Slice<MapResponseDto.UserBookmarkShopResponseDto> findBookmarkByUser(User user, Pageable pageable) {
+
+        List<Shop> shops = queryFactory.selectFrom(shop)
+                .join(shopUserBookmark).on(shopUserBookmark.shop.id.eq(shop.id))
+                .where(shopUserBookmark.user.id.eq(user.getId()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        List<Long> shopIds = shops.stream()
+                .map(Shop::getId)
+                .toList();
+
+        List<Tuple> fetch = queryFactory.select(shop.id, shopPhoto.url)
+                .from(shopPhoto)
+                .where(shopPhoto.shop.id.in(shopIds))
+                .fetch();
+
+        Map<Long, List<String>> photoUrlsByShopId = fetch.stream()
+                .collect(Collectors.groupingBy(
+                        tuple -> tuple.get(0, Long.class),
+                        Collectors.mapping(tuple -> tuple.get(1, String.class), toList())
+                ));
+
+        List<MapResponseDto.UserBookmarkShopResponseDto> userBookmarkShopResponseDtos = shops.stream()
+                .map(
+                        shop -> MapResponseDto.UserBookmarkShopResponseDto.createFrom(
+                                shop,
+                                Optional.ofNullable(photoUrlsByShopId.get(shop.getId())).orElse(List.of())
+                        )
+                )
+                .toList();
+
+        return new SliceImpl<>(userBookmarkShopResponseDtos, pageable, fetch.size() == pageable.getPageSize());
     }
 
     @Override
@@ -174,7 +219,7 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
         Map<Long, List<String>> photoUrlsByShopId = fetch2.stream()
                 .collect(Collectors.groupingBy(
                         tuple -> tuple.get(0, Long.class),
-                        Collectors.mapping(tuple -> tuple.get(1, String.class), Collectors.toList())
+                        Collectors.mapping(tuple -> tuple.get(1, String.class), toList())
                 ));
 
         // fetch의 각 요소에 대해, 해당 요소의 shop_id에 해당하는 url 리스트를 photoUrls에 설정합니다.

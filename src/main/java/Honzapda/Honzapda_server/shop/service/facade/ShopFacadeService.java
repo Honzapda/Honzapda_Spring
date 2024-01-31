@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -132,6 +134,29 @@ public class ShopFacadeService {
         }
 
         return shopService.searchShopByShopNameContaining(request, pageable);
+    }
+
+    public Slice<MapResponseDto.UserBookmarkShopResponseDto> findBookmarks(Long userId, Pageable pageable) {
+        User user = findUserById(userId);
+
+        Slice<MapResponseDto.UserBookmarkShopResponseDto> bookmarks = shopRepository.findBookmarkByUser(user, pageable);
+
+        List<Long> mysqlIds = bookmarks.getContent().stream()
+                .map(MapResponseDto.UserBookmarkShopResponseDto::getShopId)
+                .toList();
+
+        List<ShopCoordinates> shopsCoordiates = shopCoordinatesService.findShopsCoordiates(mysqlIds);
+
+        bookmarks.getContent().forEach(bookmark -> {
+            ShopCoordinates shopCoordinates = shopsCoordiates.stream()
+                    .filter(coordinates -> coordinates.getMysqlId().equals(bookmark.getShopId()))
+                    .findFirst()
+                    .orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_COORDINATES_NOT_FOUND));
+
+            bookmark.addCoordinates(shopCoordinates);
+        });
+
+        return bookmarks;
     }
 
     private Slice<ShopResponseDto.SearchByNameDto> searchSortByDistance(ShopRequestDto.SearchDto request, Pageable pageable) {
