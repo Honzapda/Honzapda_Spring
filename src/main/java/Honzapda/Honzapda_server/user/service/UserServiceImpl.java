@@ -3,41 +3,46 @@ package Honzapda.Honzapda_server.user.service;
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.apiPayload.exception.handler.UserHandler;
-
+import Honzapda.Honzapda_server.file.service.FileService;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
-import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
-import Honzapda.Honzapda_server.shop.repository.mysql.ShopPhotoRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.UserConverter;
-import Honzapda.Honzapda_server.user.data.dto.*;
-import Honzapda.Honzapda_server.user.data.entity.LikeData;
-import Honzapda.Honzapda_server.user.data.entity.User;
-import Honzapda.Honzapda_server.user.data.entity.Prefer;
-import Honzapda.Honzapda_server.user.repository.LikeRepository;
-
-import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
-import Honzapda.Honzapda_server.user.data.dto.UserPreferResDto;
+import Honzapda.Honzapda_server.user.data.dto.LikeResDto;
+import Honzapda.Honzapda_server.user.data.dto.UserDto;
+import Honzapda.Honzapda_server.user.data.dto.UserPreferDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import Honzapda.Honzapda_server.user.data.entity.LikeData;
+import Honzapda.Honzapda_server.user.data.entity.Prefer;
+import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.data.entity.UserPrefer;
+import Honzapda.Honzapda_server.user.repository.LikeRepository;
 import Honzapda.Honzapda_server.user.repository.PreferRepository;
 import Honzapda.Honzapda_server.user.repository.UserPreferRepository;
-
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,11 +56,11 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder encoder;
     private final PreferRepository preferRepository;
     private final UserPreferRepository userPreferRepository;
-
-    private final ShopPhotoRepository shopPhotoRepository;
-
     private final ShopBusinessHourRepository shopBusinessHourRepository;
+    private final FileService fileService;
 
+    @Value("${honzapda.basic-image.url}")
+    private String basicImageUrl;
 
     @Override
     public boolean isEMail(String email) {
@@ -73,91 +78,79 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserResDto patchPassword(PatchUserPwDto request, Long userId) {
+    public UserResDto.InfoDto patchPassword(UserDto.PatchUserPwDto request, Long userId) {
 
         User getUser = getUser(userId);
         getUser.setPassword(encoder.encode(request.getPassword()));
         userRepository.save(getUser);
 
-        return UserConverter.toUserResponse(getUser);
+        return UserConverter.toUserInfo(getUser);
     }
     @Override
-    public UserResDto searchUser(Long userId){
+    public UserResDto.ProfileDto findUser(Long userId){
 
-        Optional<User> optionalUser = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 존재하지 않습니다."));
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            return UserConverter.toUserResponse(user);
-        } else{
-            throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
-        }
+        return UserConverter.toUserProfile(user);
     }
     @Override
-    public UserResDto updateUser(UserJoinDto userJoinDto, Long userId){
-        Optional<User> optionalUser = userRepository.findById(userId);
+    public UserResDto.InfoDto updateUser(UserDto.JoinDto userJoinDto, Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 존재하지 않습니다."));
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setName(userJoinDto.getName());
+        user.setName(userJoinDto.getName());
+        User savedUser = userRepository.save(user);
 
-            User savedUser = userRepository.save(user);
-            return UserConverter.toUserResponse(savedUser);
-        } else{
-            throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
+        return UserConverter.toUserInfo(savedUser);
+    }
+    @Override
+    public UserResDto.ProfileDto updateUserImage(MultipartFile image, Long userId) throws Exception {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
+
+        if (!user.getProfileImage().equals(basicImageUrl)) {
+            URL imageUrl = new URL(user.getProfileImage());
+            String path = imageUrl.getPath();
+            String fileName = path.substring(path.lastIndexOf("/") + 1);
+            fileService.deleteObject(fileName);
         }
+        String imageUrl = fileService.uploadObject(image);
+        user.setProfileImage(imageUrl);
+        userRepository.save(user);
+
+        return UserConverter.toUserProfile(user);
     }
     @Override
     public boolean registerUserPrefer(Long userId, List<String> preferNameList){
 
-        Optional<User> userOptional = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 존재하지 않습니다."));
 
-        if (userOptional.isPresent()) {
-
-            User user = userOptional.get();
-            List<Prefer> preferList = toPreferList(preferNameList);
-
-            saveUserPrefer(preferList, user);
-
-            return true;
-
-        } else{
-            throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
-        }
+        List<Prefer> preferList = toPreferList(preferNameList);
+        saveUserPrefer(preferList, user);
+        return true;
     }
     @Override
-    public UserPreferResDto searchUserPrefer(Long userId) {
+    public UserPreferDto searchUserPrefer(Long userId) {
 
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 존재하지 않습니다."));
 
-        if(user.isPresent()){
-
-            Set<UserPrefer> userPreferList = user.get().getUserPrefers();
-            List<String> preferNameList = getPreferNameListByUserPreferList(userPreferList);
-            return UserConverter.toUserPreferResponse(preferNameList);
-
-        } else{
-            throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
-        }
+        Set<UserPrefer> userPreferList = user.getUserPrefers();
+        List<String> preferNameList = getPreferNameListByUserPreferList(userPreferList);
+        return UserConverter.toUserPreferResponse(preferNameList);
     }
 
     @Override
     public List<ShopResponseDto.SearchDto> getLikeShops(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
-
-
         List<LikeData> likes = likeRepository.findAllByUser(user).orElseThrow(() -> new NoSuchElementException("찜한 가게가 없습니다."));
-        //List<LikeData> likes = user.getLikes();
 
         List<ShopResponseDto.SearchDto> likeshops = new ArrayList<>();
+
         likes.forEach(likeData ->{
             Shop shop = likeData.getShop();
-            List<String> photoUrls = getShopPhotoUrls(shop);
             List<ShopResponseDto.BusinessHoursResDTO> businessHours = getShopBusinessHours(shop);
 
 
             ShopResponseDto.SearchDto shopResponseDto = ShopConverter.toShopResponse(shop);
-            shopResponseDto.setPhotoUrls(photoUrls);
             shopResponseDto.setBusinessHours(businessHours);
 
             likeshops.add(shopResponseDto);
@@ -170,18 +163,14 @@ public class UserServiceImpl implements UserService{
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new RuntimeException("shop이 존재하지 않습니다."));
         User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user가 존재하지 않습니다"));
 
-        //LikeData likeData = likeRepository.findByShopAndUser(shop, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이미 찜을 눌렀습니다."));
-        if (likeRepository.findByShopAndUser(shop, user).isPresent()) {
-            throw new GeneralException(ErrorStatus.LIKE_ALREADY_EXIST);
-        } else {
-            LikeData likeData = LikeData.builder()
-                    .shop(shop)
-                    .user(user)
-                    .build();
+        LikeData likeData = likeRepository.findByShopAndUser(shop, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이미 찜을 눌렀습니다."));
 
-            likeRepository.save(likeData);
-            return LikeResDto.toDTO(likeData);
-        }
+        likeData.setShop(shop);
+        likeData.setUser(user);
+        likeRepository.save(likeData);
+
+        return LikeResDto.toDTO(likeData);
+
     }
 
     @Override
@@ -199,22 +188,17 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public boolean updateUserPrefer(Long userId, List<String> preferNameList) {
-        Optional<User> userOptional = userRepository.findById(userId);
 
-        if (userOptional.isPresent()) {
+        User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user가 존재하지 않습니다"));
 
-            User user = userOptional.get();
-            user.getUserPrefers().clear();
+        user.getUserPrefers().clear();
 
-            List<Prefer> preferList = toPreferList(preferNameList);
-            saveUserPrefer(preferList, user);
-
-            return true;
-
-        } else{
-            throw new NoSuchElementException("해당 유저가 존재하지 않습니다.");
-        }
+        List<Prefer> preferList = toPreferList(preferNameList);
+        saveUserPrefer(preferList, user);
+        return true;
     }
+
+
 
     private List<Prefer> toPreferList(List<String> preferNameList){
         return preferNameList.stream()
@@ -250,16 +234,6 @@ public class UserServiceImpl implements UserService{
         }
 
         return preferNameList;
-    }
-
-    public List<String> getShopPhotoUrls(Shop shop) {
-        List<ShopPhoto> shopPhotoList = shopPhotoRepository.findShopPhotosByShop(shop);
-
-        List<String> photoUrls = shopPhotoList.stream()
-                .map(ShopPhoto::getUrl)
-                .collect(Collectors.toList());
-
-        return photoUrls;
     }
 
     public List<ShopResponseDto.BusinessHoursResDTO> getShopBusinessHours(Shop shop) {

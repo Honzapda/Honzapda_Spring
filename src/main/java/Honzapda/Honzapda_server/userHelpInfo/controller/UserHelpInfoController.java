@@ -20,14 +20,14 @@ public class UserHelpInfoController {
 
     @PostMapping("/")
     public ApiResult<?> registerUserHelpInfo(
-            @SessionAttribute(name = "user") UserResDto userResDto,
+            @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,
             @RequestParam Long shopId,
             @RequestBody @Valid UserHelpInfoRequestDto.CreateDto requestDto){
         return ApiResult.onSuccess(userHelpInfoService.registerUserHelpInfo(userResDto.getId(), shopId, requestDto));
     }
     @PostMapping("/{userHelpInfoId}/like")
     public ApiResult<?> likeUserHelpInfo(
-            @SessionAttribute(name = "user") UserResDto userResDto,
+            @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,
             @PathVariable Long userHelpInfoId){
         userHelpInfoService.likeUserHelpInfo(userResDto.getId(), userHelpInfoId);
         return ApiResult.onSuccess("좋아요를 눌렀습니다.");
@@ -55,7 +55,7 @@ public class UserHelpInfoController {
 
     @DeleteMapping("/{userHelpInfoId}/like")
     public ApiResult<?> deleteLikeUserHelpInfo(
-            @SessionAttribute(name = "user") UserResDto userResDto,
+            @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,
             @PathVariable Long userHelpInfoId){
 
         userHelpInfoService.deleteLikeUserHelpInfo(userResDto.getId(), userHelpInfoId);
@@ -63,7 +63,7 @@ public class UserHelpInfoController {
     }
     @DeleteMapping("/{userHelpInfoId}")
     public ApiResult<?> DeleteUserHelpInfo(
-            @SessionAttribute(name = "user") UserResDto userResDto,
+            @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,
             @PathVariable Long userHelpInfoId){
 
         userHelpInfoService.deleteUserHelpInfo(userResDto.getId(),userHelpInfoId);

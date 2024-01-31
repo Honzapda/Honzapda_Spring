@@ -14,8 +14,7 @@ import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository;
 import Honzapda.Honzapda_server.user.data.UserConverter;
 import Honzapda.Honzapda_server.user.data.dto.AppleJoinDto;
-import Honzapda.Honzapda_server.user.data.dto.UserJoinDto;
-import Honzapda.Honzapda_server.user.data.dto.UserLoginDto;
+import Honzapda.Honzapda_server.user.data.dto.UserDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.LikeRepository;
@@ -66,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public User registerUser(UserJoinDto request) {
+    public User registerUser(UserDto.JoinDto request) {
         /*
         ** 이메일 중복체크는 어노테이션으로 이미 처리.
         ** Converter : 이메일, 이름, 비밀번호까지 처리 (Auth -> User 변경)
@@ -89,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public User loginUser(UserLoginDto request) {
+    public User loginUser(UserDto.LoginDto request) {
 
         User dbUser = getUserByEMail(request.getEmail());
         if(!passwordEncoder.matches(request.getPassword(), dbUser.getPassword()))
@@ -130,7 +129,7 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> user = userRepository.findByEmail(appleIdTokenPayload.getEmail());
 
         if (user.isPresent()) {
-            return UserResDto.toDTO(user.get());
+            return UserConverter.toUserInfo(user.get());
         } else {
             return AppleJoinDto.toDTO(appleIdTokenPayload.getEmail(), appleToken.getRefreshToken());
         }
@@ -138,8 +137,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void revoke(UserResDto userResDto) {
-
+    public void revoke(UserResDto.InfoDto userResDto) {
         User user = userRepository.findById(userResDto.getId()).orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
         if (user.getSignUpType() == User.SignUpType.APPLE) {
             String refreshToken = user.getSocialToken();

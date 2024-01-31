@@ -22,7 +22,7 @@ public class ReviewController {
 
     @PostMapping("/")
     public ApiResult<ReviewResponseDto.ReviewDto> registerReview(
-            @SessionAttribute(name = "user") UserResDto userResDto,
+            @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,
             @RequestParam Long shopId,
             @RequestBody @Valid ReviewRequestDto.ReviewRegisterDto requestDto){
         return ApiResult.onSuccess(reviewService.registerReview(userResDto.getId(), shopId, requestDto));

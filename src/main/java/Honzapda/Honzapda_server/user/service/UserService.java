@@ -3,7 +3,9 @@ package Honzapda.Honzapda_server.user.service;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.user.data.dto.*;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 public interface UserService {
@@ -13,11 +15,11 @@ public interface UserService {
 
     User getUser(Long id);
 
-    UserResDto patchPassword(PatchUserPwDto request, Long userId);
+    UserResDto.InfoDto patchPassword(UserDto.PatchUserPwDto request, Long userId);
 
-    UserResDto searchUser(Long userId);
+    UserResDto.ProfileDto findUser(Long userId);
 
-    UserResDto updateUser(UserJoinDto request, Long userId);
+    UserResDto.InfoDto updateUser(UserDto.JoinDto request, Long userId);
 
     LikeResDto likeShop(Long shopId, Long userId);
 
@@ -27,8 +29,9 @@ public interface UserService {
 
     boolean registerUserPrefer(Long userId, List<String> preferNameList);
 
-    UserPreferResDto searchUserPrefer(Long userId);
+    UserPreferDto searchUserPrefer(Long userId);
   
     boolean updateUserPrefer(Long userId, List<String> preferNameList);
 
+    UserResDto.ProfileDto updateUserImage(MultipartFile image, Long userId) throws Exception;
 }

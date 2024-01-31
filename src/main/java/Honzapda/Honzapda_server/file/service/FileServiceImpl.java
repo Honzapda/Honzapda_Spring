@@ -31,7 +31,7 @@ public class FileServiceImpl implements FileService{
         this.storage = storage;
     }
     @Override
-    public List<String> uploadObject(List<MultipartFile> multipartFiles) throws IOException{
+    public List<String> uploadObjects(List<MultipartFile> multipartFiles) throws IOException{
 
         List<String> uuids = new ArrayList<>();
         for(MultipartFile image : multipartFiles){
@@ -51,6 +51,22 @@ public class FileServiceImpl implements FileService{
 
         return uuids;
 
+    }
+
+    @Override
+    public String uploadObject(MultipartFile multipartFile) throws IOException, Exception {
+
+        String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름
+        String ext = multipartFile.getContentType();
+
+        BlobInfo blobInfo = storage.create(
+                BlobInfo.newBuilder(bucketName, uuid)
+                        .setContentType(ext)
+                        .build(),
+                multipartFile.getInputStream()
+        );
+
+        return "https://storage.googleapis.com/" + bucketName + "/" + uuid;
     }
 
     @Override

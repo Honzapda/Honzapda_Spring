@@ -18,5 +18,8 @@ public interface ShopCoordinatesRepository extends MongoRepository<ShopCoordinat
 
     Page<ShopCoordinates> findByShopNameContainingAndLocationNear(String shopName, Point point, Distance distance, Pageable pageable);
 
+    boolean existsByMysqlId(Long shopId);
+
     List<ShopCoordinates> findAllByMysqlIdIn(List<Long> mysqlIds);
+
 }

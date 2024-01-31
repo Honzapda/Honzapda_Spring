@@ -26,7 +26,12 @@ public class ShopCoordinatesServiceImpl implements ShopCoordinatesService {
 
     @Override
     public ShopCoordinates registerShopCoordinates(ShopCoordinatesDto request) {
-        return shopCoordinatesRepository.save(request.toEntity());
+        if (shopCoordinatesRepository.existsByMysqlId(request.getMysqlId())) {
+            throw new GeneralException(ErrorStatus.SHOP_ALREADY_EXIST);
+        }
+        else{
+            return shopCoordinatesRepository.save(request.toEntity());
+        }
     }
 
     @Override

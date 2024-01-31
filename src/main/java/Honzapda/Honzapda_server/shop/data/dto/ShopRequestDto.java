@@ -29,7 +29,7 @@ public class ShopRequestDto {
         Double latitude;
         Double longitude;
 
-        List<String> photoUrls;
+        String shopMainImage;
         List<BusinessHoursReqDTO> businessHours;
     }
 
