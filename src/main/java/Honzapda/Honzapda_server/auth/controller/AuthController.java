@@ -4,6 +4,7 @@ import Honzapda.Honzapda_server.apiPayload.ApiResult;
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.auth.service.AuthService;
+import Honzapda.Honzapda_server.user.data.UserConverter;
 import Honzapda.Honzapda_server.user.data.dto.*;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,22 +29,23 @@ public class AuthController {
      */
     @PostMapping("/checkId")
     public ApiResult<Boolean>
-    checkId(@RequestBody @Valid UserEmailDto request) {
+    checkId(@RequestBody @Valid UserDto.EmailDto request) {
         return ApiResult.onSuccess(true);
     }
 
     @PostMapping("/register")
-    public ApiResult<UserResDto>
-    register(@RequestBody @Valid UserJoinDto request) {
+    public ApiResult<UserResDto.InfoDto>
+    register(@RequestBody @Valid UserDto.JoinDto request) {
         User newUser = authService.registerUser(request);
-        return ApiResult.onSuccess(SuccessStatus._CREATED, UserResDto.toDTO(newUser));
+        return ApiResult.onSuccess(SuccessStatus._CREATED, UserConverter.toUserInfo(newUser));
     }
 
     @PostMapping("/login")
-    public ApiResult<UserResDto>
-    login(HttpServletRequest httpRequest, @RequestBody @Valid UserLoginDto request) {
+    public ApiResult<UserResDto.InfoDto>
+    login(HttpServletRequest httpRequest, @RequestBody @Valid UserDto.LoginDto request) {
 
-        UserResDto userResDto = UserResDto.toDTO(authService.loginUser(request));
+        UserResDto.InfoDto userResDto = UserConverter.toUserInfo(authService.loginUser(request));
+
         HttpSession session = httpRequest.getSession(true);
         session.setAttribute("user", userResDto);
         session.setMaxInactiveInterval(60 * 30);
@@ -53,8 +55,7 @@ public class AuthController {
 
     @PostMapping("/findPassword")
     public ApiResult<Boolean>
-    findPassword(@RequestBody @Valid FindPwDto request) {
-
+    findPassword(@RequestBody @Valid UserDto.FindPwDto request) {
         authService.sendTempPasswordByEmail(request.getEmail());
         return ApiResult.onSuccess(true);
     }
@@ -65,8 +66,8 @@ public class AuthController {
         String authorizationCode = request.getParameter("code");
         Object serviceDto = authService.appleLogin(authorizationCode);
 
-        if (serviceDto.getClass().equals(UserResDto.class)) {
-            UserResDto userResDto = (UserResDto) serviceDto;
+        if (serviceDto.getClass().equals(UserResDto.InfoDto.class)) {
+            UserResDto.InfoDto userResDto = (UserResDto.InfoDto) serviceDto;
 
             HttpSession session = request.getSession(true);
             session.setAttribute("user", userResDto);
@@ -90,7 +91,7 @@ public class AuthController {
     }
 
     @DeleteMapping("/revoke")
-    public ApiResult<?> revoke(@SessionAttribute UserResDto user) {
+    public ApiResult<?> revoke(@SessionAttribute UserResDto.InfoDto user) {
 
         try {
             authService.revoke(user);

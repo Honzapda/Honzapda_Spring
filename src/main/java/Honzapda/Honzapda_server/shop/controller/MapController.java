@@ -28,12 +28,12 @@ public class MapController {
     }
 
     @PostMapping("/{shopId}")
-    public ApiResult<MapResponseDto.BookmarkResponseDto> addBookmark(@SessionAttribute(name = "user") UserResDto userResDto, @PathVariable(name = "shopId") Long shopId){
+    public ApiResult<MapResponseDto.BookmarkResponseDto> addBookmark(@SessionAttribute(name = "user") UserResDto.InfoDto userResDto, @PathVariable(name = "shopId") Long shopId){
         return ApiResult.onSuccess(shopFacadeService.addBookmark(userResDto.getId(), shopId));
     }
 
     @DeleteMapping("/{shopId}")
-    public ApiResult<MapResponseDto.BookmarkResponseDto> deleteBookmark(@SessionAttribute(name = "user") UserResDto userResDto, @PathVariable(name = "shopId") Long shopId){
+    public ApiResult<MapResponseDto.BookmarkResponseDto> deleteBookmark(@SessionAttribute(name = "user") UserResDto.InfoDto userResDto, @PathVariable(name = "shopId") Long shopId){
         return ApiResult.onSuccess(shopFacadeService.deleteBookmark(userResDto.getId(), shopId));
     }
 }

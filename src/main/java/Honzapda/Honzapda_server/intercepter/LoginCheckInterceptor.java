@@ -13,7 +13,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         // 1. 세션에서 회원 정보 조회
         HttpSession session = request.getSession();
-        UserResDto userResDto = (UserResDto) session.getAttribute("user");
+        UserResDto.InfoDto userResDto = (UserResDto.InfoDto) session.getAttribute("user");
 
         // 2. 회원 정보 체크
         if (userResDto == null) {
