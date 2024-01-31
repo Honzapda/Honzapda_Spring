@@ -90,8 +90,9 @@ public class UserServiceImpl implements UserService{
     public UserResDto.ProfileDto findUser(Long userId){
 
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 존재하지 않습니다."));
+        List<LikeData> likes = likeRepository.findAllByUser(user).orElseThrow(() -> new NoSuchElementException("찜한 가게가 없습니다."));
 
-        return UserConverter.toUserProfile(user);
+        return UserConverter.toUserProfile(user,likes);
     }
     @Override
     public UserResDto.InfoDto updateUser(UserDto.JoinDto userJoinDto, Long userId){
@@ -116,8 +117,9 @@ public class UserServiceImpl implements UserService{
         String imageUrl = fileService.uploadObject(image);
         user.setProfileImage(imageUrl);
         userRepository.save(user);
+        List<LikeData> likes = likeRepository.findAllByUser(user).orElseThrow(() -> new NoSuchElementException("찜한 가게가 없습니다."));
 
-        return UserConverter.toUserProfile(user);
+        return UserConverter.toUserProfile(user,likes);
     }
     @Override
     public boolean registerUserPrefer(Long userId, List<String> preferNameList){

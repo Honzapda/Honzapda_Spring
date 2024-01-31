@@ -41,7 +41,7 @@ public class MapController {
     }
 
     @GetMapping("/shop")
-    public ApiResult<Slice<MapResponseDto.UserBookmarkShopResponseDto>> fetchBookmarks(@SessionAttribute(name = "user") UserResDto userResDto, Pageable pageable) {
+    public ApiResult<Slice<MapResponseDto.UserBookmarkShopResponseDto>> fetchBookmarks(@SessionAttribute(name = "user") UserResDto.InfoDto userResDto, Pageable pageable) {
         return ApiResult.onSuccess(shopFacadeService.findBookmarks(userResDto.getId(), pageable));
     }
 }

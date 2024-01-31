@@ -48,8 +48,7 @@ public class UserConverter {
                 .preferNameList(preferNameList)
                 .build();
     }
-    public static UserResDto.ProfileDto toUserProfile(User user){
-        List<LikeData> likes = user.getLikes();
+    public static UserResDto.ProfileDto toUserProfile(User user, List<LikeData> likes){
         List<ShopResponseDto.SimpleSearchDto> likeShops = new ArrayList<>();
         List<String> preferNameList = getPreferNameListByUserPreferList(user.getUserPrefers());
 
