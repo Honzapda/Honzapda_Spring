@@ -135,7 +135,7 @@ public class UserServiceImpl implements UserService{
     public List<ShopResponseDto.SearchDto> getLikeShops(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
 
-        List<LikeData> likes = user.getLikes();
+        List<LikeData> likes = likeRepository.findAllByUser(user).orElseThrow(() -> new NoSuchElementException("찜한 가게가 없습니다."));
         List<ShopResponseDto.SearchDto> likeshops = new ArrayList<>();
 
         likes.forEach(likeData ->{
