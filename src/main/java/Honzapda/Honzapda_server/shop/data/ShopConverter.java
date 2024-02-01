@@ -34,7 +34,7 @@ public class ShopConverter {
                 .build();
     }
 
-    public static ShopResponseDto.SearchDto toShopResponse(Shop shop){
+    public static ShopResponseDto.SearchDto toShopResponse(Shop shop,List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS){
         return ShopResponseDto.SearchDto.builder()
                 .shopId(shop.getId())
                 .shopName(shop.getShopName())
@@ -46,7 +46,7 @@ public class ShopConverter {
                 .address_spec(shop.getAddress_spec())
                 .inactiveDate(shop.getInactiveDate())
                 .photoUrl(shop.getShopMainImage())
-                .reviewList(null)
+                .businessHours(businessHoursResDTOS)
                 .build();
     }
 

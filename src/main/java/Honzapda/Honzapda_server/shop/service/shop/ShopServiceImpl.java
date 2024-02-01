@@ -70,10 +70,12 @@ public class ShopServiceImpl implements ShopService {
         Shop shop = ShopConverter.toShop(request,passwordEncoder);
         shopRepository.save(shop);
 
-        List<ShopRequestDto.BusinessHoursReqDTO> businessHours = request.getBusinessHours();
-        saveShopBusinessHours(shop.getId(), businessHours);
+        saveShopBusinessHours(shop.getId(), request.getBusinessHours());
 
-        return ShopConverter.toShopResponse(shop);
+        List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
+        List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
+
+        return ShopConverter.toShopResponse(shop,businessHoursResDTOS);
     }
     @Override
     public ShopResponseDto.SearchDto findShop(Long shopId){
@@ -81,11 +83,13 @@ public class ShopServiceImpl implements ShopService {
 
         List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
         List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
+
+
         List<ReviewResponseDto.ReviewDto> reviewDtos = getReviewListDto(shop);
 
         //TODO: Dto에 추가해야함
         List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(shop);
-        ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop);
+        ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop,businessHoursResDTOS);
 
         resultDto.setRating(getRating(shopId));
         resultDto.setOpenNow(getOpenNow(businessHours));
@@ -148,8 +152,7 @@ public class ShopServiceImpl implements ShopService {
         if (optionalShop.isPresent()) {
             Shop shop = optionalShop.get();
 
-            businessHours.stream()
-                    .forEach(businessHour -> {
+            businessHours.forEach(businessHour -> {
                         boolean isOpen = businessHour.isOpen();
                         ShopBusinessHour shopBusinessHour = ShopBusinessHour.builder()
                                 .shop(shop)
@@ -177,6 +180,8 @@ public class ShopServiceImpl implements ShopService {
                 .map(ShopConverter::toShopBusinessHourDto)
                 .collect(Collectors.toList());
     }
+
+
 
     public boolean getOpenNow(List<ShopBusinessHour> businessHours) {
         return businessHours.stream()
