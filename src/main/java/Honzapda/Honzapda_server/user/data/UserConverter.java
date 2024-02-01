@@ -11,20 +11,18 @@ import Honzapda.Honzapda_server.user.data.entity.Prefer;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.data.entity.UserPrefer;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 public class UserConverter {
 
-    @Value("${honzapda.basic-image.url}")
-    private static String basicImageUrl;
 
-
-    public static User toUser(UserDto.JoinDto request, PasswordEncoder encoder){
+    public static User toUser(UserDto.JoinDto request, PasswordEncoder encoder, String basicImageUrl){
         return User.builder()
                 .email(request.getEmail())
                 .password(encoder.encode(request.getPassword()))
@@ -44,6 +42,7 @@ public class UserConverter {
     }
 
     public static UserPreferDto toUserPreferResponse(List<String> preferNameList){
+
         return UserPreferDto.builder()
                 .preferNameList(preferNameList)
                 .build();

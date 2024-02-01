@@ -29,6 +29,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final ShopUserBookmarkRepository shopUserBookmarkRepository;
 
+    @Value("${honzapda.basic-image.url}")
+    private String basicImageUrl;
 
     @Override
     @Transactional
@@ -70,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
         ** 이메일 중복체크는 어노테이션으로 이미 처리.
         ** Converter : 이메일, 이름, 비밀번호까지 처리 (Auth -> User 변경)
          */
-        User newUser = UserConverter.toUser(request, passwordEncoder);
+        User newUser = UserConverter.toUser(request, passwordEncoder,basicImageUrl);
 
         if (request.getSocialToken() == null) {
             // 일반 회원
