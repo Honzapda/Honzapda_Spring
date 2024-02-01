@@ -27,7 +27,7 @@ public interface UserService {
 
     List<ShopResponseDto.SearchDto> getLikeShops(Long id);
 
-    boolean registerUserPrefer(Long userId, List<String> preferNameList);
+    UserPreferDto registerUserPrefer(Long userId, List<String> preferNameList);
 
     UserPreferDto searchUserPrefer(Long userId);
   

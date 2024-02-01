@@ -22,12 +22,12 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ApiResult<?> findUser(@SessionAttribute UserResDto.InfoDto user){
         return ApiResult.onSuccess(userService.findUser(user.getId()));
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ApiResult<?> updateUser(@RequestBody @Valid UserDto.JoinDto userJoinDto, @SessionAttribute UserResDto.InfoDto user){
         return ApiResult.onSuccess(userService.updateUser(userJoinDto, user.getId()));
     }
@@ -69,16 +69,13 @@ public class UserController {
     }
 
     @PostMapping("/prefer")
-    public ApiResult<?> registerUserPrefer(@SessionAttribute UserResDto.InfoDto user, @RequestBody UserPreferDto request){
-        Boolean result = userService.registerUserPrefer(user.getId(), request.getPreferNameList());
-        return ApiResult.onSuccess(result);
+    public ApiResult<?> registerUserPrefer(@RequestBody UserPreferDto userPreferDto, @SessionAttribute UserResDto.InfoDto user){
+        return ApiResult.onSuccess(userService.registerUserPrefer(user.getId(), userPreferDto.getPreferNameList()));
     }
 
     @PatchMapping("/prefer")
-    public ApiResult<?> updateUserPrefer(@SessionAttribute UserResDto.InfoDto user, @RequestBody UserPreferDto request){
-        Boolean result = userService.updateUserPrefer(user.getId(), request.getPreferNameList());
-        return ApiResult.onSuccess(result);
-
+    public ApiResult<?> updateUserPrefer(@RequestBody UserPreferDto userPreferDto,@SessionAttribute UserResDto.InfoDto user){
+        return ApiResult.onSuccess(userService.updateUserPrefer(user.getId(), userPreferDto.getPreferNameList()));
     }
 
 }

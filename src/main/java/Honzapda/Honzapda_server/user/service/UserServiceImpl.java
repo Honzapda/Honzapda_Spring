@@ -122,13 +122,14 @@ public class UserServiceImpl implements UserService{
         return UserConverter.toUserProfile(user,likes);
     }
     @Override
-    public boolean registerUserPrefer(Long userId, List<String> preferNameList){
+    public UserPreferDto registerUserPrefer(Long userId, List<String> preferNameList){
 
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저가 존재하지 않습니다."));
 
         List<Prefer> preferList = toPreferList(preferNameList);
         saveUserPrefer(preferList, user);
-        return true;
+
+        return UserConverter.toUserPreferResponse(preferNameList);
     }
     @Override
     public UserPreferDto searchUserPrefer(Long userId) {
@@ -152,8 +153,7 @@ public class UserServiceImpl implements UserService{
             List<ShopResponseDto.BusinessHoursResDTO> businessHours = getShopBusinessHours(shop);
 
 
-            ShopResponseDto.SearchDto shopResponseDto = ShopConverter.toShopResponse(shop);
-            shopResponseDto.setBusinessHours(businessHours);
+            ShopResponseDto.SearchDto shopResponseDto = ShopConverter.toShopResponse(shop,businessHours);
 
             likeshops.add(shopResponseDto);
         });
@@ -165,13 +165,18 @@ public class UserServiceImpl implements UserService{
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new RuntimeException("shop이 존재하지 않습니다."));
         User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user가 존재하지 않습니다"));
 
-        LikeData likeData = likeRepository.findByShopAndUser(shop, user).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이미 찜을 눌렀습니다."));
+        if (likeRepository.findByShopAndUser(shop, user).isPresent()) {
+            throw new GeneralException(ErrorStatus.LIKE_ALREADY_EXIST);
+        }
+        else {
+            LikeData likeData = LikeData.builder()
+                    .shop(shop)
+                    .user(user)
+                    .build();
 
-        likeData.setShop(shop);
-        likeData.setUser(user);
-        likeRepository.save(likeData);
-
-        return LikeResDto.toDTO(likeData);
+            likeRepository.save(likeData);
+            return LikeResDto.toDTO(likeData);
+        }
 
     }
 
@@ -182,7 +187,6 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("user가 존재하지 않습니다"));
         LikeData likeData = likeRepository.findByShopAndUser(shop, user).orElseThrow(() -> new GeneralException(ErrorStatus.LIKE_NOT_EXIST));
 
-        //user.getLikes().remove(likeData);
         likeRepository.deleteById(likeData.getId());
 
         return LikeResDto.toDTO(likeData);
