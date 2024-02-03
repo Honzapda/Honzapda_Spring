@@ -10,14 +10,12 @@ import Honzapda.Honzapda_server.review.repository.mysql.ReviewImageRepository;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
 import Honzapda.Honzapda_server.shop.data.MapConverter;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
-import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
-import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
-import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
+import Honzapda.Honzapda_server.shop.data.dto.*;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
-import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
+import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.repository.LikeUserHelpInfoRepository;
@@ -32,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +46,8 @@ public class ShopServiceImpl implements ShopService {
     private final ReviewImageRepository reviewImageRepository;
 
     private final ShopBusinessHourRepository shopBusinessHourRepository;
+
+    private final ShopUserBookmarkRepository shopUserBookmarkRepository;
 
     private final UserHelpInfoRepository userHelpInfoRepository;
 
@@ -79,7 +76,7 @@ public class ShopServiceImpl implements ShopService {
     }
     @Override
     public ShopResponseDto.SearchDto findShop(Long shopId){
-        Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new NoSuchElementException("해당 가게가 존재하지 않습니다."));
+        Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
 
         List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
         List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
@@ -167,7 +164,7 @@ public class ShopServiceImpl implements ShopService {
 
             return true;
         } else {
-            throw new NoSuchElementException("해당 가게가 존재하지 않습니다.");
+            throw new GeneralException(ErrorStatus.SHOP_NOT_FOUND);
         }
     }
 
@@ -258,4 +255,14 @@ public class ShopServiceImpl implements ShopService {
                 }
         );
     }
+
+    public Long getShopBookMarkCount(Shop shop) {
+        return shopUserBookmarkRepository.countBookmarksByShop(shop);
+    }
+
+    public Long getShopReviewCount(Shop shop) {
+        return reviewRepository.countReviewsByShop(shop);
+    }
+
+
 }

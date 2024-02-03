@@ -1,11 +1,13 @@
 package Honzapda.Honzapda_server.user.service;
 
+import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.user.data.dto.*;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.MalformedURLException;
 import java.util.List;
 
 public interface UserService {
@@ -25,7 +27,7 @@ public interface UserService {
 
     LikeResDto deleteLikeShop(Long shopId, Long userId);
 
-    List<ShopResponseDto.SearchDto> getLikeShops(Long id);
+    Slice<ShopResponseDto.likeDto> getLikeShops(Long id, ShopRequestDto.SearchDto request, Pageable pageable);
 
     UserPreferDto registerUserPrefer(Long userId, List<String> preferNameList);
 

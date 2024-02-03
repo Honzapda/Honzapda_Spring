@@ -128,4 +128,20 @@ public class ShopResponseDto {
         String shopName;
         String shopMainImage;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class likeDto{
+        Long shopId;
+        String shopName;
+        String address;
+        String address_spec;
+        boolean openNow;
+        String mainImage;
+        Long bookMarkCount;
+        Long reviewCount;
+        double distance;
+    }
 }
