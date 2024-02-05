@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ShopResponseDto {
 
@@ -95,7 +96,7 @@ public class ShopResponseDto {
         private String address;
         private String address_spec;
         private boolean openNow;
-        private List<String> photoUrls = new ArrayList<>();
+        private String photoUrl;
 
         @JsonIgnore
         private ShopBusinessHour shopBusinessHour;
@@ -107,18 +108,13 @@ public class ShopResponseDto {
             this.address = shop.getAddress();
             this.address_spec = shop.getAddress_spec();
             this.openNow = false;
-            this.photoUrls = new ArrayList<>();
+            this.photoUrl = shop.getShopMainImage();
             this.shopBusinessHour = shopBusinessHour;
         }
 
         public void setOpenNow(boolean openNow) {
             this.openNow = openNow;
         }
-
-        public void setPhotoUrls(List<String> photoUrls) {
-            if(photoUrls != null) this.photoUrls = photoUrls;
-        }
-
     }
 
     @Builder

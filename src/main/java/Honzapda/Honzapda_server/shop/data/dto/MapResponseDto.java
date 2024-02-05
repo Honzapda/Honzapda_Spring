@@ -1,19 +1,13 @@
 package Honzapda.Honzapda_server.shop.data.dto;
 
-import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
-import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.querydsl.core.annotations.QueryProjection;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class MapResponseDto {
@@ -33,56 +27,55 @@ public class MapResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class HomeDto {
-        private Long shopId;
-        private String shopName;
+        private Long id;
+        private String place_name;
         private String adminName;
         private String description;
         private String otherDetails;
-        private String shopPhoneNumber;
+        private String phone;
         private String adminPhoneNumber;
         private String address;
         private String address_spec;
         private LocalDateTime inactiveDate;
         private boolean openNow;
-        private List<String> photoUrls;
+        private String photoUrl;
         private Double rating;
         private Long reviewCount;
 
         // 위도 경도
-        private Double latitude;
-        private Double longitude;
+        private Double x;
+        private Double y;
 
         @JsonIgnore
         private ShopBusinessHour shopBusinessHour;
 
         @QueryProjection
         public HomeDto(Shop shop, Double reviewAvg, Long reviewCnt) {
-            this.shopId = shop.getId();
-            this.shopName = shop.getShopName();
+            this.id = shop.getId();
+            this.place_name = shop.getShopName();
             this.adminName = shop.getAdminName();
             this.description = shop.getDescription();
             this.otherDetails = shop.getOtherDetails();
-            this.shopPhoneNumber = shop.getShopPhoneNumber();
+            this.phone = shop.getShopPhoneNumber();
             this.adminPhoneNumber = shop.getAdminPhoneNumber();
             this.address = shop.getAddress();
             this.address_spec = shop.getAddress_spec();
             this.inactiveDate = shop.getInactiveDate();
             this.openNow = false;
-            this.photoUrls = new ArrayList<>();
+//            this.photoUrl = Objects.requireNonNullElse(shop.getShopMainImage(), "null");
+            this.photoUrl = shop.getShopMainImage();
             this.rating = reviewAvg;
             this.reviewCount = reviewCnt;
         }
 
         public void addCoordinates(ShopCoordinates shopCoordinates) {
-            this.latitude = shopCoordinates.getLocation().getY();
-            this.longitude = shopCoordinates.getLocation().getX();
+            this.y = shopCoordinates.getLocation().getY();
+            this.x = shopCoordinates.getLocation().getX();
         }
 
         public void setOpenNow(boolean openNow) {
             this.openNow = openNow;
         }
-
-        public void setPhotoUrls(List<String> photoUrls){this.photoUrls = photoUrls;}
 
         public void setShopBusinessHour(ShopBusinessHour shopBusinessHour) {
             this.shopBusinessHour = shopBusinessHour;
@@ -95,45 +88,41 @@ public class MapResponseDto {
     @AllArgsConstructor
     @ToString
     public static class UserBookmarkShopResponseDto {
-        private Long shopId;
-        private String shopName;
+        private Long id;
+        private String place_name;
         private String address;
         private String address_spec;
         private LocalDateTime inactiveDate;
-        private List<String> photoUrls = new ArrayList<>();
+        private String photoUrl;
 
         // 위도 경도
-        private Double latitude;
-        private Double longitude;
+        private Double x;
+        private Double y;
 
         @QueryProjection
-        public UserBookmarkShopResponseDto(Shop shop, List<ShopPhoto> shopPhoto) {
-            this.shopId = shop.getId();
-            this.shopName = shop.getShopName();
+        public UserBookmarkShopResponseDto(Shop shop) {
+            this.id = shop.getId();
+            this.place_name = shop.getShopName();
             this.address = shop.getAddress();
             this.address_spec = shop.getAddress_spec();
             this.inactiveDate = shop.getInactiveDate();
-            if (shopPhoto != null) {
-                for (ShopPhoto photo : shopPhoto) {
-                    this.photoUrls.add(photo.getUrl());
-                }
-            }
+            this.photoUrl = shop.getShopMainImage();
         }
 
-        public static UserBookmarkShopResponseDto createFrom(Shop shop, List<String> photoUrls) {
+        public static UserBookmarkShopResponseDto createFrom(Shop shop) {
             return UserBookmarkShopResponseDto.builder()
-                    .shopId(shop.getId())
-                    .shopName(shop.getShopName())
+                    .id(shop.getId())
+                    .place_name(shop.getShopName())
                     .address(shop.getAddress())
                     .address_spec(shop.getAddress_spec())
                     .inactiveDate(shop.getInactiveDate())
-                    .photoUrls(Objects.requireNonNullElseGet(photoUrls, ArrayList::new))
+                    .photoUrl(Objects.requireNonNullElse(shop.getShopMainImage(), "null"))
                     .build();
         }
 
         public void addCoordinates(ShopCoordinates shopCoordinates) {
-            this.latitude = shopCoordinates.getLocation().getY();
-            this.longitude = shopCoordinates.getLocation().getX();
+            this.y = shopCoordinates.getLocation().getY();
+            this.x = shopCoordinates.getLocation().getX();
         }
 
     }

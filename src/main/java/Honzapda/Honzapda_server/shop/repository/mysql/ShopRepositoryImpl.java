@@ -1,17 +1,13 @@
 package Honzapda.Honzapda_server.shop.repository.mysql;
 
-import Honzapda.Honzapda_server.review.data.entity.QReview;
 import Honzapda.Honzapda_server.shop.data.dto.*;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
-import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -56,7 +52,6 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
 
         for (int i = 0; i < mysqlIds.size(); i++) {
             homeDtos.get(i).setShopBusinessHour(searchByNameDtosOrdered.get(i).getShopBusinessHour());
-            homeDtos.get(i).setPhotoUrls(searchByNameDtosOrdered.get(i).getPhotoUrls());
         }
 
         return homeDtos;
@@ -72,31 +67,13 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
-        List<Long> shopIds = shops.stream()
-                .map(Shop::getId)
-                .toList();
-
-        List<Tuple> fetch = queryFactory.select(shop.id, shopPhoto.url)
-                .from(shopPhoto)
-                .where(shopPhoto.shop.id.in(shopIds))
-                .fetch();
-
-        Map<Long, List<String>> photoUrlsByShopId = fetch.stream()
-                .collect(Collectors.groupingBy(
-                        tuple -> tuple.get(0, Long.class),
-                        Collectors.mapping(tuple -> tuple.get(1, String.class), toList())
-                ));
-
         List<MapResponseDto.UserBookmarkShopResponseDto> userBookmarkShopResponseDtos = shops.stream()
                 .map(
-                        shop -> MapResponseDto.UserBookmarkShopResponseDto.createFrom(
-                                shop,
-                                Optional.ofNullable(photoUrlsByShopId.get(shop.getId())).orElse(List.of())
-                        )
+                        MapResponseDto.UserBookmarkShopResponseDto::createFrom
                 )
                 .toList();
 
-        return new SliceImpl<>(userBookmarkShopResponseDtos, pageable, fetch.size() == pageable.getPageSize());
+        return new SliceImpl<>(userBookmarkShopResponseDtos, pageable, shops.size() == pageable.getPageSize());
     }
 
     @Override
@@ -198,7 +175,7 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
     }
 
     private List<ShopResponseDto.SearchByNameDto> getSearchByNameDtos(List<Long> mysqlIds, String todayOfWeek) {
-        List<ShopResponseDto.SearchByNameDto> fetch = queryFactory
+        return queryFactory
                 .select(new QShopResponseDto_SearchByNameDto(shop, shopBusinessHour))
                 .from(shop)
                 .leftJoin(shopBusinessHour).on(shopBusinessHour.shop.id.eq(shop.id))
@@ -208,24 +185,6 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
                         shopBusinessHour.isOpen.eq(true).or(shopBusinessHour.isOpen.isNull())
                 )
                 .fetch();
-
-        List<Tuple> fetch2 = queryFactory
-                .select(shopPhoto.shop.id, shopPhoto.url)
-                .from(shopPhoto)
-                .where(shop.id.in(mysqlIds))
-                .fetch();
-
-        // fetch2 리스트를 shop_id를 키로 갖고 url 리스트를 값으로 갖는 맵으로 변환합니다.
-        Map<Long, List<String>> photoUrlsByShopId = fetch2.stream()
-                .collect(Collectors.groupingBy(
-                        tuple -> tuple.get(0, Long.class),
-                        Collectors.mapping(tuple -> tuple.get(1, String.class), toList())
-                ));
-
-        // fetch의 각 요소에 대해, 해당 요소의 shop_id에 해당하는 url 리스트를 photoUrls에 설정합니다.
-        fetch.forEach(dto -> dto.setPhotoUrls(photoUrlsByShopId.get(dto.getShopId())));
-
-        return fetch;
     }
 
     private List<ShopResponseDto.SearchByNameDto> orderByIds(List<ShopResponseDto.SearchByNameDto> searchByNameDtos, List<Long> ids) {

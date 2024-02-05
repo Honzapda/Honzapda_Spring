@@ -12,21 +12,17 @@ import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository
 import Honzapda.Honzapda_server.shop.service.shop.ShopService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.ShopCoordinatesService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.dto.ShopCoordinatesDto;
-import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -141,14 +137,14 @@ public class ShopFacadeService {
         Slice<MapResponseDto.UserBookmarkShopResponseDto> bookmarks = shopRepository.findBookmarkByUser(user, pageable);
 
         List<Long> mysqlIds = bookmarks.getContent().stream()
-                .map(MapResponseDto.UserBookmarkShopResponseDto::getShopId)
+                .map(MapResponseDto.UserBookmarkShopResponseDto::getId)
                 .toList();
 
         List<ShopCoordinates> shopsCoordiates = shopCoordinatesService.findShopsCoordiates(mysqlIds);
 
         bookmarks.getContent().forEach(bookmark -> {
             ShopCoordinates shopCoordinates = shopsCoordiates.stream()
-                    .filter(coordinates -> coordinates.getMysqlId().equals(bookmark.getShopId()))
+                    .filter(coordinates -> coordinates.getMysqlId().equals(bookmark.getId()))
                     .findFirst()
                     .orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_COORDINATES_NOT_FOUND));
 
