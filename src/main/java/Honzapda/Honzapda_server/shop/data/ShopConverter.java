@@ -1,9 +1,12 @@
 package Honzapda.Honzapda_server.shop.data;
 
+import Honzapda.Honzapda_server.common.dto.SignUpType;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import Honzapda.Honzapda_server.user.data.entity.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -28,9 +31,19 @@ public class ShopConverter {
                 .address_spec(request.getAddress_spec())
                 .businessNumber(request.getBusinessNumber())
                 .inactiveDate(LocalDateTime.now())
-                .loginId(request.getLoginId())
+                .email(request.getEmail())
                 .password(encoder.encode(request.getPassword()))
+                .signUpType(SignUpType.LOCAL) //TODO: 소셜 로그인 구현시, 삭제 후 서비스에서 설정
                 .shopMainImage(request.getShopMainImage())
+                .build();
+    }
+
+    public static UserResDto.InfoDto toOwnerInfo(Shop shop) {
+        return UserResDto.InfoDto.builder()
+                .id(shop.getId())
+                .name(shop.getAdminName())
+                .email(shop.getEmail())
+                .signUpType(shop.getSignUpType())
                 .build();
     }
 
