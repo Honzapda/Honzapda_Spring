@@ -1,9 +1,6 @@
 package Honzapda.Honzapda_server.shop.data.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.ToString;
@@ -23,7 +20,9 @@ public class ShopRequestDto {
         String address;
         String address_spec;
         String businessNumber;
-        String loginId;
+        @Email
+        String email;
+        @NotBlank
         String password;
         // 위도 경도
         Double latitude;
