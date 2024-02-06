@@ -20,8 +20,9 @@ public class ShopController {
     private final ShopFacadeService shopFacadeService;
 
     @GetMapping("/{shopId}")
-    public ApiResult<ShopResponseDto.SearchDto> searchShop(@PathVariable(name = "shopId") Long shopId){
-        return ApiResult.onSuccess(shopFacadeService.findShop(shopId));
+    public ApiResult<ShopResponseDto.SearchDto> searchShop(@PathVariable(name = "shopId") Long shopId,
+                        @SessionAttribute UserResDto.InfoDto user){
+        return ApiResult.onSuccess(shopFacadeService.findShop(shopId, user.getId()));
     }
 
     @PostMapping("/register")

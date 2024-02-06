@@ -50,9 +50,9 @@ public class ShopFacadeService {
         return registeredShop;
     }
 
-    public ShopResponseDto.SearchDto findShop(Long shopId) {
+    public ShopResponseDto.SearchDto findShop(Long shopId, Long userId) {
         // 좌표 등록 없는 반환 객체
-        ShopResponseDto.SearchDto searchDto = shopService.findShop(shopId);
+        ShopResponseDto.SearchDto searchDto = shopService.findShop(shopId, userId);
 
         searchDto.addCoordinates(shopCoordinatesService.findShopCoordinates(shopId));
 

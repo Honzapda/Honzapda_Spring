@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.List;
 
@@ -22,6 +21,7 @@ public class ShopRequestDto {
         String adminPhoneNumber;
         String address;
         String address_spec;
+        String stationDistance;
         String businessNumber;
         String loginId;
         String password;

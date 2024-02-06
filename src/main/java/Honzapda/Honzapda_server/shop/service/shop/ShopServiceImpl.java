@@ -15,9 +15,11 @@ import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
-import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
+import Honzapda.Honzapda_server.user.data.entity.User;
+import Honzapda.Honzapda_server.user.repository.LikeRepository;
+import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.repository.LikeUserHelpInfoRepository;
@@ -58,7 +60,12 @@ public class ShopServiceImpl implements ShopService {
 
     private final LikeUserHelpInfoRepository likeUserHelpInfoRepository;
 
+    private final LikeRepository likeRepository;
+
+    private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request){
@@ -78,13 +85,12 @@ public class ShopServiceImpl implements ShopService {
         return ShopConverter.toShopResponse(shop,businessHoursResDTOS);
     }
     @Override
-    public ShopResponseDto.SearchDto findShop(Long shopId){
-        Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new NoSuchElementException("해당 가게가 존재하지 않습니다."));
+    public ShopResponseDto.SearchDto findShop(Long shopId, Long userId){
+        Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
         List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
-
-
         List<ReviewResponseDto.ReviewDto> reviewDtos = getReviewListDto(shop);
 
         //TODO: Dto에 추가해야함
@@ -93,9 +99,11 @@ public class ShopServiceImpl implements ShopService {
 
         resultDto.setRating(getRating(shopId));
         resultDto.setOpenNow(getOpenNow(businessHours));
+        resultDto.setReviewCount(getReviewCount(shopId));
         resultDto.setBusinessHours(businessHoursResDTOS);
         resultDto.setUserHelpInfoDtoList(userHelpInfoListDtoTop2);
         resultDto.setReviewList(reviewDtos);
+        resultDto.setUserLike(isUserLikeShop(user, shop));
 
         return resultDto;
 
@@ -143,6 +151,10 @@ public class ShopServiceImpl implements ShopService {
                 .mapToDouble(Review::getScore)
                 .average()
                 .orElse(0.0);
+    }
+
+    private Long getReviewCount(Long shopId){
+        return reviewRepository.countByShopId(shopId);
     }
 
 
@@ -231,6 +243,9 @@ public class ShopServiceImpl implements ShopService {
                 .toList();
     }
 
+    private boolean isUserLikeShop(User user, Shop shop) {
+        return likeRepository.existsByShopAndUser(shop, user);
+    }
 
 
     private void checkOpenNow(List<ShopResponseDto.SearchByNameDto> dtos) {

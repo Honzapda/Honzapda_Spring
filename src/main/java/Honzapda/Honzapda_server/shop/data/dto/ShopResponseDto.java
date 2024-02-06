@@ -14,9 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ShopResponseDto {
 
@@ -30,10 +28,13 @@ public class ShopResponseDto {
         String description;
         String otherDetails;
         String shopPhoneNumber;
+        Long reviewCount;
         Double rating;
         String address;
         String address_spec;
+        String stationDistance;
         boolean openNow;
+        boolean userLike;
         LocalDateTime inactiveDate;
         List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList;
         List<ReviewResponseDto.ReviewDto> reviewList;
@@ -57,10 +58,18 @@ public class ShopResponseDto {
             this.openNow = openNow;
         }
 
+        public void setUserLike(boolean userLike) {
+            this.userLike = userLike;
+        }
+
         public void setPhotoUrls(String photoUrl){this.photoUrl = photoUrl;}
 
         public void setBusinessHours(List<BusinessHoursResDTO> businessHours){
             this.businessHours = businessHours;
+        }
+
+        public void setReviewCount(Long reviewCount){
+            this.reviewCount = reviewCount;
         }
 
         public void setReviewList(List<ReviewResponseDto.ReviewDto> reviewList){

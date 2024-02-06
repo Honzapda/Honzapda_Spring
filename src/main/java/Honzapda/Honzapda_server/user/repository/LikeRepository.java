@@ -13,5 +13,7 @@ public interface LikeRepository extends JpaRepository<LikeData, Long> {
 
     Optional<List<LikeData>> findAllByUser(User user);
 
+    boolean existsByShopAndUser(Shop shop, User user);
+
     void deleteAllByUser(User user);
 }
