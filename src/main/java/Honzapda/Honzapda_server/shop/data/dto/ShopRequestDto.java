@@ -21,6 +21,7 @@ public class ShopRequestDto {
         String adminPhoneNumber;
         String address;
         String address_spec;
+        String stationDistance;
         String businessNumber;
         String loginId;
         String password;

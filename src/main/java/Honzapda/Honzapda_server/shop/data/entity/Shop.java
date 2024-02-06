@@ -47,6 +47,9 @@ public class Shop extends BaseEntity{
     private String address_spec;
 
     @Column
+    private String stationDistance;
+
+    @Column
     private String businessNumber;
 
     @Column
