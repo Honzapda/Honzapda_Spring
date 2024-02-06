@@ -3,7 +3,6 @@ package Honzapda.Honzapda_server.shop.data.dto;
 import jakarta.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.List;
 
