@@ -10,6 +10,7 @@ import Honzapda.Honzapda_server.shop.data.entity.ShopUserBookmark;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository;
 import Honzapda.Honzapda_server.shop.service.shop.ShopService;
+import Honzapda.Honzapda_server.shop.service.shop_congestion.ShopCongestionService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.ShopCoordinatesService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.dto.ShopCoordinatesDto;
 import Honzapda.Honzapda_server.user.data.dto.UserDto;
@@ -32,11 +33,13 @@ public class ShopFacadeService {
 
     private final ShopService shopService;
     private final ShopCoordinatesService shopCoordinatesService;
+    private final ShopCongestionService shopCongestionService;
     private final ShopUserBookmarkRepository shopUserBookmarkRepository;
 
     private final UserRepository userRepository;
     private final ShopRepository shopRepository;
 
+    @Transactional
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request) {
         // mysql에 상점 등록
         // 좌표 등록 없는 반환 객체
@@ -49,20 +52,21 @@ public class ShopFacadeService {
         // 좌표 등록한 반환 객체
         registeredShop.addCoordinates(shopCoordinates);
 
-        return registeredShop;
+        // 혼잡도 등록
+        return shopCongestionService.registerCongestion(request,registeredShop);
     }
 
     public UserResDto.InfoDto loginShop(UserDto.LoginDto request) {
         return shopService.loginShop(request);
     }
 
-    public ShopResponseDto.SearchDto findShop(Long shopId) {
+    public ShopResponseDto.SearchDto findShop(Long shopId, Long userId) {
         // 좌표 등록 없는 반환 객체
-        ShopResponseDto.SearchDto searchDto = shopService.findShop(shopId);
+        ShopResponseDto.SearchDto searchDto = shopService.findShop(shopId, userId);
 
         searchDto.addCoordinates(shopCoordinatesService.findShopCoordinates(shopId));
 
-        return searchDto;
+        return shopCongestionService.findShopCongestion(searchDto);
     }
 
     public List<MapResponseDto.HomeDto> findShopsByLocation(MapRequestDto.LocationDto locationDto) {

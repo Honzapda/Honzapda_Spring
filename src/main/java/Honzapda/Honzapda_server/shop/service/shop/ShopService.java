@@ -16,7 +16,7 @@ public interface ShopService {
 
     UserResDto.InfoDto loginShop(UserDto.LoginDto request);
 
-    ShopResponseDto.SearchDto findShop(Long shopId);
+    ShopResponseDto.SearchDto findShop(Long shopId, Long userId);
 
     Map<Long, MapResponseDto.HomeDto> findShopsByShopIds(List<Long> mysqlIds);
 

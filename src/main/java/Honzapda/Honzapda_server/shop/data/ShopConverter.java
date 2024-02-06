@@ -28,12 +28,14 @@ public class ShopConverter {
                 .rating(0.0)
                 .address(request.getAddress())
                 .address_spec(request.getAddress_spec())
+                .stationDistance(request.getStationDistance())
                 .businessNumber(request.getBusinessNumber())
                 .inactiveDate(LocalDateTime.now())
                 .email(request.getEmail())
                 .password(encoder.encode(request.getPassword()))
                 .signUpType(SignUpType.LOCAL) //TODO: 소셜 로그인 구현시, 삭제 후 서비스에서 설정
                 .shopMainImage(request.getShopMainImage())
+                .totalSeatCount(request.getTotalSeatCount())
                 .build();
     }
 
@@ -56,9 +58,11 @@ public class ShopConverter {
                 .rating(shop.getRating())
                 .address(shop.getAddress())
                 .address_spec(shop.getAddress_spec())
+                .stationDistance(shop.getStationDistance())
                 .inactiveDate(shop.getInactiveDate())
                 .photoUrl(shop.getShopMainImage())
                 .businessHours(businessHoursResDTOS)
+                .totalSeatCount(shop.getTotalSeatCount())
                 .build();
     }
 

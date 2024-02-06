@@ -48,6 +48,9 @@ public class Shop extends BaseEntity{
     private String address_spec;
 
     @Column
+    private String stationDistance;
+
+    @Column
     private String businessNumber;
 
     @Column
@@ -65,6 +68,9 @@ public class Shop extends BaseEntity{
 
     @Column
     private String shopMainImage;
+
+    @Column
+    private Long totalSeatCount;
 
     // TODO: 영업 시간 및 휴무일 추가
 

@@ -18,6 +18,7 @@ public class ShopRequestDto {
         String adminPhoneNumber;
         String address;
         String address_spec;
+        String stationDistance;
         String businessNumber;
         @Email
         String email;
@@ -29,6 +30,12 @@ public class ShopRequestDto {
 
         String shopMainImage;
         List<BusinessHoursReqDTO> businessHours;
+
+        List<ShopCongestionDto.DayCongestionDTO> dayCongestions;
+
+        List<ShopCongestionDto.AverageCongestionDTO> averageCongestions;
+
+        Long totalSeatCount;
     }
 
     @Getter

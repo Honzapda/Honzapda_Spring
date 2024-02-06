@@ -4,6 +4,7 @@ import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
+import Honzapda.Honzapda_server.shop.data.entity.ShopDayCongestion;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,9 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ShopResponseDto {
 
@@ -30,10 +29,13 @@ public class ShopResponseDto {
         String description;
         String otherDetails;
         String shopPhoneNumber;
+        Long reviewCount;
         Double rating;
         String address;
         String address_spec;
+        String stationDistance;
         boolean openNow;
+        boolean userLike;
         LocalDateTime inactiveDate;
         List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList;
         List<ReviewResponseDto.ReviewDto> reviewList;
@@ -44,6 +46,10 @@ public class ShopResponseDto {
         Double latitude;
         Double longitude;
 
+        List<ShopCongestionDto.AverageCongestionDTO> averageCongestions;
+        List<ShopCongestionDto.DayCongestionDTO> dayCongestions;
+
+        Long totalSeatCount;
         public void setRating(double rating){
             this.rating = rating;
         }
@@ -57,10 +63,18 @@ public class ShopResponseDto {
             this.openNow = openNow;
         }
 
+        public void setUserLike(boolean userLike) {
+            this.userLike = userLike;
+        }
+
         public void setPhotoUrls(String photoUrl){this.photoUrl = photoUrl;}
 
         public void setBusinessHours(List<BusinessHoursResDTO> businessHours){
             this.businessHours = businessHours;
+        }
+
+        public void setReviewCount(Long reviewCount){
+            this.reviewCount = reviewCount;
         }
 
         public void setReviewList(List<ReviewResponseDto.ReviewDto> reviewList){
@@ -69,6 +83,12 @@ public class ShopResponseDto {
         public void setUserHelpInfoDtoList(List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList){
             this.userHelpInfoDtoList = userHelpInfoDtoList;
         }
+        public void setCongestion(List<ShopCongestionDto.AverageCongestionDTO> averageCongestions,
+                                  List<ShopCongestionDto.DayCongestionDTO> dayCongestions){
+            this.averageCongestions = averageCongestions;
+            this.dayCongestions = dayCongestions;
+        }
+
     }
 
     @Builder
@@ -124,4 +144,5 @@ public class ShopResponseDto {
         String shopName;
         String shopMainImage;
     }
+
 }
