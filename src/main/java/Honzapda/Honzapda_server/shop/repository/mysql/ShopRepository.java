@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface ShopRepository extends JpaRepository<Shop, Long>, ShopRepositoryCustom {
 
-    boolean existsByLoginId(String LoginId);
+    boolean existsByEmail(String LoginId);
+    Optional<Shop> findByEmail(String email);
 }
