@@ -1,5 +1,6 @@
 package Honzapda.Honzapda_server.shop.data.entity;
 
+import Honzapda.Honzapda_server.common.dto.SignUpType;
 import Honzapda.Honzapda_server.user.data.entity.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -50,9 +51,14 @@ public class Shop extends BaseEntity{
     private String businessNumber;
 
     @Column
-    private String loginId;
+    private String email; // 로그인 id
+
     @Column
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SignUpType signUpType;
 
     @Column
     private LocalDateTime inactiveDate;
@@ -63,4 +69,5 @@ public class Shop extends BaseEntity{
     // TODO: 영업 시간 및 휴무일 추가
 
     // TODO: 유저가 저장한 가게 목록에 대한 테이블 생성 필요
+
 }
