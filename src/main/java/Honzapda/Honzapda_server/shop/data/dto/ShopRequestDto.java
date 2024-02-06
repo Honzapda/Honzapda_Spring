@@ -34,6 +34,8 @@ public class ShopRequestDto {
         List<ShopCongestionDto.DayCongestionDTO> dayCongestions;
 
         List<ShopCongestionDto.AverageCongestionDTO> averageCongestions;
+
+        Long totalSeatCount;
     }
 
     @Getter

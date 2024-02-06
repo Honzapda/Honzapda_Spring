@@ -47,6 +47,7 @@ public class ShopResponseDto {
         List<ShopCongestionDto.AverageCongestionDTO> averageCongestions;
         List<ShopCongestionDto.DayCongestionDTO> dayCongestions;
 
+        Long totalSeatCount;
         public void setRating(double rating){
             this.rating = rating;
         }

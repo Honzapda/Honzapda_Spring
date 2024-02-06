@@ -31,6 +31,7 @@ public class ShopConverter {
                 .loginId(request.getLoginId())
                 .password(encoder.encode(request.getPassword()))
                 .shopMainImage(request.getShopMainImage())
+                .totalSeatCount(request.getTotalSeatCount())
                 .build();
     }
 
@@ -47,6 +48,7 @@ public class ShopConverter {
                 .inactiveDate(shop.getInactiveDate())
                 .photoUrl(shop.getShopMainImage())
                 .businessHours(businessHoursResDTOS)
+                .totalSeatCount(shop.getTotalSeatCount())
                 .build();
     }
 

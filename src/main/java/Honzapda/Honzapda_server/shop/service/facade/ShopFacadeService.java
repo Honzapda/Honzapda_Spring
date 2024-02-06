@@ -37,6 +37,7 @@ public class ShopFacadeService {
     private final UserRepository userRepository;
     private final ShopRepository shopRepository;
 
+    @Transactional
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request) {
         // mysql에 상점 등록
         // 좌표 등록 없는 반환 객체
