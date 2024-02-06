@@ -2,6 +2,7 @@ package Honzapda.Honzapda_server.shop.service.shop;
 
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
+import Honzapda.Honzapda_server.apiPayload.exception.handler.UserHandler;
 import Honzapda.Honzapda_server.review.data.ReviewConverter;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.data.entity.Review;
@@ -15,9 +16,10 @@ import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
-import Honzapda.Honzapda_server.shop.data.entity.ShopPhoto;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
+import Honzapda.Honzapda_server.user.data.dto.UserDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.repository.LikeUserHelpInfoRepository;
@@ -63,7 +65,7 @@ public class ShopServiceImpl implements ShopService {
     @Transactional
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request){
 
-        if(shopRepository.existsByLoginId(request.getLoginId())){
+        if(shopRepository.existsByEmail(request.getEmail())){
             throw new RuntimeException("아이디가 중복되었습니다");
         }
 
@@ -77,6 +79,16 @@ public class ShopServiceImpl implements ShopService {
 
         return ShopConverter.toShopResponse(shop,businessHoursResDTOS);
     }
+
+    @Override
+    public UserResDto.InfoDto loginShop(UserDto.LoginDto request) {
+        Shop dbOwner = getShopByEMail(request.getEmail());
+        if(!passwordEncoder.matches(request.getPassword(), dbOwner.getPassword()))
+            throw new UserHandler(ErrorStatus.PW_NOT_MATCH);
+
+        return ShopConverter.toOwnerInfo(dbOwner);
+    }
+
     @Override
     public ShopResponseDto.SearchDto findShop(Long shopId){
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new NoSuchElementException("해당 가게가 존재하지 않습니다."));
@@ -196,6 +208,11 @@ public class ShopServiceImpl implements ShopService {
         LocalTime closeTime = LocalTime.parse(closeHours);
 
         return currentTime.isAfter(openTime) && currentTime.isBefore(closeTime);
+    }
+
+    private Shop getShopByEMail(String email){
+        return shopRepository.findByEmail(email)
+                .orElseThrow(()->new GeneralException(ErrorStatus.USER_NOT_FOUND));
     }
 
     private String getCurrentDayOfWeek() {

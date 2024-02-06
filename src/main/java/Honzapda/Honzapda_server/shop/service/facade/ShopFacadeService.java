@@ -12,6 +12,8 @@ import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository
 import Honzapda.Honzapda_server.shop.service.shop.ShopService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.ShopCoordinatesService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.dto.ShopCoordinatesDto;
+import Honzapda.Honzapda_server.user.data.dto.UserDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +50,10 @@ public class ShopFacadeService {
         registeredShop.addCoordinates(shopCoordinates);
 
         return registeredShop;
+    }
+
+    public UserResDto.InfoDto loginShop(UserDto.LoginDto request) {
+        return shopService.loginShop(request);
     }
 
     public ShopResponseDto.SearchDto findShop(Long shopId) {

@@ -3,6 +3,8 @@ package Honzapda.Honzapda_server.shop.service.shop;
 import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
+import Honzapda.Honzapda_server.user.data.dto.UserDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -11,6 +13,8 @@ import java.util.Map;
 
 public interface ShopService {
     ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request);
+
+    UserResDto.InfoDto loginShop(UserDto.LoginDto request);
 
     ShopResponseDto.SearchDto findShop(Long shopId);
 
