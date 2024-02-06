@@ -1,5 +1,6 @@
 package Honzapda.Honzapda_server.user.data.entity;
 
+import Honzapda.Honzapda_server.common.dto.SignUpType;
 import Honzapda.Honzapda_server.user.data.entity.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,10 +40,11 @@ public class User extends BaseEntity {
 
     @Column
     private String socialToken;
-
+/*
     public enum SignUpType {
         LOCAL, APPLE, GOOGLE, KAKAO
     }
+ */
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserPrefer> userPrefers = new HashSet<>();

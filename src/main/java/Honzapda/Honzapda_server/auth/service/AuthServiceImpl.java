@@ -8,6 +8,7 @@ import Honzapda.Honzapda_server.auth.apple.AppleProperties;
 import Honzapda.Honzapda_server.auth.apple.AppleSocialTokenInfoResponse;
 import Honzapda.Honzapda_server.auth.apple.common.TokenDecoder;
 import Honzapda.Honzapda_server.auth.util.PasswordGenerator;
+import Honzapda.Honzapda_server.common.dto.SignUpType;
 import Honzapda.Honzapda_server.review.data.entity.Review;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewImageRepository;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
@@ -77,11 +78,11 @@ public class AuthServiceImpl implements AuthService {
 
         if (request.getSocialToken() == null) {
             // 일반 회원
-            newUser.setSignUpType(User.SignUpType.LOCAL);
+            newUser.setSignUpType(SignUpType.LOCAL);
         } else {
             // 애플 회원
             newUser.setSocialToken(request.getSocialToken());
-            newUser.setSignUpType(User.SignUpType.APPLE);
+            newUser.setSignUpType(SignUpType.APPLE);
         }
 
         return userRepository.save(newUser);
@@ -142,7 +143,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void revoke(UserResDto.InfoDto userResDto) {
         User user = userRepository.findById(userResDto.getId()).orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
-        if (user.getSignUpType() == User.SignUpType.APPLE) {
+        if (user.getSignUpType() == SignUpType.APPLE) {
             String refreshToken = user.getSocialToken();
             if (refreshToken != null) {
                 //HttpHeaders headers = new HttpHeaders();
