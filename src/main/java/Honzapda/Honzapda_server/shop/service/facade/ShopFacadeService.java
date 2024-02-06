@@ -10,23 +10,20 @@ import Honzapda.Honzapda_server.shop.data.entity.ShopUserBookmark;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository;
 import Honzapda.Honzapda_server.shop.service.shop.ShopService;
+import Honzapda.Honzapda_server.shop.service.shop_congestion.ShopCongestionService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.ShopCoordinatesService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.dto.ShopCoordinatesDto;
-import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +31,7 @@ public class ShopFacadeService {
 
     private final ShopService shopService;
     private final ShopCoordinatesService shopCoordinatesService;
+    private final ShopCongestionService shopCongestionService;
     private final ShopUserBookmarkRepository shopUserBookmarkRepository;
 
     private final UserRepository userRepository;
@@ -51,7 +49,8 @@ public class ShopFacadeService {
         // 좌표 등록한 반환 객체
         registeredShop.addCoordinates(shopCoordinates);
 
-        return registeredShop;
+        // 혼잡도 등록
+        return shopCongestionService.registerCongestion(request,registeredShop);
     }
 
     public ShopResponseDto.SearchDto findShop(Long shopId) {
@@ -60,7 +59,7 @@ public class ShopFacadeService {
 
         searchDto.addCoordinates(shopCoordinatesService.findShopCoordinates(shopId));
 
-        return searchDto;
+        return shopCongestionService.findShopCongestion(searchDto);
     }
 
     public List<MapResponseDto.HomeDto> findShopsByLocation(MapRequestDto.LocationDto locationDto) {
