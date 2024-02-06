@@ -7,15 +7,11 @@ import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.userHelpInfo.data.LikeUserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
-import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoImageConverter;
-import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoImageResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
-import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfoImage;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.mapping.LikeUserHelpInfo;
 import Honzapda.Honzapda_server.userHelpInfo.repository.LikeUserHelpInfoRepository;
-import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,7 +31,6 @@ public class UserHelpInfoService {
 
     private final ShopRepository shopRepository;
     private final UserHelpInfoRepository userHelpInfoRepository;
-    private final UserHelpInfoImageRepository userHelpInfoImageRepository;
     private final LikeUserHelpInfoRepository likeUserHelpInfoRepository;
 
     @Transactional
@@ -53,11 +48,6 @@ public class UserHelpInfoService {
 
         Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(savedUserHelpInfo);
 
-        // TODO: url의 유효성 검증
-        if (!requestDto.getImageUrls().isEmpty())
-            userHelpInfoImageRepository.saveAll(
-                            UserHelpInfoImageConverter.toImages(requestDto,savedUserHelpInfo,shop));
-
         return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,likeCount);
     }
     @Transactional
@@ -66,7 +56,6 @@ public class UserHelpInfoService {
         UserHelpInfo userHelpInfo = getUserHelpInfoById(userHelpInfoId);
 
         if(userHelpInfo.getUser().getId().equals(userId)) {
-            userHelpInfoImageRepository.deleteAllByUserHelpInfo(userHelpInfo);
             likeUserHelpInfoRepository.deleteAllByUserHelpInfo(userHelpInfo);
             userHelpInfoRepository.delete(userHelpInfo);
         }
@@ -117,14 +106,6 @@ public class UserHelpInfoService {
                 .toList();
 
         return UserHelpInfoConverter.toUserHelpInfoListDto(findAllByShop, userHelpInfoDtos);
-    }
-
-    public UserHelpInfoImageResponseDto.ImageListDto getUserHelpInfoImageListDto(Long shopId, Pageable pageable){
-
-        Shop findshop = findShopById(shopId);
-        Slice<UserHelpInfoImage> allByShop = userHelpInfoImageRepository.findAllByShopOrderByIdDesc(findshop,pageable);
-
-        return UserHelpInfoImageConverter.toImageListDto(allByShop);
     }
 
     private Shop findShopById(Long shopId) {

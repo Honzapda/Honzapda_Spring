@@ -43,16 +43,6 @@ public class UserHelpInfoController {
         return ApiResult.onSuccess(userHelpInfoService.getUserHelpInfoListDto(shopId, PageRequest.of(page, size)));
     }
 
-    @GetMapping("/image")
-    public ApiResult<?> getUserHelpInfoImages(
-            @RequestParam Long shopId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        return ApiResult.onSuccess(userHelpInfoService.getUserHelpInfoImageListDto(shopId,PageRequest.of(page,size)));
-
-    }
-
     @DeleteMapping("/{userHelpInfoId}/like")
     public ApiResult<?> deleteLikeUserHelpInfo(
             @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,

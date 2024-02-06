@@ -23,7 +23,6 @@ import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.repository.LikeUserHelpInfoRepository;
-import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -55,8 +54,6 @@ public class ShopServiceImpl implements ShopService {
     private final ShopBusinessHourRepository shopBusinessHourRepository;
 
     private final UserHelpInfoRepository userHelpInfoRepository;
-
-    private final UserHelpInfoImageRepository userHelpInfoImageRepository;
 
     private final LikeUserHelpInfoRepository likeUserHelpInfoRepository;
 
