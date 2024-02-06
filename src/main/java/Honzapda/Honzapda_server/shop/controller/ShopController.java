@@ -4,6 +4,7 @@ import Honzapda.Honzapda_server.apiPayload.ApiResult;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.service.facade.ShopFacadeService;
+import Honzapda.Honzapda_server.user.data.dto.UserDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,13 @@ public class ShopController {
             @RequestBody @Valid ShopRequestDto.RegisterDto request)
     {
         return ApiResult.onSuccess(shopFacadeService.registerShop(request));
+    }
+
+    @PostMapping("/login")
+    public ApiResult<UserResDto.InfoDto> loginShop(
+            @RequestBody @Valid UserDto.LoginDto request)
+    {
+        return ApiResult.onSuccess(shopFacadeService.loginShop(request));
     }
 
     @GetMapping("/search")
