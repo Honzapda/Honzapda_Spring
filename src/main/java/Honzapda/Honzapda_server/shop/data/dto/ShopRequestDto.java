@@ -20,7 +20,8 @@ public class ShopRequestDto {
         String address_spec;
         String stationDistance;
         String businessNumber;
-        @Email
+        //@Email TODO: 데모데이 이후 활성화
+        @NotBlank
         String email;
         @NotBlank
         String password;
