@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.List;
 
@@ -31,6 +30,12 @@ public class ShopRequestDto {
 
         String shopMainImage;
         List<BusinessHoursReqDTO> businessHours;
+
+        List<ShopCongestionDto.DayCongestionDTO> dayCongestions;
+
+        List<ShopCongestionDto.AverageCongestionDTO> averageCongestions;
+
+        Long totalSeatCount;
     }
 
     @Getter

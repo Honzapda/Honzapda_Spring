@@ -4,6 +4,7 @@ import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
+import Honzapda.Honzapda_server.shop.data.entity.ShopDayCongestion;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -44,6 +45,10 @@ public class ShopResponseDto {
         Double latitude;
         Double longitude;
 
+        List<ShopCongestionDto.AverageCongestionDTO> averageCongestions;
+        List<ShopCongestionDto.DayCongestionDTO> dayCongestions;
+
+        Long totalSeatCount;
         public void setRating(double rating){
             this.rating = rating;
         }
@@ -69,6 +74,12 @@ public class ShopResponseDto {
         public void setUserHelpInfoDtoList(List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList){
             this.userHelpInfoDtoList = userHelpInfoDtoList;
         }
+        public void setCongestion(List<ShopCongestionDto.AverageCongestionDTO> averageCongestions,
+                                  List<ShopCongestionDto.DayCongestionDTO> dayCongestions){
+            this.averageCongestions = averageCongestions;
+            this.dayCongestions = dayCongestions;
+        }
+
     }
 
     @Builder
@@ -124,4 +135,5 @@ public class ShopResponseDto {
         String shopName;
         String shopMainImage;
     }
+
 }
