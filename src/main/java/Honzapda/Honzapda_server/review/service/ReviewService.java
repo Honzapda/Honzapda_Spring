@@ -38,8 +38,8 @@ public class ReviewService {
         User user = User.builder().id(userId).build();
         Shop shop = findShopById(shopId);
 
-        // 리뷰 중복 방지
-        validateDuplicate(user, shop);
+        // 리뷰 중복 방지 TODO: 데모데이까지 주석처리
+        // validateDuplicate(user, shop);
 
         Review review = Review.builder()
                 .user(user)
