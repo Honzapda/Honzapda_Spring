@@ -9,6 +9,13 @@ import java.util.List;
 public class ShopRequestDto {
 
     @Getter
+    public static class LoginDto {
+        //@Email TODO: 데모데이 이후 활성화
+        private String loginId;
+        private String password;
+    }
+
+    @Getter
     public static class RegisterDto {
         String shopName;
         String adminName;
@@ -22,7 +29,7 @@ public class ShopRequestDto {
         String businessNumber;
         //@Email TODO: 데모데이 이후 활성화
         @NotBlank
-        String email;
+        String loginId;
         @NotBlank
         String password;
         // 위도 경도

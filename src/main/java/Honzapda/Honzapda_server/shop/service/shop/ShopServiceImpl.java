@@ -69,7 +69,7 @@ public class ShopServiceImpl implements ShopService {
     @Transactional
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request){
 
-        if(shopRepository.existsByEmail(request.getEmail())){
+        if(shopRepository.existsByLoginId(request.getLoginId())){
             throw new RuntimeException("아이디가 중복되었습니다");
         }
 
@@ -85,8 +85,8 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public UserResDto.InfoDto loginShop(UserDto.LoginDto request) {
-        Shop dbOwner = getShopByEMail(request.getEmail());
+    public ShopResponseDto.OwnerInfoDto loginShop(ShopRequestDto.LoginDto request) {
+        Shop dbOwner = getShopByEMail(request.getLoginId());
         if(!passwordEncoder.matches(request.getPassword(), dbOwner.getPassword()))
             throw new GeneralException(ErrorStatus.PW_NOT_MATCH);
 
@@ -220,7 +220,7 @@ public class ShopServiceImpl implements ShopService {
     }
 
     private Shop getShopByEMail(String email){
-        return shopRepository.findByEmail(email)
+        return shopRepository.findByLoginId(email)
                 .orElseThrow(()->new GeneralException(ErrorStatus.USER_NOT_FOUND));
     }
 

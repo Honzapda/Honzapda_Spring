@@ -31,7 +31,7 @@ public class ShopConverter {
                 .stationDistance(request.getStationDistance())
                 .businessNumber(request.getBusinessNumber())
                 .inactiveDate(LocalDateTime.now())
-                .email(request.getEmail())
+                .loginId(request.getLoginId())
                 .password(encoder.encode(request.getPassword()))
                 .signUpType(SignUpType.LOCAL) //TODO: 소셜 로그인 구현시, 삭제 후 서비스에서 설정
                 .shopMainImage(request.getShopMainImage())
@@ -39,11 +39,11 @@ public class ShopConverter {
                 .build();
     }
 
-    public static UserResDto.InfoDto toOwnerInfo(Shop shop) {
-        return UserResDto.InfoDto.builder()
+    public static ShopResponseDto.OwnerInfoDto toOwnerInfo(Shop shop) {
+        return ShopResponseDto.OwnerInfoDto.builder()
                 .id(shop.getId())
                 .name(shop.getAdminName())
-                .email(shop.getEmail())
+                .loginId(shop.getLoginId())
                 .signUpType(shop.getSignUpType())
                 .build();
     }

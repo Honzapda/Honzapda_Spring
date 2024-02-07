@@ -54,7 +54,7 @@ public class Shop extends BaseEntity{
     private String businessNumber;
 
     @Column
-    private String email; // 로그인 id
+    private String loginId;
 
     @Column
     private String password;

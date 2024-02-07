@@ -1,23 +1,31 @@
 package Honzapda.Honzapda_server.shop.data.dto;
 
+import Honzapda.Honzapda_server.common.dto.SignUpType;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
-import Honzapda.Honzapda_server.shop.data.entity.ShopDayCongestion;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class ShopResponseDto {
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OwnerInfoDto{
+        private Long id;
+        private String name;
+        private String loginId;
+        private SignUpType signUpType;
+    }
 
     @Builder
     @Getter

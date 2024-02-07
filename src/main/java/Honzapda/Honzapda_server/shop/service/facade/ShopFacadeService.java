@@ -13,8 +13,6 @@ import Honzapda.Honzapda_server.shop.service.shop.ShopService;
 import Honzapda.Honzapda_server.shop.service.shop_congestion.ShopCongestionService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.ShopCoordinatesService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.dto.ShopCoordinatesDto;
-import Honzapda.Honzapda_server.user.data.dto.UserDto;
-import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +55,7 @@ public class ShopFacadeService {
 
     }
 
-    public UserResDto.InfoDto loginShop(UserDto.LoginDto request) {
+    public ShopResponseDto.OwnerInfoDto loginShop(ShopRequestDto.LoginDto request) {
         return shopService.loginShop(request);
     }
 

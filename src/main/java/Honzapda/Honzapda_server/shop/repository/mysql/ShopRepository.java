@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface ShopRepository extends JpaRepository<Shop, Long>, ShopRepositoryCustom {
 
-    boolean existsByEmail(String LoginId);
-    Optional<Shop> findByEmail(String email);
+    boolean existsByLoginId(String LoginId);
+    Optional<Shop> findByLoginId(String email);
 }
