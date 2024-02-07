@@ -31,7 +31,7 @@ public class UserDto {
 
     @Getter
     public static class LoginDto {
-        //@Email TODO: 데모데이 이후 활성화
+        @Email
         private String email;
         private String password;
     }
