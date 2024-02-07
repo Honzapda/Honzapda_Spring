@@ -17,8 +17,6 @@ import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
-import Honzapda.Honzapda_server.user.data.dto.UserDto;
-import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.LikeRepository;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
