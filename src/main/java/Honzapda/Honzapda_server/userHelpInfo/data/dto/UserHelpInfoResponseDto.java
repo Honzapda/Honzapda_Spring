@@ -15,6 +15,8 @@ public class UserHelpInfoResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UserHelpInfoDto {
+        private String name;
+        private String profileImage;
         private LocalDateTime visitDateTime;
         // 혼잡도: 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%, 100%
         private String congestion;

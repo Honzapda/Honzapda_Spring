@@ -35,6 +35,8 @@ public class UserHelpInfoConverter {
             UserHelpInfo entity, Long likeCount, Boolean userLike){
 
         return UserHelpInfoResponseDto.UserHelpInfoDto.builder()
+                .name(entity.getUser().getName())
+                .profileImage(entity.getUser().getProfileImage())
                 .congestion(entity.getCongestion().getResponseDescription())
                 .light(entity.getLight().getResponseDescription())
                 .deskSize(entity.getDeskSize().getResponseDescription())
