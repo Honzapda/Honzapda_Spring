@@ -5,12 +5,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 public class UserHelpInfoRequestDto {
 
     @Getter
     public static class CreateDto {
         @Schema(example = "yyyy-MM-ddThh:mm:ss")
-        private String visitDateTime;
+        private LocalDateTime visitDateTime;
 
         // 혼잡도: 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%, 100%
         @Schema(description = "available inputs : 10, 20,... , 90")
