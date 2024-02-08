@@ -109,7 +109,8 @@ public class UserHelpInfoService {
                 .sorted((info1, info2) -> Long.compare(info2.getLikeCount(), info1.getLikeCount()))
                 .toList();
 
-        return UserHelpInfoConverter.toUserHelpInfoListDto(findAllByShop, userHelpInfoDtos);
+        return UserHelpInfoConverter.toUserHelpInfoListDto(
+                findAllByShop, userHelpInfoDtos, pageable.getPageNumber());
     }
 
     private Shop findShopById(Long shopId) {

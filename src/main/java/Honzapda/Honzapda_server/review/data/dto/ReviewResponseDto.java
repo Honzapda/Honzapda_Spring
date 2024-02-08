@@ -35,6 +35,7 @@ public class ReviewResponseDto {
         private Integer listSize;
         private Integer totalPage;
         private Long totalElements;
+        private Integer currentPage;
         private Boolean isFirst;
         private Boolean isLast;
     }

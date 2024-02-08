@@ -46,13 +46,14 @@ public class ReviewConverter {
     }
 
     public static ReviewResponseDto.ReviewListDto toReviewListDto(
-            Page<Review> reviews, List<ReviewResponseDto.ReviewDto>reviewDtos){
+            Page<Review> reviews, List<ReviewResponseDto.ReviewDto>reviewDtos, Integer currentPage){
 
         return ReviewResponseDto.ReviewListDto.builder()
                 .reviews(reviewDtos)
                 .listSize(reviews.getSize())
                 .totalPage(reviews.getTotalPages())
                 .totalElements(reviews.getTotalElements())
+                .currentPage(currentPage)
                 .isFirst(reviews.isFirst())
                 .isLast(reviews.isLast())
                 .build();

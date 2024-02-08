@@ -53,7 +53,7 @@ public class UserHelpInfoConverter {
                 .build();
     }
     public static UserHelpInfoResponseDto.UserHelpInfoListDto toUserHelpInfoListDto(
-            Page<UserHelpInfo> userHelpInfoPage, List<UserHelpInfoResponseDto.UserHelpInfoDto>userHelpInfoDtos){
+            Page<UserHelpInfo> userHelpInfoPage, List<UserHelpInfoResponseDto.UserHelpInfoDto>userHelpInfoDtos, Integer currentPage){
 
         return UserHelpInfoResponseDto.UserHelpInfoListDto.builder()
                 .userHelpInfoDtoList(userHelpInfoDtos)
@@ -62,6 +62,7 @@ public class UserHelpInfoConverter {
                 .listSize(userHelpInfoPage.getSize())
                 .totalElements(userHelpInfoPage.getTotalElements())
                 .totalPage(userHelpInfoPage.getTotalPages())
+                .currentPage(currentPage)
                 .build();
     }
 }

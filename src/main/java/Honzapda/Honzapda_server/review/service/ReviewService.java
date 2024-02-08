@@ -104,7 +104,8 @@ public class ReviewService {
                 })
                 .collect(Collectors.toList());
 
-        return ReviewConverter.toReviewListDto(allByShopOrderByCreatedAtDesc, reviewDtos);
+        return ReviewConverter.toReviewListDto(
+                allByShopOrderByCreatedAtDesc, reviewDtos, pageable.getPageNumber());
     }
 
     public ReviewImageResponseDto.ImageListDto getReviewImageListDto(Long shopId, Pageable pageable){

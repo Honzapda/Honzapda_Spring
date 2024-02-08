@@ -47,6 +47,7 @@ public class UserHelpInfoResponseDto {
         private List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList;
         private Integer listSize;
         private Integer totalPage;
+        private Integer currentPage;
         private Long totalElements;
         private Boolean isFirst;
         private Boolean isLast;
