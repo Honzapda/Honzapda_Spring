@@ -33,6 +33,7 @@ public class UserHelpInfoResponseDto {
         // 카페의 전체적인 분위기는 어떻게 느껴졌나요?: 직접 입력, 기억나지 않아요
         private String atmosphere;
         private Long likeCount;
+        private boolean userLike;
         private Long userHelpInfId;
         private LocalDateTime createdAt;
     }

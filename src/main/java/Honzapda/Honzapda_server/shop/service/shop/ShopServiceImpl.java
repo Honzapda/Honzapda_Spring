@@ -101,7 +101,7 @@ public class ShopServiceImpl implements ShopService {
         List<ReviewResponseDto.ReviewDto> reviewDtos = getReviewListDto(shop);
 
         //TODO: Dto에 추가해야함
-        List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(shop);
+        List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(user, shop);
         ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop,businessHoursResDTOS);
 
         resultDto.setRating(getRating(shopId));
@@ -240,14 +240,15 @@ public class ShopServiceImpl implements ShopService {
 
         return reviewDtoList;
     }
-    private List<UserHelpInfoResponseDto.UserHelpInfoDto> getUserHelpInfoListDtoTop2(Shop shop) {
+    private List<UserHelpInfoResponseDto.UserHelpInfoDto> getUserHelpInfoListDtoTop2(User user, Shop shop) {
 
         return userHelpInfoRepository.findAllByShop(shop)
                 .orElseThrow(()->new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND))
                 .stream()
                 .map(userHelpInfo->{
                     Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(userHelpInfo);
-                    return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount);
+                    boolean userLike = likeUserHelpInfoRepository.existsByUserAndUserHelpInfo(user,userHelpInfo);
+                    return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount,userLike);
                 })
                 // likeCount를 기준으로 내림차순으로 정렬
                 .sorted((info1, info2) -> Long.compare(info2.getLikeCount(), info1.getLikeCount()))

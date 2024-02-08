@@ -47,7 +47,9 @@ public class UserHelpInfoService {
 
         Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(savedUserHelpInfo);
 
-        return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,likeCount);
+        boolean isLike = likeUserHelpInfoRepository.existsByUserAndUserHelpInfo(user,savedUserHelpInfo);
+
+        return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,likeCount,isLike);
     }
     @Transactional
     public void deleteUserHelpInfo(Long userId, Long userHelpInfoId){
@@ -88,7 +90,9 @@ public class UserHelpInfoService {
 
 
 
-    public UserHelpInfoResponseDto.UserHelpInfoListDto getUserHelpInfoListDto(Long shopId, Pageable pageable){
+    public UserHelpInfoResponseDto.UserHelpInfoListDto getUserHelpInfoListDto(Long userId,Long shopId, Pageable pageable){
+
+        User user = User.builder().id(userId).build();
         // 어디 shop 도움 정보인지 확인
         Shop findShop = findShopById(shopId);
         // 정렬과 무관하게 shop을 기준으로 조회
@@ -98,7 +102,8 @@ public class UserHelpInfoService {
                 .map(userHelpInfo -> {
                         // 좋아요 갯수
                         Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(userHelpInfo);
-                        return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount);
+                        boolean userLike = likeUserHelpInfoRepository.existsByUserAndUserHelpInfo(user,userHelpInfo);
+                        return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount,userLike);
                 })
                 // likeCount를 기준으로 내림차순으로 정렬
                 .sorted((info1, info2) -> Long.compare(info2.getLikeCount(), info1.getLikeCount()))

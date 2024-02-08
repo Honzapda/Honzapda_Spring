@@ -16,17 +16,8 @@ import java.util.List;
 public class UserHelpInfoConverter {
     public static UserHelpInfo toEntity(UserHelpInfoRequestDto.CreateDto requestDto,User user, Shop shop) {
 
-        LocalDateTime dateTime = null;
-        try {
-            dateTime = LocalDateTime.parse(requestDto.getVisitDateTime());
-            // 성공적으로 파싱된 경우에 수행할 작업
-        } catch (DateTimeParseException ex) {
-            // 커스텀 예외로 감싸서 throw
-            throw new GeneralException(ErrorStatus.INVALID_DATE_TIME_FORMAT);
-        }
-
         return UserHelpInfo.builder()
-                .visitDate(dateTime)
+                .visitDate(requestDto.getVisitDateTime())
                 .congestion(requestDto.getCongestion())
                 .deskSize(requestDto.getDeskSize())
                 .outletCount(requestDto.getOutletCount())
@@ -41,7 +32,7 @@ public class UserHelpInfoConverter {
     }
 
     public  static UserHelpInfoResponseDto.UserHelpInfoDto toUserHelpInfoDto(
-            UserHelpInfo entity, Long likeCount){
+            UserHelpInfo entity, Long likeCount, Boolean userLike){
 
         return UserHelpInfoResponseDto.UserHelpInfoDto.builder()
                 .congestion(entity.getCongestion().getResponseDescription())
@@ -55,6 +46,7 @@ public class UserHelpInfoConverter {
                 .visitDateTime(entity.getVisitDate())
                 .createdAt(entity.getCreatedAt())
                 .likeCount(likeCount)
+                .userLike(userLike)
                 .userHelpInfId(entity.getId())
                 .build();
     }
