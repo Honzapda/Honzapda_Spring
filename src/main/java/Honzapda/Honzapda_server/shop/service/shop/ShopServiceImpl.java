@@ -230,15 +230,13 @@ public class ShopServiceImpl implements ShopService {
 
         List<Review> reviewList = reviewRepository.findTop3ByShopOrderByVisitedAtDesc(shop);
 
-        List<ReviewResponseDto.ReviewDto> reviewDtoList = reviewList.stream()
+        return reviewList.stream()
                 .map(review -> {
                     List<ReviewImage> reviewImages = reviewImageRepository
                             .findAllByReview(review).orElseThrow(()-> new GeneralException(ErrorStatus.REVIEW_NOT_FOUND));
                     return ReviewConverter.toReviewDto(review, reviewImages);
                 })
                 .collect(Collectors.toList());
-
-        return reviewDtoList;
     }
     private List<UserHelpInfoResponseDto.UserHelpInfoDto> getUserHelpInfoListDtoTop2(User user, Shop shop) {
 
