@@ -18,6 +18,8 @@ public class ReviewConverter {
                 .reviewId(review.getId())
                 .shopId(review.getShop().getId())
                 .userId(review.getUser().getId())
+                .name(review.getUser().getName())
+                .profileImage(review.getUser().getProfileImage())
                 .score(review.getScore())
                 .body(review.getBody())
                 .visitedAt(review.getVisitedAt())

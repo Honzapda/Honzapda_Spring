@@ -19,6 +19,8 @@ public class ReviewResponseDto {
         private Long reviewId;
         private Long shopId;
         private Long userId;
+        private String profileImage;
+        private String name;
         private Double score;
         private String body;
         private LocalDateTime visitedAt;
@@ -36,6 +38,7 @@ public class ReviewResponseDto {
         private Boolean isFirst;
         private Boolean isLast;
     }
+
 
 
 }
