@@ -5,6 +5,7 @@ import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import Honzapda.Honzapda_server.user.service.UserService;
 import Honzapda.Honzapda_server.userHelpInfo.data.LikeUserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
@@ -31,12 +32,13 @@ public class UserHelpInfoService {
     private final ShopRepository shopRepository;
     private final UserHelpInfoRepository userHelpInfoRepository;
     private final LikeUserHelpInfoRepository likeUserHelpInfoRepository;
+    private final UserService userService;
 
     @Transactional
     public UserHelpInfoResponseDto.UserHelpInfoDto registerUserHelpInfo(
             Long userId, Long shopId, UserHelpInfoRequestDto.CreateDto requestDto) {
 
-        User user = User.builder().id(userId).build();
+        User user = userService.getUser(userId);
         Shop shop = findShopById(shopId);
 
         // TODO: 3시간 이내 작성 제한 (데모데이까지는 안쓰는 기능)
@@ -106,7 +108,7 @@ public class UserHelpInfoService {
                         return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount,userLike);
                 })
                 // likeCount를 기준으로 내림차순으로 정렬
-                .sorted((info1, info2) -> Long.compare(info2.getLikeCount(), info1.getLikeCount()))
+                .sorted((info1, info2) -> Long.compare(info2.getLike().getLikeCount(), info1.getLike().getLikeCount()))
                 .toList();
 
         return UserHelpInfoConverter.toUserHelpInfoListDto(
