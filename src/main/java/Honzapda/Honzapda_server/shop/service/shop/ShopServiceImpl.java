@@ -68,7 +68,7 @@ public class ShopServiceImpl implements ShopService {
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request){
 
         if(shopRepository.existsByLoginId(request.getLoginId())){
-            throw new RuntimeException("아이디가 중복되었습니다");
+            throw new GeneralException(ErrorStatus.SHOP_EXIST_MYSQL);
         }
 
         Shop shop = ShopConverter.toShop(request,passwordEncoder);
@@ -249,7 +249,7 @@ public class ShopServiceImpl implements ShopService {
                     return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount,userLike);
                 })
                 // likeCount를 기준으로 내림차순으로 정렬
-                .sorted((info1, info2) -> Long.compare(info2.getLikeCount(), info1.getLikeCount()))
+                .sorted((info1, info2) -> Long.compare(info2.getLike().getLikeCount(), info1.getLike().getLikeCount()))
                 .limit(2)
                 .toList();
     }
