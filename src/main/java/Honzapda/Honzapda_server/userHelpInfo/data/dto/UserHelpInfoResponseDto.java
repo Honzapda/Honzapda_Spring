@@ -1,5 +1,6 @@
 package Honzapda.Honzapda_server.userHelpInfo.data.dto;
 
+import Honzapda.Honzapda_server.common.dto.ComResDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,12 @@ public class UserHelpInfoResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UserHelpInfoDto {
+
+        private ComResDto.UserProfileDto user;
         private LocalDateTime visitDateTime;
+
+        private ComResDto.LikeDto like;
+
         // 혼잡도: 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%, 100%
         private String congestion;
         // 앉았던 책상의 넓이: 넓었어요, 적당했어요, 좁았어요, 기억나지 않아요
@@ -32,7 +38,7 @@ public class UserHelpInfoResponseDto {
         private String musicGenre;
         // 카페의 전체적인 분위기는 어떻게 느껴졌나요?: 직접 입력, 기억나지 않아요
         private String atmosphere;
-        private Long likeCount;
+        // 기타 정보
         private Long userHelpInfId;
         private LocalDateTime createdAt;
     }
@@ -44,6 +50,7 @@ public class UserHelpInfoResponseDto {
         private List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList;
         private Integer listSize;
         private Integer totalPage;
+        private Integer currentPage;
         private Long totalElements;
         private Boolean isFirst;
         private Boolean isLast;

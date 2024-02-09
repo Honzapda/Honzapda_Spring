@@ -12,12 +12,7 @@ import java.util.Optional;
 
 public interface UserHelpInfoRepository extends JpaRepository<UserHelpInfo, Long> {
 
-    Optional<UserHelpInfo> findByUserAndShop(User user, Shop shop);
-
-    List<UserHelpInfo> findAllByUser(User user);
-
     void deleteAllByUser(User user);
-
     Optional<UserHelpInfo>findFirstByUserAndShopOrderByIdDesc(User user, Shop shop);
     Page<UserHelpInfo> findAllByShop(Shop shop, Pageable pageable);
     Optional<List<UserHelpInfo>> findAllByShop(Shop shop);

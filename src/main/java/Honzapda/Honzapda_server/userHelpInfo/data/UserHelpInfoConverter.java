@@ -1,7 +1,6 @@
 package Honzapda.Honzapda_server.userHelpInfo.data;
 
-import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
-import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
+import Honzapda.Honzapda_server.common.dto.ComResDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
@@ -9,24 +8,13 @@ import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
 import org.springframework.data.domain.Page;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class UserHelpInfoConverter {
     public static UserHelpInfo toEntity(UserHelpInfoRequestDto.CreateDto requestDto,User user, Shop shop) {
 
-        LocalDateTime dateTime = null;
-        try {
-            dateTime = LocalDateTime.parse(requestDto.getVisitDateTime());
-            // 성공적으로 파싱된 경우에 수행할 작업
-        } catch (DateTimeParseException ex) {
-            // 커스텀 예외로 감싸서 throw
-            throw new GeneralException(ErrorStatus.INVALID_DATE_TIME_FORMAT);
-        }
-
         return UserHelpInfo.builder()
-                .visitDate(dateTime)
+                .visitDate(requestDto.getVisitDateTime())
                 .congestion(requestDto.getCongestion())
                 .deskSize(requestDto.getDeskSize())
                 .outletCount(requestDto.getOutletCount())
@@ -41,9 +29,24 @@ public class UserHelpInfoConverter {
     }
 
     public  static UserHelpInfoResponseDto.UserHelpInfoDto toUserHelpInfoDto(
-            UserHelpInfo entity, Long likeCount){
+            UserHelpInfo entity, Long likeCount, Boolean userLike){
+
+        ComResDto.UserProfileDto user = ComResDto.UserProfileDto.builder()
+                .userId(entity.getUser().getId())
+                .name(entity.getUser().getName())
+                .profileImage(entity.getUser().getProfileImage())
+                .build();
+
+        ComResDto.LikeDto like = ComResDto.LikeDto.builder()
+                .likeCount(likeCount)
+                .userLike(userLike)
+                .build();
 
         return UserHelpInfoResponseDto.UserHelpInfoDto.builder()
+                .user(user)
+                .visitDateTime(entity.getVisitDate())
+                .like(like)
+                // 내용
                 .congestion(entity.getCongestion().getResponseDescription())
                 .light(entity.getLight().getResponseDescription())
                 .deskSize(entity.getDeskSize().getResponseDescription())
@@ -52,14 +55,13 @@ public class UserHelpInfoConverter {
                 .atmosphere(entity.getAtmosphere())
                 .restroomLocation(entity.getRestroomLocation())
                 .musicGenre(entity.getMusicGenre())
-                .visitDateTime(entity.getVisitDate())
+                // 기타 정보
                 .createdAt(entity.getCreatedAt())
-                .likeCount(likeCount)
                 .userHelpInfId(entity.getId())
                 .build();
     }
     public static UserHelpInfoResponseDto.UserHelpInfoListDto toUserHelpInfoListDto(
-            Page<UserHelpInfo> userHelpInfoPage, List<UserHelpInfoResponseDto.UserHelpInfoDto>userHelpInfoDtos){
+            Page<UserHelpInfo> userHelpInfoPage, List<UserHelpInfoResponseDto.UserHelpInfoDto>userHelpInfoDtos, Integer currentPage){
 
         return UserHelpInfoResponseDto.UserHelpInfoListDto.builder()
                 .userHelpInfoDtoList(userHelpInfoDtos)
@@ -68,6 +70,7 @@ public class UserHelpInfoConverter {
                 .listSize(userHelpInfoPage.getSize())
                 .totalElements(userHelpInfoPage.getTotalElements())
                 .totalPage(userHelpInfoPage.getTotalPages())
+                .currentPage(currentPage)
                 .build();
     }
 }

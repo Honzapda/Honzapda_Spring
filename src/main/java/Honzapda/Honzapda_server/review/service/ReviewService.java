@@ -14,6 +14,7 @@ import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import Honzapda.Honzapda_server.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,15 +32,16 @@ public class ReviewService {
     private final ReviewImageRepository reviewImageRepository;
     private final ReviewRepository reviewRepository;
     private final ShopRepository shopRepository;
+    private final UserService userService;
 
     @Transactional
     public ReviewResponseDto.ReviewDto registerReview(Long userId, Long shopId, ReviewRequestDto.ReviewRegisterDto requestDto) {
 
-        User user = User.builder().id(userId).build();
+        User user = userService.getUser(userId);
         Shop shop = findShopById(shopId);
 
-        // 리뷰 중복 방지
-        validateDuplicate(user, shop);
+        // 리뷰 중복 방지 TODO: 데모데이까지 주석처리
+        // validateDuplicate(user, shop);
 
         Review review = Review.builder()
                 .user(user)
@@ -104,7 +106,8 @@ public class ReviewService {
                 })
                 .collect(Collectors.toList());
 
-        return ReviewConverter.toReviewListDto(allByShopOrderByCreatedAtDesc, reviewDtos);
+        return ReviewConverter.toReviewListDto(
+                allByShopOrderByCreatedAtDesc, reviewDtos, pageable.getPageNumber());
     }
 
     public ReviewImageResponseDto.ImageListDto getReviewImageListDto(Long shopId, Pageable pageable){

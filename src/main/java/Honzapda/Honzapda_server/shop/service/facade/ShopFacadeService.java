@@ -52,6 +52,11 @@ public class ShopFacadeService {
 
         // 혼잡도 등록
         return shopCongestionService.registerCongestion(request,registeredShop);
+
+    }
+
+    public ShopResponseDto.OwnerInfoDto loginShop(ShopRequestDto.LoginDto request) {
+        return shopService.loginShop(request);
     }
 
     public ShopResponseDto.SearchDto findShop(Long shopId, Long userId) {

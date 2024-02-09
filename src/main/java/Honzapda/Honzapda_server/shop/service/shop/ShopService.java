@@ -12,6 +12,8 @@ import java.util.Map;
 public interface ShopService {
     ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request);
 
+    ShopResponseDto.OwnerInfoDto loginShop(ShopRequestDto.LoginDto request);
+
     ShopResponseDto.SearchDto findShop(Long shopId, Long userId);
 
     Map<Long, MapResponseDto.HomeDto> findShopsByShopIds(List<Long> mysqlIds);

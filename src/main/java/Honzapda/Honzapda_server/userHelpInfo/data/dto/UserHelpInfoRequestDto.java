@@ -5,14 +5,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 public class UserHelpInfoRequestDto {
 
     @Getter
     public static class CreateDto {
         @Schema(example = "yyyy-MM-ddThh:mm:ss")
-        private String visitDateTime;
+        private LocalDateTime visitDateTime;
 
         // 혼잡도: 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%, 100%
         @Schema(description = "available inputs : 10, 20,... , 90")
@@ -45,8 +45,6 @@ public class UserHelpInfoRequestDto {
 
         // 카페의 전체적인 분위기는 어떻게 느껴졌나요?: 직접 입력, 기억나지 않아요
         private String atmosphere;
-
-        private List<String> imageUrls;
 
     }
 }
