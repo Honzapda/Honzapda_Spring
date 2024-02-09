@@ -32,6 +32,7 @@ public class ShopController {
         return ApiResult.onSuccess(shopFacadeService.registerShop(request));
     }
 
+
     @PostMapping("/login")
     public ApiResult<ShopResponseDto.OwnerInfoDto> loginShop(
             @RequestBody @Valid ShopRequestDto.LoginDto request)
@@ -39,7 +40,9 @@ public class ShopController {
         return ApiResult.onSuccess(shopFacadeService.loginShop(request));
     }
 
-    @GetMapping("/search")
+
+
+    @PostMapping("/search")
     public ApiResult<Slice<ShopResponseDto.SearchByNameDto>> searchShopSlice(
             @RequestBody @Valid ShopRequestDto.SearchDto request,
             @PageableDefault() Pageable pageable)
