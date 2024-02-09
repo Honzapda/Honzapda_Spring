@@ -32,7 +32,7 @@ public class ShopController {
         return ApiResult.onSuccess(shopFacadeService.registerShop(request));
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ApiResult<Slice<ShopResponseDto.SearchByNameDto>> searchShopSlice(
             @RequestBody @Valid ShopRequestDto.SearchDto request,
             @PageableDefault() Pageable pageable)
