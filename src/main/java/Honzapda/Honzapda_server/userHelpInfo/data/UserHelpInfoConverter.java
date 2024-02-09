@@ -1,5 +1,6 @@
 package Honzapda.Honzapda_server.userHelpInfo.data;
 
+import Honzapda.Honzapda_server.common.dto.ComResDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
@@ -30,9 +31,22 @@ public class UserHelpInfoConverter {
     public  static UserHelpInfoResponseDto.UserHelpInfoDto toUserHelpInfoDto(
             UserHelpInfo entity, Long likeCount, Boolean userLike){
 
-        return UserHelpInfoResponseDto.UserHelpInfoDto.builder()
+        ComResDto.UserProfileDto user = ComResDto.UserProfileDto.builder()
+                .userId(entity.getUser().getId())
                 .name(entity.getUser().getName())
                 .profileImage(entity.getUser().getProfileImage())
+                .build();
+
+        ComResDto.LikeDto like = ComResDto.LikeDto.builder()
+                .likeCount(likeCount)
+                .userLike(userLike)
+                .build();
+
+        return UserHelpInfoResponseDto.UserHelpInfoDto.builder()
+                .user(user)
+                .visitDateTime(entity.getVisitDate())
+                .like(like)
+                // 내용
                 .congestion(entity.getCongestion().getResponseDescription())
                 .light(entity.getLight().getResponseDescription())
                 .deskSize(entity.getDeskSize().getResponseDescription())
@@ -41,10 +55,8 @@ public class UserHelpInfoConverter {
                 .atmosphere(entity.getAtmosphere())
                 .restroomLocation(entity.getRestroomLocation())
                 .musicGenre(entity.getMusicGenre())
-                .visitDateTime(entity.getVisitDate())
+                // 기타 정보
                 .createdAt(entity.getCreatedAt())
-                .likeCount(likeCount)
-                .userLike(userLike)
                 .userHelpInfId(entity.getId())
                 .build();
     }
