@@ -1,5 +1,6 @@
 package Honzapda.Honzapda_server.review.data;
 
+import Honzapda.Honzapda_server.common.dto.ComResDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewImageResponseDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.data.entity.Review;
@@ -13,13 +14,17 @@ public class ReviewConverter {
 
     public static ReviewResponseDto.ReviewDto toReviewDto(Review review) {
 
+        ComResDto.UserProfileDto user = ComResDto.UserProfileDto.builder()
+                .userId(review.getUser().getId())
+                .name(review.getUser().getName())
+                .profileImage(review.getUser().getProfileImage())
+                .build();
+
         return ReviewResponseDto.ReviewDto.builder()
                 .images(null)
                 .reviewId(review.getId())
                 .shopId(review.getShop().getId())
-                .userId(review.getUser().getId())
-                .name(review.getUser().getName())
-                .profileImage(review.getUser().getProfileImage())
+                .user(user)
                 .score(review.getScore())
                 .body(review.getBody())
                 .visitedAt(review.getVisitedAt())
@@ -33,11 +38,17 @@ public class ReviewConverter {
                 .map(ReviewImageConverter::toImageDto)
                 .collect(Collectors.toList());
 
+        ComResDto.UserProfileDto user = ComResDto.UserProfileDto.builder()
+                .userId(review.getUser().getId())
+                .name(review.getUser().getName())
+                .profileImage(review.getUser().getProfileImage())
+                .build();
+
         return ReviewResponseDto.ReviewDto.builder()
                 .images(imageDtos)
                 .reviewId(review.getId())
                 .shopId(review.getShop().getId())
-                .userId(review.getUser().getId())
+                .user(user)
                 .score(review.getScore())
                 .body(review.getBody())
                 .visitedAt(review.getVisitedAt())
