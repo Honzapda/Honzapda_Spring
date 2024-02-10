@@ -1,6 +1,6 @@
 package Honzapda.Honzapda_server.userHelpInfo.data.dto;
 
-import Honzapda.Honzapda_server.common.dto.ComResDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,12 +15,21 @@ public class UserHelpInfoResponseDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class LikeDto{
+        private Long likeCount;
+        private boolean userLike;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UserHelpInfoDto {
 
-        private ComResDto.UserProfileDto user;
+        private UserResDto.InfoDto user;
         private LocalDateTime visitDateTime;
 
-        private ComResDto.LikeDto like;
+        private LikeDto like;
 
         // 혼잡도: 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%, 100%
         private String congestion;
