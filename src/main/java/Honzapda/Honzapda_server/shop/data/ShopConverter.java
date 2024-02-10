@@ -1,11 +1,10 @@
 package Honzapda.Honzapda_server.shop.data;
 
-import Honzapda.Honzapda_server.common.dto.SignUpType;
+import Honzapda.Honzapda_server.user.data.entity.SignUpType;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
-import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
