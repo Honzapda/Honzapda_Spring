@@ -1,10 +1,10 @@
 package Honzapda.Honzapda_server.review.data;
 
-import Honzapda.Honzapda_server.common.dto.ComResDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewImageResponseDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.data.entity.Review;
 import Honzapda.Honzapda_server.review.data.entity.ReviewImage;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -14,10 +14,12 @@ public class ReviewConverter {
 
     public static ReviewResponseDto.ReviewDto toReviewDto(Review review) {
 
-        ComResDto.UserProfileDto user = ComResDto.UserProfileDto.builder()
-                .userId(review.getUser().getId())
+        UserResDto.InfoDto user = UserResDto.InfoDto.builder()
+                .id(review.getUser().getId())
                 .name(review.getUser().getName())
                 .profileImage(review.getUser().getProfileImage())
+                .email(null)
+                .signUpType(null)
                 .build();
 
         return ReviewResponseDto.ReviewDto.builder()
@@ -38,10 +40,12 @@ public class ReviewConverter {
                 .map(ReviewImageConverter::toImageDto)
                 .collect(Collectors.toList());
 
-        ComResDto.UserProfileDto user = ComResDto.UserProfileDto.builder()
-                .userId(review.getUser().getId())
+        UserResDto.InfoDto user = UserResDto.InfoDto.builder()
+                .id(review.getUser().getId())
                 .name(review.getUser().getName())
                 .profileImage(review.getUser().getProfileImage())
+                .email(null)
+                .signUpType(null)
                 .build();
 
         return ReviewResponseDto.ReviewDto.builder()
