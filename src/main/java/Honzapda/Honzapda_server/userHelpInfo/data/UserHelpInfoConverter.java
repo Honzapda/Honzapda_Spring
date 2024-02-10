@@ -1,7 +1,7 @@
 package Honzapda.Honzapda_server.userHelpInfo.data;
 
-import Honzapda.Honzapda_server.common.dto.ComResDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
@@ -31,13 +31,15 @@ public class UserHelpInfoConverter {
     public  static UserHelpInfoResponseDto.UserHelpInfoDto toUserHelpInfoDto(
             UserHelpInfo entity, Long likeCount, Boolean userLike){
 
-        ComResDto.UserProfileDto user = ComResDto.UserProfileDto.builder()
-                .userId(entity.getUser().getId())
+        UserResDto.InfoDto user = UserResDto.InfoDto.builder()
+                .id(entity.getUser().getId())
                 .name(entity.getUser().getName())
                 .profileImage(entity.getUser().getProfileImage())
+                .email(null)
+                .signUpType(null)
                 .build();
 
-        ComResDto.LikeDto like = ComResDto.LikeDto.builder()
+        UserHelpInfoResponseDto.LikeDto like = UserHelpInfoResponseDto.LikeDto.builder()
                 .likeCount(likeCount)
                 .userLike(userLike)
                 .build();

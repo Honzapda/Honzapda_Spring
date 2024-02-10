@@ -1,6 +1,6 @@
 package Honzapda.Honzapda_server.review.data.dto;
 
-import Honzapda.Honzapda_server.common.dto.ComResDto;
+import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +17,7 @@ public class ReviewResponseDto {
     @AllArgsConstructor
     public static class ReviewDto {
         // 필수 정보
-        private ComResDto.UserProfileDto user;
+        private UserResDto.InfoDto user;
         private Double score;
         private List<ReviewImageResponseDto.ImageDto> images;
         private String body;

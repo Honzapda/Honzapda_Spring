@@ -1,6 +1,6 @@
 package Honzapda.Honzapda_server.shop.data.entity;
 
-import Honzapda.Honzapda_server.common.dto.SignUpType;
+import Honzapda.Honzapda_server.user.data.entity.SignUpType;
 import Honzapda.Honzapda_server.user.data.entity.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -58,10 +58,6 @@ public class Shop extends BaseEntity{
 
     @Column
     private String password;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SignUpType signUpType;
 
     @Column
     private LocalDateTime inactiveDate;

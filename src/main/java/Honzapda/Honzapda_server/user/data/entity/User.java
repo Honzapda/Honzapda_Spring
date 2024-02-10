@@ -1,6 +1,5 @@
 package Honzapda.Honzapda_server.user.data.entity;
 
-import Honzapda.Honzapda_server.common.dto.SignUpType;
 import Honzapda.Honzapda_server.user.data.entity.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

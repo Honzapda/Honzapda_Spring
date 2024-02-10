@@ -8,7 +8,7 @@ import Honzapda.Honzapda_server.auth.apple.AppleProperties;
 import Honzapda.Honzapda_server.auth.apple.AppleSocialTokenInfoResponse;
 import Honzapda.Honzapda_server.auth.apple.common.TokenDecoder;
 import Honzapda.Honzapda_server.auth.util.PasswordGenerator;
-import Honzapda.Honzapda_server.common.dto.SignUpType;
+import Honzapda.Honzapda_server.user.data.entity.SignUpType;
 import Honzapda.Honzapda_server.review.data.entity.Review;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewImageRepository;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;

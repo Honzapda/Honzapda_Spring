@@ -37,6 +37,7 @@ public class UserConverter {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .profileImage(user.getProfileImage())
                 .signUpType(user.getSignUpType())
                 .build();
     }

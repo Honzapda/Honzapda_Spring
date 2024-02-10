@@ -1,6 +1,6 @@
 package Honzapda.Honzapda_server.user.data.dto;
 
-import Honzapda.Honzapda_server.common.dto.SignUpType;
+import Honzapda.Honzapda_server.user.data.entity.SignUpType;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import lombok.*;
 
@@ -13,6 +13,7 @@ public class UserResDto {
     public static class InfoDto{
         private Long id;
         private String name;
+        private String profileImage;
         private String email;
         private SignUpType signUpType;
     }
