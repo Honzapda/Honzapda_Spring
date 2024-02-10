@@ -1,6 +1,5 @@
 package Honzapda.Honzapda_server.shop.data;
 
-import Honzapda.Honzapda_server.user.data.entity.SignUpType;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
@@ -32,7 +31,6 @@ public class ShopConverter {
                 .inactiveDate(LocalDateTime.now())
                 .loginId(request.getLoginId())
                 .password(encoder.encode(request.getPassword()))
-                .signUpType(SignUpType.LOCAL) //TODO: 소셜 로그인 구현시, 삭제 후 서비스에서 설정
                 .shopMainImage(request.getShopMainImage())
                 .totalSeatCount(request.getTotalSeatCount())
                 .build();
@@ -43,7 +41,6 @@ public class ShopConverter {
                 .id(shop.getId())
                 .name(shop.getAdminName())
                 .loginId(shop.getLoginId())
-                .signUpType(shop.getSignUpType())
                 .build();
     }
 

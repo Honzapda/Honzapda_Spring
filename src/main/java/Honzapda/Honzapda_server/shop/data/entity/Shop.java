@@ -59,10 +59,6 @@ public class Shop extends BaseEntity{
     @Column
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SignUpType signUpType;
-
     @Column
     private LocalDateTime inactiveDate;
 

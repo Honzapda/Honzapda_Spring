@@ -24,7 +24,6 @@ public class ShopResponseDto {
         private Long id;
         private String name;
         private String loginId;
-        private SignUpType signUpType;
     }
 
     @Builder
