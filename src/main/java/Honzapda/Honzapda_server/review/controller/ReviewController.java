@@ -20,16 +20,16 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("/")
+    @PostMapping("")
     public ApiResult<ReviewResponseDto.ReviewDto> registerReview(
-            @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,
+            @SessionAttribute UserResDto.InfoDto user,
             @RequestParam Long shopId,
             @RequestBody @Valid ReviewRequestDto.ReviewRegisterDto requestDto){
-        return ApiResult.onSuccess(reviewService.registerReview(userResDto.getId(), shopId, requestDto));
+        return ApiResult.onSuccess(reviewService.registerReview(user.getId(), shopId, requestDto));
     }
 
 
-    @GetMapping("/")
+    @GetMapping("")
     public ApiResult<ReviewResponseDto.ReviewListDto> getReviews(
             @RequestParam Long shopId,
             @RequestParam(defaultValue = "0") int page,

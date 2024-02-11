@@ -18,7 +18,7 @@ public class UserHelpInfoController {
 
     private final UserHelpInfoService userHelpInfoService;
 
-    @PostMapping("/")
+    @PostMapping("")
     public ApiResult<?> registerUserHelpInfo(
             @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,
             @RequestParam Long shopId,
@@ -34,7 +34,7 @@ public class UserHelpInfoController {
     }
 
 
-    @GetMapping("/")
+    @GetMapping("")
     public ApiResult<?> getUserHelpInfos(
             @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,
             @RequestParam Long shopId,
