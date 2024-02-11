@@ -10,10 +10,7 @@ import Honzapda.Honzapda_server.user.data.entity.LikeData;
 import Honzapda.Honzapda_server.user.data.entity.Prefer;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.data.entity.UserPrefer;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
