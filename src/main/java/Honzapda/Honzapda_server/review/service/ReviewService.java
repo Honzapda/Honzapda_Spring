@@ -23,6 +23,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -133,7 +134,13 @@ public class ReviewService {
         if(review.getUser().getId().equals(userId)){
             reviewImageRepository.findAllByReview(review).ifPresent(reviewImages -> {
                 reviewImages.forEach(reviewImage -> {
-                    fileService.deleteObject(reviewImage.getUrl());
+                    try {
+                        String fileName = fileService.subStringUrl(reviewImage.getUrl());
+                        fileService.deleteObject(fileName);
+                    }
+                    catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    }
                     reviewImageRepository.deleteById(reviewImage.getId());
                 });
             });

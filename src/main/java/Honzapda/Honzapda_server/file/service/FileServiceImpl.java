@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -85,6 +87,12 @@ public class FileServiceImpl implements FileService{
         storage.delete(bucketName, objectName,precondition);
 
         return "Object " + objectName + " was deleted from " + bucketName;
+    }
+    @Override
+    public String subStringUrl(String url) throws MalformedURLException {
+        URL imageUrl = new URL(url);
+        String path = imageUrl.getPath();
+        return path.substring(path.lastIndexOf("/") + 1);
     }
 
 
