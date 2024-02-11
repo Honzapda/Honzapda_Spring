@@ -91,8 +91,11 @@ public class ReviewService {
     }
 
     public ReviewResponseDto.ReviewListDto getReviewListDto(Long shopId, Pageable pageable) {
+
+
         // 어디 shop 리뷰인지 확인
         Shop findShop = findShopById(shopId);
+
 
         // 최신순으로 리뷰 페이징 조회
         Page<Review> allByShopOrderByCreatedAtDesc = reviewRepository.findAllByShopOrderByVisitedAtDesc(findShop, pageable);
