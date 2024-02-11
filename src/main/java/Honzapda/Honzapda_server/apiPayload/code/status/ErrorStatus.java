@@ -42,6 +42,8 @@ public enum ErrorStatus implements BaseErrorCode {
     // 리뷰 응답
     REVIEW_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "REVIEW4000", "리뷰는 가게당 하나입니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND,"REVIEW4001","리뷰가 없습니다."),
+    INVALID_REVIEW(HttpStatus.FORBIDDEN,"REVIEW4002","해당 리뷰에 접근 권한이 없습니다."),
+    REVIEW_IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND,"REVIEW4003","해당 리뷰사진이 없습니다."),
 
     // 유저 도움 정보 응답
     INVALID_CONGESTION_EMPTY(HttpStatus.BAD_REQUEST, "USERHELPINFO4000", "혼잡도를 입력해주세요."),
