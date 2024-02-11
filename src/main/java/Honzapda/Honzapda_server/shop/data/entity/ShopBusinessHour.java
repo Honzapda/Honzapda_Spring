@@ -27,4 +27,5 @@ public class ShopBusinessHour {
     private String openHours;
 
     private String closeHours;
+
 }

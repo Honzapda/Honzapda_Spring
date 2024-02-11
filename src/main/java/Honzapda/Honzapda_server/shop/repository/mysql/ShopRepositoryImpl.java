@@ -50,7 +50,7 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
 
         List<ShopResponseDto.SearchByNameDto> searchByNameDtosOrdered = orderByIds(searchByNameDtos, mysqlIds);
 
-        for (int i = 0; i < mysqlIds.size(); i++) {
+        for (int i = 0; i < mysqlIds.size() && i < searchByNameDtos.size(); i++) {
             homeDtos.get(i).setShopBusinessHour(searchByNameDtosOrdered.get(i).getShopBusinessHour());
         }
 
@@ -181,8 +181,7 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
                 .leftJoin(shopBusinessHour).on(shopBusinessHour.shop.id.eq(shop.id))
                 .where(
                         shop.id.in(mysqlIds),
-                        shopBusinessHour.dayOfWeek.equalsIgnoreCase(todayOfWeek).or(shopBusinessHour.dayOfWeek.isNull()),
-                        shopBusinessHour.isOpen.eq(true).or(shopBusinessHour.isOpen.isNull())
+                        shopBusinessHour.dayOfWeek.equalsIgnoreCase(todayOfWeek).or(shopBusinessHour.dayOfWeek.isNull())
                 )
                 .fetch();
     }

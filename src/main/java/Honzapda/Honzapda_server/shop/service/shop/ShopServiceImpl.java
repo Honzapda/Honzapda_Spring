@@ -264,7 +264,11 @@ public class ShopServiceImpl implements ShopService {
                 dto -> {
                     if (dto != null) {
                         Optional.ofNullable(dto.getShopBusinessHour()).ifPresentOrElse(
-                                shopBusinessHour -> dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours())),
+                                shopBusinessHour -> {
+                                    if (shopBusinessHour.isOpen())
+                                        dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours()));
+                                    else dto.setOpenNow(false);
+                                },
                                 () -> dto.setOpenNow(false)
                         );
                     }
@@ -277,7 +281,11 @@ public class ShopServiceImpl implements ShopService {
                 dto -> {
                     if (dto != null) {
                         Optional.ofNullable(dto.getShopBusinessHour()).ifPresentOrElse(
-                                shopBusinessHour -> dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours())),
+                                shopBusinessHour -> {
+                                    if (shopBusinessHour.isOpen())
+                                        dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours()));
+                                    else dto.setOpenNow(false);
+                                },
                                 () -> dto.setOpenNow(false)
                         );
                     }
