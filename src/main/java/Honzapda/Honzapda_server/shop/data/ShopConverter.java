@@ -56,7 +56,7 @@ public class ShopConverter {
                 .address_spec(shop.getAddress_spec())
                 .stationDistance(shop.getStationDistance())
                 .inactiveDate(shop.getInactiveDate())
-                .photoUrl(shop.getShopMainImage())
+                .mainImage(shop.getShopMainImage())
                 .businessHours(businessHoursResDTOS)
                 .totalSeatCount(shop.getTotalSeatCount())
                 .build();

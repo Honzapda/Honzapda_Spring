@@ -103,8 +103,9 @@ public class ShopServiceImpl implements ShopService {
         //TODO: Dto에 추가해야함
         List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(user, shop);
         ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop,businessHoursResDTOS);
-
-        resultDto.setRating(getRating(shopId));
+        double reviewScore = getRating(shopId);
+        // shop entity에 수정
+        resultDto.setRating(reviewScore);
         resultDto.setOpenNow(getOpenNow(businessHours));
         resultDto.setReviewCount(getReviewCount(shopId));
         resultDto.setBusinessHours(businessHoursResDTOS);

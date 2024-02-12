@@ -28,12 +28,7 @@ public class ShopCongestionDto {
 
         String endTime;
     }
-    public static DayCongestionDTO of(String dayOfWeek, ShopDayCongestion.CongestionLevel congestionLevel){
-        return DayCongestionDTO.builder()
-                .dayOfWeek(dayOfWeek)
-                .congestionLevel(congestionLevel)
-                .build();
-    }
+
     public static ShopDayCongestion toEntity(DayCongestionDTO dayCongestionDTO, Shop shop){
         return ShopDayCongestion.builder()
                 .dayOfWeek(dayCongestionDTO.getDayOfWeek())
@@ -64,13 +59,8 @@ public class ShopCongestionDto {
                 .build();
 
     }
-    public static AverageCongestionDTO of(boolean isWeekend, String startTime, String endTime){
-        return AverageCongestionDTO.builder()
-                .isWeekend(isWeekend)
-                .startTime(startTime)
-                .endTime(endTime)
-                .build();
-    }
+
+
 
 
 }

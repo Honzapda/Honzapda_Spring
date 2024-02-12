@@ -1,6 +1,5 @@
 package Honzapda.Honzapda_server.shop.data.dto;
 
-import Honzapda.Honzapda_server.user.data.entity.SignUpType;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
@@ -36,6 +35,7 @@ public class ShopResponseDto {
         String description;
         String otherDetails;
         String shopPhoneNumber;
+        String mainImage;
         Long reviewCount;
         Double rating;
         String address;
@@ -46,7 +46,6 @@ public class ShopResponseDto {
         LocalDateTime inactiveDate;
         List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList;
         List<ReviewResponseDto.ReviewDto> reviewList;
-        String photoUrl;
         List<BusinessHoursResDTO> businessHours;
 
         // 위도 경도
@@ -57,6 +56,8 @@ public class ShopResponseDto {
         List<ShopCongestionDto.DayCongestionDTO> dayCongestions;
 
         Long totalSeatCount;
+        int cameraCount;
+        int wifiCount;
         public void setRating(double rating){
             this.rating = rating;
         }
@@ -74,7 +75,7 @@ public class ShopResponseDto {
             this.userLike = userLike;
         }
 
-        public void setPhotoUrls(String photoUrl){this.photoUrl = photoUrl;}
+        public void setPhotoUrls(String photoUrl){this.mainImage = photoUrl;}
 
         public void setBusinessHours(List<BusinessHoursResDTO> businessHours){
             this.businessHours = businessHours;
@@ -90,10 +91,15 @@ public class ShopResponseDto {
         public void setUserHelpInfoDtoList(List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList){
             this.userHelpInfoDtoList = userHelpInfoDtoList;
         }
+
         public void setCongestion(List<ShopCongestionDto.AverageCongestionDTO> averageCongestions,
-                                  List<ShopCongestionDto.DayCongestionDTO> dayCongestions){
+                                  List<ShopCongestionDto.DayCongestionDTO> dayCongestions,
+                                  int cameraCount,
+                                  int wifiCount){
             this.averageCongestions = averageCongestions;
             this.dayCongestions = dayCongestions;
+            this.cameraCount = cameraCount;
+            this.wifiCount = wifiCount;
         }
 
     }
