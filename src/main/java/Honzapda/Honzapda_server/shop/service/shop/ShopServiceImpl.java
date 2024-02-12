@@ -92,6 +92,7 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
+    @Transactional
     public ShopResponseDto.SearchDto findShop(Long shopId, Long userId){
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
         User user = userRepository.findById(userId).orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -104,7 +105,10 @@ public class ShopServiceImpl implements ShopService {
         List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(user, shop);
         ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop,businessHoursResDTOS);
         double reviewScore = getRating(shopId);
-        // shop entity에 수정
+
+        shop.setRating(reviewScore);
+        shopRepository.save(shop);
+
         resultDto.setRating(reviewScore);
         resultDto.setOpenNow(getOpenNow(businessHours));
         resultDto.setReviewCount(getReviewCount(shopId));

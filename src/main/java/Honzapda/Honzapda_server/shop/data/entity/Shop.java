@@ -68,6 +68,10 @@ public class Shop extends BaseEntity{
     @Column
     private Long totalSeatCount;
 
+    public void setRating(double rating){
+        this.rating = rating;
+    }
+
     // TODO: 영업 시간 및 휴무일 추가
 
     // TODO: 유저가 저장한 가게 목록에 대한 테이블 생성 필요
