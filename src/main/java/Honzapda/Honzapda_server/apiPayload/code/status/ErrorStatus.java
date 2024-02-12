@@ -62,8 +62,8 @@ public enum ErrorStatus implements BaseErrorCode {
     LIKE_ALREADY_LIKED(HttpStatus.CONFLICT,"LIKE4000","이미 좋아요를 누르셨습니다."),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND,"LKE4001","좋아요를 안누른 유저 도움 정보입니다."),
 
-    // 일시 응답
-    INVALID_DATE_TIME_FORMAT(HttpStatus.BAD_REQUEST,"DATETIME4000","일시 형식이 올바르지 않습니다."),
+    // FILE 응답
+    INVALID_URL(HttpStatus.BAD_REQUEST,"FILE4000","URL형식이 올바르지 않습니다."),
   
     // 유저 가게 찜하기 응답
     LIKE_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "LIKE4000", "이미 찜을 눌렀습니다."),
