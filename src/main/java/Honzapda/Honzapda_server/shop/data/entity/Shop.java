@@ -27,10 +27,6 @@ public class Shop extends BaseEntity{
     @Column
     private String description;
 
-    @Lob
-    @Column
-    private String otherDetails;
-
     @Column(length = 50)
     private String shopPhoneNumber;
 

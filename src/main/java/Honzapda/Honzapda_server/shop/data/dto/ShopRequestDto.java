@@ -20,7 +20,6 @@ public class ShopRequestDto {
         String shopName;
         String adminName;
         String description;
-        String otherDetails;
         String shopPhoneNumber;
         String adminPhoneNumber;
         String address;

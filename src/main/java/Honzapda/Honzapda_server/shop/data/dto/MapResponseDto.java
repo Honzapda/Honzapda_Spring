@@ -55,14 +55,12 @@ public class MapResponseDto {
             this.place_name = shop.getShopName();
             this.adminName = shop.getAdminName();
             this.description = shop.getDescription();
-            this.otherDetails = shop.getOtherDetails();
             this.phone = shop.getShopPhoneNumber();
             this.adminPhoneNumber = shop.getAdminPhoneNumber();
             this.address = shop.getAddress();
             this.address_spec = shop.getAddress_spec();
             this.inactiveDate = shop.getInactiveDate();
             this.openNow = false;
-//            this.photoUrl = Objects.requireNonNullElse(shop.getShopMainImage(), "null");
             this.photoUrl = shop.getShopMainImage();
             this.rating = reviewAvg;
             this.reviewCount = reviewCnt;

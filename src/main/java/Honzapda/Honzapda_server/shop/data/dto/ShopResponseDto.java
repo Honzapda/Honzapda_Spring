@@ -33,7 +33,6 @@ public class ShopResponseDto {
         Long shopId;
         String shopName;
         String description;
-        String otherDetails;
         String shopPhoneNumber;
         String mainImage;
         Long reviewCount;
