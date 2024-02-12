@@ -99,7 +99,6 @@ public class ReviewService {
         // 어디 shop 리뷰인지 확인
         Shop findShop = findShopById(shopId);
 
-
         // 최신순으로 리뷰 페이징 조회
         Page<Review> allByShopOrderByCreatedAtDesc = reviewRepository.findAllByShopOrderByVisitedAtDesc(findShop, pageable);
 
@@ -133,14 +132,11 @@ public class ReviewService {
 
         if(review.getUser().getId().equals(userId)){
             reviewImageRepository.findAllByReview(review).ifPresent(reviewImages -> {
+                // 리뷰 이미지 리스트 제거 로직
                 reviewImages.forEach(reviewImage -> {
-                    try {
-                        String fileName = fileService.subStringUrl(reviewImage.getUrl());
-                        fileService.deleteObject(fileName);
-                    }
-                    catch (MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
+                    // URL파싱 > google storage 삭제 > db 제거
+                    String fileName = fileService.subStringUrl(reviewImage.getUrl());
+                    fileService.deleteObject(fileName);
                     reviewImageRepository.deleteById(reviewImage.getId());
                 });
             });

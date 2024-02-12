@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface FileService {
 
-    List<String> uploadObjects(List<MultipartFile> multipartFiles) throws IOException, Exception;
+    List<String> uploadObjects(List<MultipartFile> multipartFiles) ;
 
-    String uploadObject(MultipartFile multipartFile) throws IOException, Exception;
+    String uploadObject(MultipartFile multipartFile);
 
     String deleteObject(String objectName);
 
-    String subStringUrl(String url) throws MalformedURLException;
+    String subStringUrl(String url);
 }

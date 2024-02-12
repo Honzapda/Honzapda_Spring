@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService{
         return UserConverter.toUserInfo(savedUser);
     }
     @Override
-    public UserResDto.ProfileDto updateUserImage(MultipartFile image, Long userId) throws Exception {
+    public UserResDto.ProfileDto updateUserImage(MultipartFile image, Long userId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
 
