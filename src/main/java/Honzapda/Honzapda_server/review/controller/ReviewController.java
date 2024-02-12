@@ -47,4 +47,13 @@ public class ReviewController {
         return ApiResult.onSuccess(reviewService.getReviewImageListDto(shopId,PageRequest.of(page,size)));
 
     }
+
+    @DeleteMapping("/{reviewId}")
+    public ApiResult<String> deleteReview(
+            @SessionAttribute UserResDto.InfoDto user,
+            @PathVariable Long reviewId) {
+
+        reviewService.deleteReview(user.getId(), reviewId);
+        return ApiResult.onSuccess("리뷰를 삭제했습니다.");
+    }
 }

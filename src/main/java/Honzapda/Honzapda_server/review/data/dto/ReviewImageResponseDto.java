@@ -23,6 +23,7 @@ public class ReviewImageResponseDto {
     public static class ImageListDto{
         private List<ImageDto> imageDtoList;
         private Integer getNumberOfElements;
+        private Integer currentPage;
         private Boolean hasNext;
         private Boolean hasPrevious;
     }

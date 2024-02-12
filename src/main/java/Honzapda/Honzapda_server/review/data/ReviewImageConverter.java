@@ -15,13 +15,14 @@ public class ReviewImageConverter {
                 .build();
     }
 
-    public static ReviewImageResponseDto.ImageListDto toImageListDto(Slice<ReviewImage> imageSlice){
+    public static ReviewImageResponseDto.ImageListDto toImageListDto(Slice<ReviewImage> imageSlice, Integer currentPage){
 
         List<ReviewImageResponseDto.ImageDto> imageDtoList =
                 imageSlice.getContent().stream().map(ReviewImageConverter::toImageDto).toList();
 
         return ReviewImageResponseDto.ImageListDto.builder()
                 .imageDtoList(imageDtoList)
+                .currentPage(currentPage)
                 .hasNext(imageSlice.hasNext())
                 .hasPrevious(imageSlice.hasPrevious())
                 .getNumberOfElements(imageSlice.getNumberOfElements())

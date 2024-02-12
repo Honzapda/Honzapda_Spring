@@ -1,8 +1,6 @@
 package Honzapda.Honzapda_server.user.data.dto;
 
-import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.user.data.entity.LikeData;
-import Honzapda.Honzapda_server.user.data.entity.User;
 import lombok.Builder;
 import lombok.Data;
 
