@@ -18,7 +18,7 @@ import java.util.Arrays;
 @Slf4j
 public enum Congestion {
 
-
+    ZERO("0","0%"),
     TEN("10", "10%"),
     TWENTY("20", "20%"),
     THIRTY("30", "30%"),
