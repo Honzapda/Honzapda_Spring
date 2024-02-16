@@ -1,7 +1,9 @@
 package Honzapda.Honzapda_server.shop.repository.mysql;
 
 import Honzapda.Honzapda_server.shop.data.dto.*;
+import Honzapda.Honzapda_server.shop.data.entity.QShopDayCongestion;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.shop.data.entity.ShopDayCongestion;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 import static Honzapda.Honzapda_server.review.data.entity.QReview.review;
 import static Honzapda.Honzapda_server.shop.data.entity.QShop.shop;
 import static Honzapda.Honzapda_server.shop.data.entity.QShopBusinessHour.*;
+import static Honzapda.Honzapda_server.shop.data.entity.QShopDayCongestion.*;
 import static Honzapda.Honzapda_server.shop.data.entity.QShopPhoto.*;
 import static Honzapda.Honzapda_server.shop.data.entity.QShopUserBookmark.shopUserBookmark;
 import static com.querydsl.core.group.GroupBy.groupBy;
@@ -54,7 +57,29 @@ public class ShopRepositoryImpl implements ShopRepositoryCustom {
             homeDtos.get(i).setShopBusinessHour(searchByNameDtosOrdered.get(i).getShopBusinessHour());
         }
 
+        //Map<shopId, List<ShopDayCongestion>>
+        Map<Long, List<ShopDayCongestion>> shopDayCongestionMap = findShopDayCongestionByShopIds(mysqlIds);
+
+        for (MapResponseDto.HomeDto homeDto : homeDtos) {
+            List<ShopDayCongestion> shopDayCongestions = shopDayCongestionMap.get(homeDto.getId());
+            homeDto.setShopDayCongestions(shopDayCongestions);
+        }
+
         return homeDtos;
+    }
+
+    private Map<Long, List<ShopDayCongestion>> findShopDayCongestionByShopIds(List<Long> shopIds) {
+        List<ShopDayCongestion> shopDayCongestions = queryFactory.selectFrom(shopDayCongestion)
+                .rightJoin(shopDayCongestion.shop).fetchJoin()
+                .where(shopDayCongestion.shop.id.in(shopIds))
+                .fetch();
+
+        return shopDayCongestions.stream()
+                .collect(
+                        Collectors.groupingBy(
+                                shopDayCongestion -> shopDayCongestion.getShop().getId()
+                        )
+                );
     }
 
     @Override

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -75,4 +76,5 @@ public class ShopCongestionServiceImpl implements ShopCongestionService {
         return searchDto;
 
     }
+
 }

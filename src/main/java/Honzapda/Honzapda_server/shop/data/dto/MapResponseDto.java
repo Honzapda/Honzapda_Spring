@@ -3,11 +3,14 @@ package Honzapda.Honzapda_server.shop.data.dto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
+import Honzapda.Honzapda_server.shop.data.entity.ShopDayCongestion;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class MapResponseDto {
@@ -42,6 +45,9 @@ public class MapResponseDto {
         private Double rating;
         private Long reviewCount;
 
+        private String posFromStation;
+        private List<Integer> densityOfDays;
+
         // 위도 경도
         private Double x;
         private Double y;
@@ -64,6 +70,8 @@ public class MapResponseDto {
             this.photoUrl = shop.getShopMainImage();
             this.rating = reviewAvg;
             this.reviewCount = reviewCnt;
+            this.posFromStation = shop.getStationDistance();
+            this.densityOfDays = new ArrayList<>();
         }
 
         public void addCoordinates(ShopCoordinates shopCoordinates) {
@@ -77,6 +85,15 @@ public class MapResponseDto {
 
         public void setShopBusinessHour(ShopBusinessHour shopBusinessHour) {
             this.shopBusinessHour = shopBusinessHour;
+        }
+
+        //TODO: 만약 월화수 순서가 아니라면 수정 필요
+        public void setShopDayCongestions(List<ShopDayCongestion> shopDayCongestions) {
+            shopDayCongestions.stream()
+                    .map(ShopDayCongestion::getCongestionLevel)
+                    .map(Enum::ordinal)
+                    .map(i -> i + 1)
+                    .forEach(densityOfDays::add);
         }
     }
 
