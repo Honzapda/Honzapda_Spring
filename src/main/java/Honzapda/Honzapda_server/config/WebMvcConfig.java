@@ -14,6 +14,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginCheckInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns(
+                        "/auth/expired",
                         "/auth/checkId",
                         "/auth/findId",
                         "/auth/findPassword",
