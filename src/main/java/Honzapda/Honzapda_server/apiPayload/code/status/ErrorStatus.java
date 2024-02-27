@@ -21,8 +21,6 @@ public enum ErrorStatus implements BaseErrorCode {
     // 로그인 응답
     SESSION_EXPIRED(HttpStatus.UNAUTHORIZED,"LOGIN"+HttpStatus.UNAUTHORIZED.value(),"세션이 만료되었습니다."),
     ID_NOT_EXIST(HttpStatus.NOT_FOUND,"LOGIN"+HttpStatus.NOT_FOUND.value(),"ID를 잘못 입력하셨습니다."),
-    NICKNAME_NOT_EXIST(HttpStatus.NOT_FOUND,"LOGIN"+HttpStatus.NOT_FOUND.value(),"닉네임을 잘못 입력하셨습니다."),
-    //PW_NOT_MATCH(HttpStatus.FORBIDDEN,"LOGIN"+HttpStatus.FORBIDDEN.value(),"PW를 잘못 입력하셨습니다."),
     PW_NOT_MATCH(HttpStatus.FORBIDDEN,"LOGIN"+HttpStatus.FORBIDDEN.value(),"입력하신 정보가 회원정보와 일치하지 않습니다."),
 
     // 유저 응답
