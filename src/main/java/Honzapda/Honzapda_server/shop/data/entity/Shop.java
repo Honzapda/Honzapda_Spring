@@ -27,10 +27,6 @@ public class Shop extends BaseEntity{
     @Column
     private String description;
 
-    @Lob
-    @Column
-    private String otherDetails;
-
     @Column(length = 50)
     private String shopPhoneNumber;
 
@@ -47,10 +43,14 @@ public class Shop extends BaseEntity{
     private String address_spec;
 
     @Column
+    private String stationDistance;
+
+    @Column
     private String businessNumber;
 
     @Column
     private String loginId;
+
     @Column
     private String password;
 
@@ -60,7 +60,15 @@ public class Shop extends BaseEntity{
     @Column
     private String shopMainImage;
 
+    @Column
+    private Long totalSeatCount;
+
+    public void setRating(double rating){
+        this.rating = rating;
+    }
+
     // TODO: 영업 시간 및 휴무일 추가
 
     // TODO: 유저가 저장한 가게 목록에 대한 테이블 생성 필요
+
 }

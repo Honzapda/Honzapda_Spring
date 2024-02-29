@@ -1,15 +1,17 @@
 package Honzapda.Honzapda_server.shop.data.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShopBusinessHour {
-
+public class ShopAverageCongestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,14 +20,13 @@ public class ShopBusinessHour {
     @JoinColumn(name = "shopId")
     private Shop shop;
 
-    @Column(nullable = false)
-    private boolean isOpen;
+    @Column
+    private boolean isWeekend;
 
-    @Column(nullable = false)
-    private String dayOfWeek;
+    @Column
+    private String startTime;
 
-    private String openHours;
-
-    private String closeHours;
+    @Column
+    private String endTime;
 
 }

@@ -18,7 +18,7 @@ public class UserHelpInfoController {
 
     private final UserHelpInfoService userHelpInfoService;
 
-    @PostMapping("/")
+    @PostMapping("")
     public ApiResult<?> registerUserHelpInfo(
             @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,
             @RequestParam Long shopId,
@@ -34,23 +34,14 @@ public class UserHelpInfoController {
     }
 
 
-    @GetMapping("/")
+    @GetMapping("")
     public ApiResult<?> getUserHelpInfos(
+            @SessionAttribute(name = "user") UserResDto.InfoDto userResDto,
             @RequestParam Long shopId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        return ApiResult.onSuccess(userHelpInfoService.getUserHelpInfoListDto(shopId, PageRequest.of(page, size)));
-    }
-
-    @GetMapping("/image")
-    public ApiResult<?> getUserHelpInfoImages(
-            @RequestParam Long shopId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        return ApiResult.onSuccess(userHelpInfoService.getUserHelpInfoImageListDto(shopId,PageRequest.of(page,size)));
-
+        return ApiResult.onSuccess(userHelpInfoService.getUserHelpInfoListDto(userResDto.getId(),shopId, PageRequest.of(page, size)));
     }
 
     @DeleteMapping("/{userHelpInfoId}/like")

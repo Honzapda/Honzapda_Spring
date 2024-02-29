@@ -20,17 +20,26 @@ public class ShopConverter {
                 .shopName(request.getShopName())
                 .adminName(request.getAdminName())
                 .description(request.getDescription())
-                .otherDetails(request.getOtherDetails())
                 .shopPhoneNumber(request.getShopPhoneNumber())
                 .adminPhoneNumber(request.getAdminPhoneNumber())
                 .rating(0.0)
                 .address(request.getAddress())
                 .address_spec(request.getAddress_spec())
+                .stationDistance(request.getStationDistance())
                 .businessNumber(request.getBusinessNumber())
                 .inactiveDate(LocalDateTime.now())
                 .loginId(request.getLoginId())
                 .password(encoder.encode(request.getPassword()))
                 .shopMainImage(request.getShopMainImage())
+                .totalSeatCount(request.getTotalSeatCount())
+                .build();
+    }
+
+    public static ShopResponseDto.OwnerInfoDto toOwnerInfo(Shop shop) {
+        return ShopResponseDto.OwnerInfoDto.builder()
+                .id(shop.getId())
+                .name(shop.getAdminName())
+                .loginId(shop.getLoginId())
                 .build();
     }
 
@@ -39,14 +48,15 @@ public class ShopConverter {
                 .shopId(shop.getId())
                 .shopName(shop.getShopName())
                 .description(shop.getDescription())
-                .otherDetails(shop.getOtherDetails())
                 .shopPhoneNumber(shop.getShopPhoneNumber())
                 .rating(shop.getRating())
                 .address(shop.getAddress())
                 .address_spec(shop.getAddress_spec())
+                .stationDistance(shop.getStationDistance())
                 .inactiveDate(shop.getInactiveDate())
-                .photoUrl(shop.getShopMainImage())
+                .mainImage(shop.getShopMainImage())
                 .businessHours(businessHoursResDTOS)
+                .totalSeatCount(shop.getTotalSeatCount())
                 .build();
     }
 

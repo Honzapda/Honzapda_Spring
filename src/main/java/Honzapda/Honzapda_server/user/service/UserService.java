@@ -35,5 +35,5 @@ public interface UserService {
   
     boolean updateUserPrefer(Long userId, List<String> preferNameList);
 
-    UserResDto.ProfileDto updateUserImage(MultipartFile image, Long userId) throws Exception;
+    UserResDto.ProfileDto updateUserImage(MultipartFile image, Long userId);
 }

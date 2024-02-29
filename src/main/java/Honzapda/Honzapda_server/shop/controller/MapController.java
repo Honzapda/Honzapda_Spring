@@ -24,7 +24,7 @@ public class MapController {
 
     private final ShopFacadeService shopFacadeService;
 
-    @GetMapping
+    @PostMapping
     public ApiResult<List<MapResponseDto.HomeDto>> fetchShops(@RequestBody @Validated MapRequestDto.LocationDto locationDto) {
         return ApiResult.onSuccess(shopFacadeService.findShopsByLocation(locationDto));
     }

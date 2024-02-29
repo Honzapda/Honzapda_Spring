@@ -5,22 +5,18 @@ import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import Honzapda.Honzapda_server.user.service.UserService;
 import Honzapda.Honzapda_server.userHelpInfo.data.LikeUserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
-import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoImageConverter;
-import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoImageResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
-import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfoImage;
 import Honzapda.Honzapda_server.userHelpInfo.data.entity.mapping.LikeUserHelpInfo;
 import Honzapda.Honzapda_server.userHelpInfo.repository.LikeUserHelpInfoRepository;
-import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,14 +31,14 @@ public class UserHelpInfoService {
 
     private final ShopRepository shopRepository;
     private final UserHelpInfoRepository userHelpInfoRepository;
-    private final UserHelpInfoImageRepository userHelpInfoImageRepository;
     private final LikeUserHelpInfoRepository likeUserHelpInfoRepository;
+    private final UserService userService;
 
     @Transactional
     public UserHelpInfoResponseDto.UserHelpInfoDto registerUserHelpInfo(
             Long userId, Long shopId, UserHelpInfoRequestDto.CreateDto requestDto) {
 
-        User user = User.builder().id(userId).build();
+        User user = userService.getUser(userId);
         Shop shop = findShopById(shopId);
 
         // TODO: 3시간 이내 작성 제한 (데모데이까지는 안쓰는 기능)
@@ -53,12 +49,9 @@ public class UserHelpInfoService {
 
         Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(savedUserHelpInfo);
 
-        // TODO: url의 유효성 검증
-        if (!requestDto.getImageUrls().isEmpty())
-            userHelpInfoImageRepository.saveAll(
-                            UserHelpInfoImageConverter.toImages(requestDto,savedUserHelpInfo,shop));
+        boolean isLike = likeUserHelpInfoRepository.existsByUserAndUserHelpInfo(user,savedUserHelpInfo);
 
-        return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,likeCount);
+        return UserHelpInfoConverter.toUserHelpInfoDto(savedUserHelpInfo,likeCount,isLike);
     }
     @Transactional
     public void deleteUserHelpInfo(Long userId, Long userHelpInfoId){
@@ -66,7 +59,6 @@ public class UserHelpInfoService {
         UserHelpInfo userHelpInfo = getUserHelpInfoById(userHelpInfoId);
 
         if(userHelpInfo.getUser().getId().equals(userId)) {
-            userHelpInfoImageRepository.deleteAllByUserHelpInfo(userHelpInfo);
             likeUserHelpInfoRepository.deleteAllByUserHelpInfo(userHelpInfo);
             userHelpInfoRepository.delete(userHelpInfo);
         }
@@ -100,7 +92,9 @@ public class UserHelpInfoService {
 
 
 
-    public UserHelpInfoResponseDto.UserHelpInfoListDto getUserHelpInfoListDto(Long shopId, Pageable pageable){
+    public UserHelpInfoResponseDto.UserHelpInfoListDto getUserHelpInfoListDto(Long userId,Long shopId, Pageable pageable){
+
+        User user = User.builder().id(userId).build();
         // 어디 shop 도움 정보인지 확인
         Shop findShop = findShopById(shopId);
         // 정렬과 무관하게 shop을 기준으로 조회
@@ -110,21 +104,15 @@ public class UserHelpInfoService {
                 .map(userHelpInfo -> {
                         // 좋아요 갯수
                         Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(userHelpInfo);
-                        return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount);
+                        boolean userLike = likeUserHelpInfoRepository.existsByUserAndUserHelpInfo(user,userHelpInfo);
+                        return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount,userLike);
                 })
                 // likeCount를 기준으로 내림차순으로 정렬
-                .sorted((info1, info2) -> Long.compare(info2.getLikeCount(), info1.getLikeCount()))
+                .sorted((info1, info2) -> Long.compare(info2.getLike().getLikeCount(), info1.getLike().getLikeCount()))
                 .toList();
 
-        return UserHelpInfoConverter.toUserHelpInfoListDto(findAllByShop, userHelpInfoDtos);
-    }
-
-    public UserHelpInfoImageResponseDto.ImageListDto getUserHelpInfoImageListDto(Long shopId, Pageable pageable){
-
-        Shop findshop = findShopById(shopId);
-        Slice<UserHelpInfoImage> allByShop = userHelpInfoImageRepository.findAllByShopOrderByIdDesc(findshop,pageable);
-
-        return UserHelpInfoImageConverter.toImageListDto(allByShop);
+        return UserHelpInfoConverter.toUserHelpInfoListDto(
+                findAllByShop, userHelpInfoDtos, pageable.getPageNumber());
     }
 
     private Shop findShopById(Long shopId) {

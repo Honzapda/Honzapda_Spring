@@ -2,6 +2,7 @@ package Honzapda.Honzapda_server.review.service;
 
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
+import Honzapda.Honzapda_server.file.service.FileService;
 import Honzapda.Honzapda_server.review.data.ReviewConverter;
 import Honzapda.Honzapda_server.review.data.ReviewImageConverter;
 import Honzapda.Honzapda_server.review.data.dto.ReviewImageResponseDto;
@@ -14,6 +15,7 @@ import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import Honzapda.Honzapda_server.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,15 +34,17 @@ public class ReviewService {
     private final ReviewImageRepository reviewImageRepository;
     private final ReviewRepository reviewRepository;
     private final ShopRepository shopRepository;
+    private final UserService userService;
+    private final FileService fileService;
 
     @Transactional
     public ReviewResponseDto.ReviewDto registerReview(Long userId, Long shopId, ReviewRequestDto.ReviewRegisterDto requestDto) {
 
-        User user = User.builder().id(userId).build();
+        User user = userService.getUser(userId);
         Shop shop = findShopById(shopId);
 
-        // 리뷰 중복 방지
-        validateDuplicate(user, shop);
+        // 리뷰 중복 방지 TODO: 데모데이까지 주석처리
+        // validateDuplicate(user, shop);
 
         Review review = Review.builder()
                 .user(user)
@@ -89,6 +94,8 @@ public class ReviewService {
     }
 
     public ReviewResponseDto.ReviewListDto getReviewListDto(Long shopId, Pageable pageable) {
+
+
         // 어디 shop 리뷰인지 확인
         Shop findShop = findShopById(shopId);
 
@@ -104,7 +111,8 @@ public class ReviewService {
                 })
                 .collect(Collectors.toList());
 
-        return ReviewConverter.toReviewListDto(allByShopOrderByCreatedAtDesc, reviewDtos);
+        return ReviewConverter.toReviewListDto(
+                allByShopOrderByCreatedAtDesc, reviewDtos, pageable.getPageNumber());
     }
 
     public ReviewImageResponseDto.ImageListDto getReviewImageListDto(Long shopId, Pageable pageable){
@@ -114,6 +122,26 @@ public class ReviewService {
         Slice<ReviewImage> allByShopOrderByCreatedAtDesc =
                 reviewImageRepository.findAllByShopOrderByCreatedAtDesc(findShop, pageable);
 
-        return ReviewImageConverter.toImageListDto(allByShopOrderByCreatedAtDesc);
+        return ReviewImageConverter.toImageListDto(allByShopOrderByCreatedAtDesc, pageable.getPageNumber());
+    }
+
+    @Transactional
+    public void deleteReview(Long userId, Long reviewId){
+        Review review = reviewRepository.findById(reviewId).orElseThrow(
+                ()-> new GeneralException(ErrorStatus.REVIEW_NOT_FOUND));
+
+        if(review.getUser().getId().equals(userId)){
+            reviewImageRepository.findAllByReview(review).ifPresent(reviewImages -> {
+                // 리뷰 이미지 리스트 제거 로직
+                reviewImages.forEach(reviewImage -> {
+                    // URL파싱 > google storage 삭제 > db 제거
+                    String fileName = fileService.subStringUrl(reviewImage.getUrl());
+                    fileService.deleteObject(fileName);
+                    reviewImageRepository.deleteById(reviewImage.getId());
+                });
+            });
+            reviewRepository.deleteById(reviewId);
+        }
+        else throw new GeneralException(ErrorStatus.INVALID_REVIEW);
     }
 }

@@ -1,8 +1,7 @@
 package Honzapda.Honzapda_server.user.data.dto;
 
+import Honzapda.Honzapda_server.user.data.entity.SignUpType;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
-import Honzapda.Honzapda_server.shop.data.entity.Shop;
-import Honzapda.Honzapda_server.user.data.entity.User;
 import lombok.*;
 
 import java.util.List;
@@ -14,8 +13,9 @@ public class UserResDto {
     public static class InfoDto{
         private Long id;
         private String name;
+        private String profileImage;
         private String email;
-        private User.SignUpType signUpType;
+        private SignUpType signUpType;
     }
     @Data
     @Builder

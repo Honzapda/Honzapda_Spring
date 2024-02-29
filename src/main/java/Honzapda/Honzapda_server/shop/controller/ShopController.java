@@ -20,8 +20,9 @@ public class ShopController {
     private final ShopFacadeService shopFacadeService;
 
     @GetMapping("/{shopId}")
-    public ApiResult<ShopResponseDto.SearchDto> searchShop(@PathVariable(name = "shopId") Long shopId){
-        return ApiResult.onSuccess(shopFacadeService.findShop(shopId));
+    public ApiResult<ShopResponseDto.SearchDto> searchShop(@PathVariable(name = "shopId") Long shopId,
+                        @SessionAttribute UserResDto.InfoDto user){
+        return ApiResult.onSuccess(shopFacadeService.findShop(shopId, user.getId()));
     }
 
     @PostMapping("/register")
@@ -31,7 +32,17 @@ public class ShopController {
         return ApiResult.onSuccess(shopFacadeService.registerShop(request));
     }
 
-    @GetMapping("/search")
+
+    @PostMapping("/login")
+    public ApiResult<ShopResponseDto.OwnerInfoDto> loginShop(
+            @RequestBody @Valid ShopRequestDto.LoginDto request)
+    {
+        return ApiResult.onSuccess(shopFacadeService.loginShop(request));
+    }
+
+
+
+    @PostMapping("/search")
     public ApiResult<Slice<ShopResponseDto.SearchByNameDto>> searchShopSlice(
             @RequestBody @Valid ShopRequestDto.SearchDto request,
             @PageableDefault() Pageable pageable)

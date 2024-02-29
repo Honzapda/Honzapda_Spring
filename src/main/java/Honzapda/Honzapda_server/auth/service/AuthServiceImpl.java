@@ -8,6 +8,7 @@ import Honzapda.Honzapda_server.auth.apple.AppleProperties;
 import Honzapda.Honzapda_server.auth.apple.AppleSocialTokenInfoResponse;
 import Honzapda.Honzapda_server.auth.apple.common.TokenDecoder;
 import Honzapda.Honzapda_server.auth.util.PasswordGenerator;
+import Honzapda.Honzapda_server.user.data.entity.SignUpType;
 import Honzapda.Honzapda_server.review.data.entity.Review;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewImageRepository;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
@@ -20,8 +21,6 @@ import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.LikeRepository;
 import Honzapda.Honzapda_server.user.repository.UserPreferRepository;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
-import Honzapda.Honzapda_server.userHelpInfo.data.entity.UserHelpInfo;
-import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
@@ -56,7 +55,6 @@ public class AuthServiceImpl implements AuthService {
     private final ReviewRepository reviewRepository;
     private final ReviewImageRepository reviewImageRepository;
     private final UserHelpInfoRepository userHelpInfoRepository;
-    private final UserHelpInfoImageRepository userHelpInfoImageRepository;
     private final LikeRepository likeRepository;
 
     private final UserPreferRepository userPreferRepository;
@@ -77,11 +75,11 @@ public class AuthServiceImpl implements AuthService {
 
         if (request.getSocialToken() == null) {
             // 일반 회원
-            newUser.setSignUpType(User.SignUpType.LOCAL);
+            newUser.setSignUpType(SignUpType.LOCAL);
         } else {
             // 애플 회원
             newUser.setSocialToken(request.getSocialToken());
-            newUser.setSignUpType(User.SignUpType.APPLE);
+            newUser.setSignUpType(SignUpType.APPLE);
         }
 
         return userRepository.save(newUser);
@@ -142,7 +140,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void revoke(UserResDto.InfoDto userResDto) {
         User user = userRepository.findById(userResDto.getId()).orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
-        if (user.getSignUpType() == User.SignUpType.APPLE) {
+        if (user.getSignUpType() == SignUpType.APPLE) {
             String refreshToken = user.getSocialToken();
             if (refreshToken != null) {
                 //HttpHeaders headers = new HttpHeaders();
@@ -172,17 +170,7 @@ public class AuthServiceImpl implements AuthService {
         likeRepository.deleteAllByUser(user);
     }
 
-    private void deleteUserHelpInfos(User user) {
-
-        List<UserHelpInfo> userHelpInfoList = userHelpInfoRepository.findAllByUser(user);
-
-        userHelpInfoList.stream()
-                .forEach(userHelpInfo -> {
-                    userHelpInfoImageRepository.deleteAllByUserHelpInfo(userHelpInfo);
-                });
-
-        userHelpInfoRepository.deleteAllByUser(user);
-    }
+    private void deleteUserHelpInfos(User user) { userHelpInfoRepository.deleteAllByUser(user);}
 
     private void deleteUserReviews(User user) {
 

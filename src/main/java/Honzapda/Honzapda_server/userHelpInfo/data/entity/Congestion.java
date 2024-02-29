@@ -3,7 +3,6 @@ package Honzapda.Honzapda_server.userHelpInfo.data.entity;
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ import java.util.Arrays;
 @Slf4j
 public enum Congestion {
 
-
+    ZERO("0","0%"),
     TEN("10", "10%"),
     TWENTY("20", "20%"),
     THIRTY("30", "30%"),

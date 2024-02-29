@@ -31,8 +31,9 @@ public enum ErrorStatus implements BaseErrorCode {
     SHOP_COORDINATES_NOT_FOUND(HttpStatus.NO_CONTENT, "SHOP_COORDINATES2040" , "가게 위치를 찾을 수 없습니다."),
 
     // 가게 응답
+    SHOP_EXIST_MYSQL(HttpStatus.CONFLICT,"SHOP409","MYSQL에 이미 등록된 가게입니다."),
     SHOP_NOT_FOUND(HttpStatus.NOT_FOUND, "SHOP404", "해당 id의 가게를 찾을 수 없습니다."),
-    SHOP_ALREADY_EXIST(HttpStatus.BAD_REQUEST,"SHOP400","MONGODB에 존재하는 가게입니다."),
+    SHOP_EXIST_MONGO(HttpStatus.BAD_REQUEST,"SHOP400","MONGODB에 존재하는 가게입니다."),
 
     // <유저,샵> 북마크 응답
     BOOKMARK_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4000", "이미 존재하는 북마크입니다."),
@@ -41,6 +42,8 @@ public enum ErrorStatus implements BaseErrorCode {
     // 리뷰 응답
     REVIEW_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "REVIEW4000", "리뷰는 가게당 하나입니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND,"REVIEW4001","리뷰가 없습니다."),
+    INVALID_REVIEW(HttpStatus.FORBIDDEN,"REVIEW4002","해당 리뷰에 접근 권한이 없습니다."),
+    REVIEW_IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND,"REVIEW4003","해당 리뷰사진이 없습니다."),
 
     // 유저 도움 정보 응답
     INVALID_CONGESTION_EMPTY(HttpStatus.BAD_REQUEST, "USERHELPINFO4000", "혼잡도를 입력해주세요."),
@@ -59,8 +62,8 @@ public enum ErrorStatus implements BaseErrorCode {
     LIKE_ALREADY_LIKED(HttpStatus.CONFLICT,"LIKE4000","이미 좋아요를 누르셨습니다."),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND,"LKE4001","좋아요를 안누른 유저 도움 정보입니다."),
 
-    // 일시 응답
-    INVALID_DATE_TIME_FORMAT(HttpStatus.BAD_REQUEST,"DATETIME4000","일시 형식이 올바르지 않습니다."),
+    // FILE 응답
+    INVALID_URL(HttpStatus.BAD_REQUEST,"FILE4000","URL형식이 올바르지 않습니다."),
   
     // 유저 가게 찜하기 응답
     LIKE_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "LIKE4000", "이미 찜을 눌렀습니다."),

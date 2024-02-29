@@ -7,10 +7,12 @@ import Honzapda.Honzapda_server.shop.data.dto.*;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
+import Honzapda.Honzapda_server.shop.data.entity.ShopDayCongestion;
 import Honzapda.Honzapda_server.shop.data.entity.ShopUserBookmark;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository;
 import Honzapda.Honzapda_server.shop.service.shop.ShopService;
+import Honzapda.Honzapda_server.shop.service.shop_congestion.ShopCongestionService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.ShopCoordinatesService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.dto.ShopCoordinatesDto;
 import Honzapda.Honzapda_server.user.data.entity.LikeData;
@@ -20,11 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +33,13 @@ public class ShopFacadeService {
 
     private final ShopService shopService;
     private final ShopCoordinatesService shopCoordinatesService;
+    private final ShopCongestionService shopCongestionService;
     private final ShopUserBookmarkRepository shopUserBookmarkRepository;
 
     private final UserRepository userRepository;
     private final ShopRepository shopRepository;
 
+    @Transactional
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request) {
         // mysql에 상점 등록
         // 좌표 등록 없는 반환 객체
@@ -49,16 +52,22 @@ public class ShopFacadeService {
         // 좌표 등록한 반환 객체
         registeredShop.addCoordinates(shopCoordinates);
 
-        return registeredShop;
+        // 혼잡도 등록
+        return shopCongestionService.registerCongestion(request,registeredShop);
+
     }
 
-    public ShopResponseDto.SearchDto findShop(Long shopId) {
+    public ShopResponseDto.OwnerInfoDto loginShop(ShopRequestDto.LoginDto request) {
+        return shopService.loginShop(request);
+    }
+
+    public ShopResponseDto.SearchDto findShop(Long shopId, Long userId) {
         // 좌표 등록 없는 반환 객체
-        ShopResponseDto.SearchDto searchDto = shopService.findShop(shopId);
+        ShopResponseDto.SearchDto searchDto = shopService.findShop(shopId, userId);
 
         searchDto.addCoordinates(shopCoordinatesService.findShopCoordinates(shopId));
 
-        return searchDto;
+        return shopCongestionService.findShopCongestion(searchDto);
     }
 
     public List<MapResponseDto.HomeDto> findShopsByLocation(MapRequestDto.LocationDto locationDto) {
@@ -139,14 +148,14 @@ public class ShopFacadeService {
         Slice<MapResponseDto.UserBookmarkShopResponseDto> bookmarks = shopRepository.findBookmarkByUser(user, pageable);
 
         List<Long> mysqlIds = bookmarks.getContent().stream()
-                .map(MapResponseDto.UserBookmarkShopResponseDto::getShopId)
+                .map(MapResponseDto.UserBookmarkShopResponseDto::getId)
                 .toList();
 
         List<ShopCoordinates> shopsCoordiates = shopCoordinatesService.findShopsCoordiates(mysqlIds);
 
         bookmarks.getContent().forEach(bookmark -> {
             ShopCoordinates shopCoordinates = shopsCoordiates.stream()
-                    .filter(coordinates -> coordinates.getMysqlId().equals(bookmark.getShopId()))
+                    .filter(coordinates -> coordinates.getMysqlId().equals(bookmark.getId()))
                     .findFirst()
                     .orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_COORDINATES_NOT_FOUND));
 

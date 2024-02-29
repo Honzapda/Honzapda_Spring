@@ -4,7 +4,6 @@ import Honzapda.Honzapda_server.user.validation.annotation.UniqueEmail;
 import Honzapda.Honzapda_server.user.validation.annotation.UnqiueNickName;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import lombok.Getter;
 
 public class UserDto {

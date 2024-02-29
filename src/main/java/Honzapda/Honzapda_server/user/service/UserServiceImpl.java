@@ -34,8 +34,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,14 +102,12 @@ public class UserServiceImpl implements UserService{
         return UserConverter.toUserInfo(savedUser);
     }
     @Override
-    public UserResDto.ProfileDto updateUserImage(MultipartFile image, Long userId) throws Exception {
+    public UserResDto.ProfileDto updateUserImage(MultipartFile image, Long userId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
 
         if (!user.getProfileImage().equals(basicImageUrl)) {
-            URL imageUrl = new URL(user.getProfileImage());
-            String path = imageUrl.getPath();
-            String fileName = path.substring(path.lastIndexOf("/") + 1);
+            String fileName = fileService.subStringUrl(user.getProfileImage());
             fileService.deleteObject(fileName);
         }
         String imageUrl = fileService.uploadObject(image);

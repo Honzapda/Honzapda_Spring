@@ -22,7 +22,7 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public ApiResult<List<String>> uploadObject(@RequestPart List<MultipartFile> images) throws Exception {
+    public ApiResult<List<String>> uploadObject(@RequestPart List<MultipartFile> images) {
         return ApiResult.onSuccess(fileService.uploadObjects(images));
     }
 

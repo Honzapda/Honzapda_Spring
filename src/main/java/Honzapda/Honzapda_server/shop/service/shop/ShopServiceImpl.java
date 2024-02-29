@@ -16,10 +16,12 @@ import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository;
+import Honzapda.Honzapda_server.user.data.entity.User;
+import Honzapda.Honzapda_server.user.repository.LikeRepository;
+import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import Honzapda.Honzapda_server.userHelpInfo.data.UserHelpInfoConverter;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import Honzapda.Honzapda_server.userHelpInfo.repository.LikeUserHelpInfoRepository;
-import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoImageRepository;
 import Honzapda.Honzapda_server.userHelpInfo.repository.UserHelpInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -51,17 +53,20 @@ public class ShopServiceImpl implements ShopService {
 
     private final UserHelpInfoRepository userHelpInfoRepository;
 
-    private final UserHelpInfoImageRepository userHelpInfoImageRepository;
-
     private final LikeUserHelpInfoRepository likeUserHelpInfoRepository;
 
+    private final LikeRepository likeRepository;
+
+    private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request){
 
         if(shopRepository.existsByLoginId(request.getLoginId())){
-            throw new RuntimeException("아이디가 중복되었습니다");
+            throw new GeneralException(ErrorStatus.SHOP_EXIST_MYSQL);
         }
 
         Shop shop = ShopConverter.toShop(request,passwordEncoder);
@@ -74,6 +79,16 @@ public class ShopServiceImpl implements ShopService {
 
         return ShopConverter.toShopResponse(shop,businessHoursResDTOS);
     }
+
+    @Override
+    public ShopResponseDto.OwnerInfoDto loginShop(ShopRequestDto.LoginDto request) {
+        Shop dbOwner = getShopByEMail(request.getLoginId());
+        if(!passwordEncoder.matches(request.getPassword(), dbOwner.getPassword()))
+            throw new GeneralException(ErrorStatus.PW_NOT_MATCH);
+
+        return ShopConverter.toOwnerInfo(dbOwner);
+    }
+
     @Override
     public ShopResponseDto.SearchDto findShop(Long shopId){
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
@@ -142,6 +157,10 @@ public class ShopServiceImpl implements ShopService {
                 .orElse(0.0);
     }
 
+    private Long getReviewCount(Long shopId){
+        return reviewRepository.countByShopId(shopId);
+    }
+
 
     public boolean saveShopBusinessHours(Long shopId, List<ShopRequestDto.BusinessHoursReqDTO> businessHours){
 
@@ -195,6 +214,11 @@ public class ShopServiceImpl implements ShopService {
         return currentTime.isAfter(openTime) && currentTime.isBefore(closeTime);
     }
 
+    private Shop getShopByEMail(String email){
+        return shopRepository.findByLoginId(email)
+                .orElseThrow(()->new GeneralException(ErrorStatus.USER_NOT_FOUND));
+    }
+
     private String getCurrentDayOfWeek() {
         return LocalDateTime.now().getDayOfWeek().name();
     }
@@ -203,31 +227,33 @@ public class ShopServiceImpl implements ShopService {
 
         List<Review> reviewList = reviewRepository.findTop3ByShopOrderByVisitedAtDesc(shop);
 
-        List<ReviewResponseDto.ReviewDto> reviewDtoList = reviewList.stream()
+        return reviewList.stream()
                 .map(review -> {
                     List<ReviewImage> reviewImages = reviewImageRepository
                             .findAllByReview(review).orElseThrow(()-> new GeneralException(ErrorStatus.REVIEW_NOT_FOUND));
                     return ReviewConverter.toReviewDto(review, reviewImages);
                 })
                 .collect(Collectors.toList());
-
-        return reviewDtoList;
     }
-    private List<UserHelpInfoResponseDto.UserHelpInfoDto> getUserHelpInfoListDtoTop2(Shop shop) {
+    private List<UserHelpInfoResponseDto.UserHelpInfoDto> getUserHelpInfoListDtoTop2(User user, Shop shop) {
 
         return userHelpInfoRepository.findAllByShop(shop)
                 .orElseThrow(()->new GeneralException(ErrorStatus.USER_HELP_INFO_NOT_FOUND))
                 .stream()
                 .map(userHelpInfo->{
                     Long likeCount = likeUserHelpInfoRepository.countByUserHelpInfo(userHelpInfo);
-                    return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount);
+                    boolean userLike = likeUserHelpInfoRepository.existsByUserAndUserHelpInfo(user,userHelpInfo);
+                    return UserHelpInfoConverter.toUserHelpInfoDto(userHelpInfo,likeCount,userLike);
                 })
                 // likeCount를 기준으로 내림차순으로 정렬
-                .sorted((info1, info2) -> Long.compare(info2.getLikeCount(), info1.getLikeCount()))
+                .sorted((info1, info2) -> Long.compare(info2.getLike().getLikeCount(), info1.getLike().getLikeCount()))
                 .limit(2)
                 .toList();
     }
 
+    private boolean isUserLikeShop(User user, Shop shop) {
+        return likeRepository.existsByShopAndUser(shop, user);
+    }
 
 
     private void checkOpenNow(List<ShopResponseDto.SearchByNameDto> dtos) {
@@ -235,7 +261,11 @@ public class ShopServiceImpl implements ShopService {
                 dto -> {
                     if (dto != null) {
                         Optional.ofNullable(dto.getShopBusinessHour()).ifPresentOrElse(
-                                shopBusinessHour -> dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours())),
+                                shopBusinessHour -> {
+                                    if (shopBusinessHour.isOpen())
+                                        dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours()));
+                                    else dto.setOpenNow(false);
+                                },
                                 () -> dto.setOpenNow(false)
                         );
                     }
@@ -248,7 +278,11 @@ public class ShopServiceImpl implements ShopService {
                 dto -> {
                     if (dto != null) {
                         Optional.ofNullable(dto.getShopBusinessHour()).ifPresentOrElse(
-                                shopBusinessHour -> dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours())),
+                                shopBusinessHour -> {
+                                    if (shopBusinessHour.isOpen())
+                                        dto.setOpenNow(isCurrentTimeWithinOpenHours(shopBusinessHour.getOpenHours(), shopBusinessHour.getCloseHours()));
+                                    else dto.setOpenNow(false);
+                                },
                                 () -> dto.setOpenNow(false)
                         );
                     }
