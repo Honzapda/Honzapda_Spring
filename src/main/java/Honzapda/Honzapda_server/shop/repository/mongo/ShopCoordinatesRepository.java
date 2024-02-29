@@ -3,7 +3,6 @@ package Honzapda.Honzapda_server.shop.repository.mongo;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -22,4 +21,5 @@ public interface ShopCoordinatesRepository extends MongoRepository<ShopCoordinat
 
     List<ShopCoordinates> findAllByMysqlIdIn(List<Long> mysqlIds);
 
+    ShopCoordinates findByShopName(String shopName);
 }

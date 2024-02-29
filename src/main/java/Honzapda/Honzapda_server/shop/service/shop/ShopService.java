@@ -3,6 +3,8 @@ package Honzapda.Honzapda_server.shop.service.shop;
 import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
+import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -25,4 +27,12 @@ public interface ShopService {
     Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContainingSortByBookmark(ShopRequestDto.SearchDto request, Pageable pageable);
 
     Slice<ShopResponseDto.SearchByNameDto> searchShopByShopNameContaining(ShopRequestDto.SearchDto request, Pageable pageable);
+
+    List<ShopBusinessHour> getShopBusinessHours(Shop shop);
+
+    boolean getOpenNow(List<ShopBusinessHour> businessHours);
+
+    Long getShopBookMarkCount(Shop shop);
+
+    Long getShopReviewCount(Shop shop);
 }

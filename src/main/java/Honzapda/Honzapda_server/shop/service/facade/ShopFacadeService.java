@@ -5,6 +5,7 @@ import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.shop.data.BookmarkConverter;
 import Honzapda.Honzapda_server.shop.data.dto.*;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
+import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
 import Honzapda.Honzapda_server.shop.data.entity.ShopDayCongestion;
 import Honzapda.Honzapda_server.shop.data.entity.ShopUserBookmark;
@@ -14,6 +15,7 @@ import Honzapda.Honzapda_server.shop.service.shop.ShopService;
 import Honzapda.Honzapda_server.shop.service.shop_congestion.ShopCongestionService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.ShopCoordinatesService;
 import Honzapda.Honzapda_server.shop.service.shop_coordinates.dto.ShopCoordinatesDto;
+import Honzapda.Honzapda_server.user.data.entity.LikeData;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.*;
 
-import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -180,6 +181,55 @@ public class ShopFacadeService {
         );
     }
 
+    public Slice<ShopResponseDto.likeDto> getLikeShopsSortBy(List<LikeData> likes, ShopRequestDto.SearchDto request, Pageable pageable){
+        List<ShopResponseDto.likeDto> likeShops = new ArrayList<>();
+
+        likes.forEach(likeData ->{
+            Shop shop = likeData.getShop();
+            List<ShopBusinessHour> businessHours = shopService.getShopBusinessHours(shop);
+            boolean openNow = shopService.getOpenNow(businessHours);
+            Long bookMarkCount = shopService.getShopBookMarkCount(shop);
+            Long reviewCount = shopService.getShopReviewCount(shop);
+            Double distance = shopCoordinatesService.getDistance(request, shop);
+
+
+            ShopResponseDto.likeDto shopLikeDto = ShopResponseDto.likeDto.builder()
+                    .shopId(shop.getId())
+                    .shopName(shop.getShopName())
+                    .address(shop.getAddress())
+                    .address_spec(shop.getAddress_spec())
+                    .mainImage(shop.getShopMainImage())
+                    .openNow(openNow)
+                    .bookMarkCount(bookMarkCount)
+                    .reviewCount(reviewCount)
+                    .distance(distance)
+                    .build();
+
+            likeShops.add(shopLikeDto);
+        });
+
+        SortColumn sortColumn = request.getSortColumn();
+
+        if (sortColumn == SortColumn.DISTANCE) {
+            Collections.sort(likeShops, Comparator.comparingDouble(ShopResponseDto.likeDto::getDistance));
+        }
+
+        if (sortColumn == SortColumn.REVIEW_COUNT) {
+            Collections.sort(likeShops, Comparator.comparingLong(ShopResponseDto.likeDto::getReviewCount).reversed());
+        }
+
+        if (sortColumn == SortColumn.BOOKMARK_COUNT) {
+            Collections.sort(likeShops, Comparator.comparingLong(ShopResponseDto.likeDto::getBookMarkCount).reversed());
+        }
+
+        if (sortColumn == SortColumn.RECOMMEND) {
+            // TODO: 추천수 미구현
+
+        }
+
+        return new SliceImpl<>(likeShops, pageable, true);
+    }
+
     private User findUserById(Long userId) {
 //        return userRepository.findById(userId)
 //                .orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
@@ -203,4 +253,6 @@ public class ShopFacadeService {
         return shopUserBookmarkRepository.findByUserAndShop(user, shop)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.BOOKMARK_NOT_FOUND));
     }
+
+
 }

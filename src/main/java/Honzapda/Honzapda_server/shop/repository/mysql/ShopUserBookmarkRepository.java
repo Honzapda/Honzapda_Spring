@@ -11,4 +11,6 @@ public interface ShopUserBookmarkRepository extends JpaRepository<ShopUserBookma
     Optional<ShopUserBookmark> findByUserAndShop(User user, Shop shop);
 
     void deleteAllByUser(User user);
+
+    Long countBookmarksByShop(Shop shop);
 }

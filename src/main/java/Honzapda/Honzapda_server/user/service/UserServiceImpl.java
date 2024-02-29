@@ -5,11 +5,13 @@ import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.apiPayload.exception.handler.UserHandler;
 import Honzapda.Honzapda_server.file.service.FileService;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
+import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
+import Honzapda.Honzapda_server.shop.service.facade.ShopFacadeService;
 import Honzapda.Honzapda_server.user.data.UserConverter;
 import Honzapda.Honzapda_server.user.data.dto.LikeResDto;
 import Honzapda.Honzapda_server.user.data.dto.UserDto;
@@ -26,11 +28,13 @@ import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -50,6 +54,8 @@ public class UserServiceImpl implements UserService{
     private final UserPreferRepository userPreferRepository;
     private final ShopBusinessHourRepository shopBusinessHourRepository;
     private final FileService fileService;
+
+    private final ShopFacadeService shopFacadeService;
 
     @Value("${honzapda.basic-image.url}")
     private String basicImageUrl;
@@ -132,22 +138,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<ShopResponseDto.SearchDto> getLikeShops(Long id) {
+    public Slice<ShopResponseDto.likeDto> getLikeShops(Long id, ShopRequestDto.SearchDto request, Pageable pageable) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user가 존재하지 않습니다"));
         List<LikeData> likes = likeRepository.findAllByUser(user).orElseThrow(() -> new NoSuchElementException("찜한 가게가 없습니다."));
 
-        List<ShopResponseDto.SearchDto> likeshops = new ArrayList<>();
-
-        likes.forEach(likeData ->{
-            Shop shop = likeData.getShop();
-            List<ShopResponseDto.BusinessHoursResDTO> businessHours = getShopBusinessHours(shop);
-
-
-            ShopResponseDto.SearchDto shopResponseDto = ShopConverter.toShopResponse(shop,businessHours);
-
-            likeshops.add(shopResponseDto);
-        });
-        return likeshops;
+        return shopFacadeService.getLikeShopsSortBy(likes, request, pageable);
     }
 
     @Override

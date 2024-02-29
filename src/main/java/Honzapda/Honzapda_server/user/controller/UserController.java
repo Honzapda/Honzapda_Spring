@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.user.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
+import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.user.data.dto.LikeResDto;
 import Honzapda.Honzapda_server.user.data.dto.UserDto;
@@ -9,11 +10,10 @@ import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.net.MalformedURLException;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,8 +50,10 @@ public class UserController {
     }
 
     @GetMapping("/likeshops")
-    public ApiResult<List<ShopResponseDto.SearchDto>> getLikeShops(@SessionAttribute("user") UserResDto.InfoDto userResDto) {
-        return ApiResult.onSuccess(userService.getLikeShops(userResDto.getId()));
+    public ApiResult<Slice<ShopResponseDto.likeDto>> getLikeShops(@SessionAttribute("user") UserResDto.InfoDto userResDto
+            , @RequestBody @Valid ShopRequestDto.SearchDto request,@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+
+        return ApiResult.onSuccess(userService.getLikeShops(userResDto.getId(), request, PageRequest.of(page, size)));
     }
 
     @PostMapping("/likes")

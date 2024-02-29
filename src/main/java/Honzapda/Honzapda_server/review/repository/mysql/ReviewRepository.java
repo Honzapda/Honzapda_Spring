@@ -25,6 +25,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findAllByShopOrderByVisitedAtDesc(Shop shop, Pageable pageable);
 
     List<Review> findTop3ByShopOrderByVisitedAtDesc(Shop shop);
+
+    Long countReviewsByShop(Shop shop);
 }
 
 

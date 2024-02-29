@@ -10,13 +10,12 @@ import Honzapda.Honzapda_server.review.repository.mysql.ReviewImageRepository;
 import Honzapda.Honzapda_server.review.repository.mysql.ReviewRepository;
 import Honzapda.Honzapda_server.shop.data.MapConverter;
 import Honzapda.Honzapda_server.shop.data.ShopConverter;
-import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
-import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
-import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
+import Honzapda.Honzapda_server.shop.data.dto.*;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopBusinessHourRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
+import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.LikeRepository;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
@@ -33,10 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +48,8 @@ public class ShopServiceImpl implements ShopService {
     private final ReviewImageRepository reviewImageRepository;
 
     private final ShopBusinessHourRepository shopBusinessHourRepository;
+
+    private final ShopUserBookmarkRepository shopUserBookmarkRepository;
 
     private final UserHelpInfoRepository userHelpInfoRepository;
 
@@ -92,30 +90,24 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    @Transactional
-    public ShopResponseDto.SearchDto findShop(Long shopId, Long userId){
+    public ShopResponseDto.SearchDto findShop(Long shopId){
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
-        User user = userRepository.findById(userId).orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
         List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
+
+
         List<ReviewResponseDto.ReviewDto> reviewDtos = getReviewListDto(shop);
 
         //TODO: Dto에 추가해야함
-        List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(user, shop);
+        List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(shop);
         ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop,businessHoursResDTOS);
-        double reviewScore = getRating(shopId);
 
-        shop.setRating(reviewScore);
-        shopRepository.save(shop);
-
-        resultDto.setRating(reviewScore);
+        resultDto.setRating(getRating(shopId));
         resultDto.setOpenNow(getOpenNow(businessHours));
-        resultDto.setReviewCount(getReviewCount(shopId));
         resultDto.setBusinessHours(businessHoursResDTOS);
         resultDto.setUserHelpInfoDtoList(userHelpInfoListDtoTop2);
         resultDto.setReviewList(reviewDtos);
-        resultDto.setUserLike(isUserLikeShop(user, shop));
 
         return resultDto;
 
@@ -191,7 +183,7 @@ public class ShopServiceImpl implements ShopService {
 
             return true;
         } else {
-            throw new NoSuchElementException("해당 가게가 존재하지 않습니다.");
+            throw new GeneralException(ErrorStatus.SHOP_NOT_FOUND);
         }
     }
 
@@ -297,4 +289,14 @@ public class ShopServiceImpl implements ShopService {
                 }
         );
     }
+
+    public Long getShopBookMarkCount(Shop shop) {
+        return shopUserBookmarkRepository.countBookmarksByShop(shop);
+    }
+
+    public Long getShopReviewCount(Shop shop) {
+        return reviewRepository.countReviewsByShop(shop);
+    }
+
+
 }
