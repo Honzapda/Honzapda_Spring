@@ -90,8 +90,9 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public ShopResponseDto.SearchDto findShop(Long shopId){
+    public ShopResponseDto.SearchDto findShop(Long userId, Long shopId){
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
         List<ShopBusinessHour> businessHours = getShopBusinessHours(shop);
         List<ShopResponseDto.BusinessHoursResDTO> businessHoursResDTOS = getShopBusinessHoursResDTO(businessHours);
@@ -100,8 +101,8 @@ public class ShopServiceImpl implements ShopService {
         List<ReviewResponseDto.ReviewDto> reviewDtos = getReviewListDto(shop);
 
         //TODO: Dto에 추가해야함
-        List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(shop);
-        ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop,businessHoursResDTOS);
+        List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoListDtoTop2 = getUserHelpInfoListDtoTop2(user, shop);
+        ShopResponseDto.SearchDto resultDto = ShopConverter.toShopResponse(shop, businessHoursResDTOS);
 
         resultDto.setRating(getRating(shopId));
         resultDto.setOpenNow(getOpenNow(businessHours));
