@@ -1,4 +1,5 @@
 package Honzapda.Honzapda_server.intercepter;
+
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +18,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         // 2. 회원 정보 체크
         if (userResDto == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);  // 401 status code를 전송
+
+            request.getRequestDispatcher("/auth/expired").forward(request,response); // 컨트롤러로 이동해서 에러 발생
             return false;
         }
 

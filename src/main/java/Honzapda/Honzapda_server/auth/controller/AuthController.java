@@ -3,6 +3,7 @@ package Honzapda.Honzapda_server.auth.controller;
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
 import Honzapda.Honzapda_server.apiPayload.code.status.ErrorStatus;
 import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
+import Honzapda.Honzapda_server.apiPayload.exception.GeneralException;
 import Honzapda.Honzapda_server.auth.service.AuthService;
 import Honzapda.Honzapda_server.user.data.UserConverter;
 import Honzapda.Honzapda_server.user.data.dto.*;
@@ -101,5 +102,9 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/expired")
+    public void expired() {
+            throw new GeneralException(ErrorStatus.SESSION_EXPIRED);
+    }
 
 }

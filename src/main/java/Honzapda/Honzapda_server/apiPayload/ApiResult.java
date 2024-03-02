@@ -48,8 +48,5 @@ public class ApiResult<T> {
     public static <T> ApiResult<T> onFailure(BaseErrorCode code, T result){
         return new ApiResult<>(false, code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
     }
-    public static <T> ApiResult<T> of(BaseErrorCode code, T result){
-        return new ApiResult<>(false, code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
-    }
 
 }
