@@ -8,10 +8,12 @@ import Honzapda.Honzapda_server.user.data.dto.UserDto;
 import Honzapda.Honzapda_server.user.data.dto.UserPreferDto;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.user.service.UserService;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,12 +30,12 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ApiResult<?> updateUser(@RequestBody @Valid UserDto.JoinDto userJoinDto, @SessionAttribute UserResDto.InfoDto user){
+    public ApiResult<?> updateUser(@RequestBody @Valid UserDto.JoinDto userJoinDto, @SessionAttribute @Parameter(hidden = true) UserResDto.InfoDto user){
         return ApiResult.onSuccess(userService.updateUser(userJoinDto, user.getId()));
     }
 
-    @PostMapping("/profileImage")
-    public ApiResult<?> updateUserImage(@RequestPart MultipartFile image,@SessionAttribute UserResDto.InfoDto user) throws Exception {
+    @PostMapping(value = "/profileImage",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResult<?> updateUserImage(@RequestPart MultipartFile image,@SessionAttribute @Parameter(hidden = true) UserResDto.InfoDto user) throws Exception {
         return ApiResult.onSuccess(userService.updateUserImage(image,user.getId()));
     }
 
@@ -41,7 +43,7 @@ public class UserController {
 
 
     @PostMapping("/password")
-    public ApiResult<?> patchPassword(@RequestBody @Valid UserDto.PatchUserPwDto userPwDto, @SessionAttribute("user") UserResDto.InfoDto user){
+    public ApiResult<?> patchPassword(@RequestBody @Valid UserDto.PatchUserPwDto userPwDto, @SessionAttribute("user") @Parameter(hidden = true) UserResDto.InfoDto user){
         /*
          * flow : 1. 기존 비밀번호 재확인 -> 동일하면, 2.신규 비밀번호 입력으로 변경
          * 일단, MY에 없어서, 2번만 구현하였습니다.
@@ -49,8 +51,8 @@ public class UserController {
         return ApiResult.onSuccess(userService.patchPassword(userPwDto, user.getId()));
     }
 
-    @GetMapping("/likeshops")
-    public ApiResult<Slice<ShopResponseDto.likeDto>> getLikeShops(@SessionAttribute("user") UserResDto.InfoDto userResDto
+    @PostMapping("/likeshops")
+    public ApiResult<Slice<ShopResponseDto.likeDto>> getLikeShops(@SessionAttribute("user") @Parameter(hidden = true) UserResDto.InfoDto userResDto
             , @RequestBody @Valid ShopRequestDto.SearchDto request,@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 
         return ApiResult.onSuccess(userService.getLikeShops(userResDto.getId(), request, PageRequest.of(page, size)));
@@ -65,18 +67,18 @@ public class UserController {
         return ApiResult.onSuccess(userService.deleteLikeShop(shopId, userResDto.getId()));
     }
     @GetMapping("/prefer")
-    public ApiResult<?> searchUserPrefer(@SessionAttribute UserResDto.InfoDto user){
+    public ApiResult<?> searchUserPrefer(@SessionAttribute @Parameter(hidden = true) UserResDto.InfoDto user){
         UserPreferDto preferNameList = userService.searchUserPrefer(user.getId());
         return ApiResult.onSuccess(preferNameList);
     }
 
     @PostMapping("/prefer")
-    public ApiResult<?> registerUserPrefer(@RequestBody UserPreferDto userPreferDto, @SessionAttribute UserResDto.InfoDto user){
+    public ApiResult<?> registerUserPrefer(@RequestBody UserPreferDto userPreferDto, @SessionAttribute @Parameter(hidden = true) UserResDto.InfoDto user){
         return ApiResult.onSuccess(userService.registerUserPrefer(user.getId(), userPreferDto.getPreferNameList()));
     }
 
     @PatchMapping("/prefer")
-    public ApiResult<?> updateUserPrefer(@RequestBody UserPreferDto userPreferDto,@SessionAttribute UserResDto.InfoDto user){
+    public ApiResult<?> updateUserPrefer(@RequestBody UserPreferDto userPreferDto,@SessionAttribute @Parameter(hidden = true) UserResDto.InfoDto user){
         return ApiResult.onSuccess(userService.updateUserPrefer(user.getId(), userPreferDto.getPreferNameList()));
     }
 

@@ -42,8 +42,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ApiResult<UserResDto.InfoDto>
-    login(HttpServletRequest httpRequest, @RequestBody @Valid UserDto.LoginDto request) {
+    public ApiResult<UserResDto.InfoDto> login(HttpServletRequest httpRequest, @RequestBody @Valid UserDto.UserLoginDto request) {
 
         UserResDto.InfoDto userResDto = UserConverter.toUserInfo(authService.loginUser(request));
 

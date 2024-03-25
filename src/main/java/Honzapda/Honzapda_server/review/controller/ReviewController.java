@@ -6,6 +6,7 @@ import Honzapda.Honzapda_server.review.data.dto.ReviewRequestDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
 import Honzapda.Honzapda_server.review.service.ReviewService;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class ReviewController {
 
     @PostMapping("")
     public ApiResult<ReviewResponseDto.ReviewDto> registerReview(
-            @SessionAttribute UserResDto.InfoDto user,
+            @SessionAttribute @Parameter(hidden = true) UserResDto.InfoDto user,
             @RequestParam Long shopId,
             @RequestBody @Valid ReviewRequestDto.ReviewRegisterDto requestDto){
         return ApiResult.onSuccess(reviewService.registerReview(user.getId(), shopId, requestDto));

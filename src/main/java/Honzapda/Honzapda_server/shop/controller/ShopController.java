@@ -5,12 +5,16 @@ import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.service.facade.ShopFacadeService;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,8 +49,10 @@ public class ShopController {
     @PostMapping("/search")
     public ApiResult<Slice<ShopResponseDto.SearchByNameDto>> searchShopSlice(
             @RequestBody @Valid ShopRequestDto.SearchDto request,
-            @PageableDefault() Pageable pageable)
+            @PageableDefault()@Parameter(hidden = true) Pageable pageable)
     {
         return ApiResult.onSuccess(shopFacadeService.searchShop(request, pageable));
     }
+
+
 }

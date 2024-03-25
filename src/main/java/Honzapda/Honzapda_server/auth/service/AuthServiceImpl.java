@@ -89,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public User loginUser(UserDto.LoginDto request) {
+    public User loginUser(UserDto.UserLoginDto request) {
 
         User dbUser = getUserByEMail(request.getEmail());
         if(!passwordEncoder.matches(request.getPassword(), dbUser.getPassword()))

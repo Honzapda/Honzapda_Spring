@@ -7,7 +7,6 @@ import Honzapda.Honzapda_server.shop.data.dto.*;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
-import Honzapda.Honzapda_server.shop.data.entity.ShopDayCongestion;
 import Honzapda.Honzapda_server.shop.data.entity.ShopUserBookmark;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopRepository;
 import Honzapda.Honzapda_server.shop.repository.mysql.ShopUserBookmarkRepository;

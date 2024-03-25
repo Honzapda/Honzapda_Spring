@@ -12,7 +12,7 @@ public interface AuthService {
 
     User registerUser(UserDto.JoinDto request);
 
-    User loginUser(UserDto.LoginDto request);
+    User loginUser(UserDto.UserLoginDto request);
 
     Object appleLogin(String authorizationCode);
 
