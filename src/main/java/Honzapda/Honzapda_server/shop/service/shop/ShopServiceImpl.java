@@ -90,7 +90,7 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public ShopResponseDto.SearchDto findShop(Long userId, Long shopId){
+    public ShopResponseDto.SearchDto findShop(Long shopId, Long userId){
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new GeneralException(ErrorStatus.SHOP_NOT_FOUND));
         User user = userRepository.findById(userId).orElseThrow(() -> new GeneralException(ErrorStatus.USER_NOT_FOUND));
 
