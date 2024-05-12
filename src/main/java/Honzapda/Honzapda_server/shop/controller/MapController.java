@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.shop.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
+import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.shop.data.dto.MapRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +33,9 @@ public class MapController {
 
 
     @PostMapping("/shop/{shopId}")
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResult<MapResponseDto.BookmarkResponseDto> addBookmark(@SessionAttribute(name = "user") UserResDto.InfoDto userResDto, @PathVariable(name = "shopId") Long shopId) {
-        return ApiResult.onSuccess(shopFacadeService.addBookmark(userResDto.getId(), shopId));
+        return ApiResult.onSuccess(SuccessStatus._CREATED,shopFacadeService.addBookmark(userResDto.getId(), shopId));
     }
 
     @DeleteMapping("/shop/{shopId}")

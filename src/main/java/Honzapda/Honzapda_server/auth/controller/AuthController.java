@@ -8,10 +8,12 @@ import Honzapda.Honzapda_server.auth.service.AuthService;
 import Honzapda.Honzapda_server.user.data.UserConverter;
 import Honzapda.Honzapda_server.user.data.dto.*;
 import Honzapda.Honzapda_server.user.data.entity.User;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +37,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResult<UserResDto.InfoDto>
     register(@RequestBody @Valid UserDto.JoinDto request) {
         User newUser = authService.registerUser(request);

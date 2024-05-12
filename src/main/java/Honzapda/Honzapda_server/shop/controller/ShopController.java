@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.shop.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
+import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.shop.service.facade.ShopFacadeService;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -30,10 +32,11 @@ public class ShopController {
     }
 
     @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResult<ShopResponseDto.SearchDto> registerShop(
             @RequestBody @Valid ShopRequestDto.RegisterDto request)
     {
-        return ApiResult.onSuccess(shopFacadeService.registerShop(request));
+        return ApiResult.onSuccess(SuccessStatus._CREATED,shopFacadeService.registerShop(request));
     }
 
 

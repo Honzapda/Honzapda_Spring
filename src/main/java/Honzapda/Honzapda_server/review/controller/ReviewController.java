@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.review.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
+import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.review.data.dto.ReviewImageResponseDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewRequestDto;
 import Honzapda.Honzapda_server.review.data.dto.ReviewResponseDto;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,11 +24,12 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResult<ReviewResponseDto.ReviewDto> registerReview(
             @SessionAttribute @Parameter(hidden = true) UserResDto.InfoDto user,
             @RequestParam Long shopId,
             @RequestBody @Valid ReviewRequestDto.ReviewRegisterDto requestDto){
-        return ApiResult.onSuccess(reviewService.registerReview(user.getId(), shopId, requestDto));
+        return ApiResult.onSuccess(SuccessStatus._CREATED,reviewService.registerReview(user.getId(), shopId, requestDto));
     }
 
 

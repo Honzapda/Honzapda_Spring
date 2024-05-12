@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.user.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
+import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.shop.data.dto.ShopRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.user.data.dto.LikeResDto;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,8 +61,9 @@ public class UserController {
     }
 
     @PostMapping("/likes")
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResult<LikeResDto> likeShop(@RequestParam Long shopId, @SessionAttribute("user") UserResDto.InfoDto userResDto){
-        return ApiResult.onSuccess(userService.likeShop(shopId, userResDto.getId()));
+        return ApiResult.onSuccess(SuccessStatus._CREATED,userService.likeShop(shopId, userResDto.getId()));
     }
     @DeleteMapping("/likes")
     public ApiResult<LikeResDto> deleteLikeShop(@RequestParam Long shopId,@SessionAttribute("user") UserResDto.InfoDto userResDto) {
@@ -73,8 +76,9 @@ public class UserController {
     }
 
     @PostMapping("/prefer")
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResult<?> registerUserPrefer(@RequestBody UserPreferDto userPreferDto, @SessionAttribute @Parameter(hidden = true) UserResDto.InfoDto user){
-        return ApiResult.onSuccess(userService.registerUserPrefer(user.getId(), userPreferDto.getPreferNameList()));
+        return ApiResult.onSuccess(SuccessStatus._CREATED,userService.registerUserPrefer(user.getId(), userPreferDto.getPreferNameList()));
     }
 
     @PatchMapping("/prefer")

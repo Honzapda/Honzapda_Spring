@@ -1,6 +1,7 @@
 package Honzapda.Honzapda_server.userHelpInfo.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
+import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoRequestDto;
 import Honzapda.Honzapda_server.userHelpInfo.service.UserHelpInfoService;
@@ -9,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,18 +22,20 @@ public class UserHelpInfoController {
     private final UserHelpInfoService userHelpInfoService;
 
     @PostMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResult<?> registerUserHelpInfo(
             @SessionAttribute(name = "user") @Parameter(hidden = true) UserResDto.InfoDto userResDto,
             @RequestParam Long shopId,
             @RequestBody @Valid UserHelpInfoRequestDto.CreateDto requestDto){
-        return ApiResult.onSuccess(userHelpInfoService.registerUserHelpInfo(userResDto.getId(), shopId, requestDto));
+        return ApiResult.onSuccess(SuccessStatus._CREATED,userHelpInfoService.registerUserHelpInfo(userResDto.getId(), shopId, requestDto));
     }
     @PostMapping("/{userHelpInfoId}/like")
+    @ResponseStatus(HttpStatus.CREATED)
     public ApiResult<?> likeUserHelpInfo(
             @SessionAttribute(name = "user") @Parameter(hidden = true) UserResDto.InfoDto userResDto,
             @PathVariable Long userHelpInfoId){
         userHelpInfoService.likeUserHelpInfo(userResDto.getId(), userHelpInfoId);
-        return ApiResult.onSuccess("좋아요를 눌렀습니다.");
+        return ApiResult.onSuccess(SuccessStatus._CREATED,"좋아요를 눌렀습니다.");
     }
 
 
