@@ -18,8 +18,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         // 2. 회원 정보 체크
         if (userResDto == null) {
-
-            request.getRequestDispatcher("/auth/expired").forward(request,response); // 컨트롤러로 이동해서 에러 발생
+            response.sendRedirect("/auth/expired");
             return false;
         }
 
