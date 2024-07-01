@@ -3,12 +3,9 @@
 <img src="https://github.com/Honzapda/Honzapda_Spring/assets/137385615/59313914-771f-45f3-b8f3-765b96477c4e" width="100%">
 
   <br><br>
-  <img src="https://img.shields.io/badge/IntelliJ-14.3.1-red?logo=intellij-idea"/>
   <img src="https://img.shields.io/badge/SpringBoot-3.2.1-green?logo=springBoot"/> 
-  <img src="https://img.shields.io/badge/MySQL-15.0+-white?logo=mysql"/>
-  <img src="https://img.shields.io/badge/MongoDB-15.0+-white?logo=mongodb"/>  
-  <img src="https://img.shields.io/badge/VsCode-15.0+-white?logo=visualstudiocode"/>
-  <img src="https://img.shields.io/badge/YOLO-15.0+-white?logo=yolo"/><br>
+  <img src="https://img.shields.io/badge/MySQL-8.0+-white?logo=mysql"/>
+  <img src="https://img.shields.io/badge/MongoDB-7.0.11+-white?logo=mongodb"/>  
   [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FBookJamm%2FFE&count_bg=%23FF4343&title_bg=%23FFC8C8&icon=swift.svg&icon_color=%23FF4F4F&title=total+hits&edge_flat=false)](https://hits.seeyoufarm.com)
 </div>
 
@@ -48,8 +45,7 @@
 | 2. 유저 취향을 토대로 카페 추천 | 2. cctv를 이용하여, 방문객 수 체크 가능      |
 
 ## Project Architecture
-
-
- <br>
+<br>
+<a href="https://www.notion.so/youz2me/0b2cf6839c7843ecb505064c82f62758?v=bcca024b9b114c459c6a5a854ca731d5&pvs=4">API 명세서</a>
 
 </div>
