@@ -13,7 +13,7 @@
 
 # 🌱 Team Server Members 🌱
 
-| <img width="200px" src="https://avatars.githubusercontent.com/u/113610239?v=4"/> | <img width="200px" src="https://avatars.githubusercontent.com/u/93821377?v=4"/> | <img width="200px" src="https://avatars.githubusercontent.com/u/67568824?v=4"/> | <img width="200px" src="https://avatars.githubusercontent.com/u/137385615?v=4"/> |
+| <img width="200px" src="https://storage.googleapis.com/honzapda-properties/KakaoTalk_20240701_183609942.jpg"/> | <img width="200px" src="https://storage.googleapis.com/honzapda-properties/KakaoTalk_20240701_183609942_03.jpg"/> | <img width="200px" src="https://storage.googleapis.com/honzapda-properties/KakaoTalk_20240701_183609942_01.jpg"/> | <img width="200px" src="https://avatars.githubusercontent.com/u/137385615?v=4"/> |
 |:-----:|:-----:|:-----:|:-----:|
 |[김관주 (웅이)](https://github.com/kkj6235)|[최준영 (제로)](https://github.com/CJY512)|[기승민 (휘리릭)](https://github.com/KiSeungMin)|[윤성문 (로딩)](https://github.com/loading1031)|
 |리드 개발자 🧑‍💻|리드 개발자 🧑‍💻|팀원 🧑‍💻|팀원 🧑‍💻|
@@ -29,7 +29,8 @@
 1. 🎨 [Service Introduce](#service-introduce)
 2. 📅 [Project Period](#project-period)
 3. 🔍 [Service Details](#service-details)
-4. 📄 [API Docs](#API-Docs)
+4. 🏠 [Landing Page](#landing-page)
+5. 📄 [API Docs](#API-Docs)
 
 ## 🎨 Service Introduce
 다들 한 번쯤, 붐비는 카페에 갔다가 돌아가는 경험이 있으셨을 겁니다.  <br>
@@ -43,6 +44,8 @@
 |:-------------------------:|:------------------------------------:|
 | 1. 카페 실시간 혼잡도 제공     | 1. wifi 접속 기기수를 통해, 손님 수 체크 가능 |
 | 2. 유저 취향을 토대로 카페 추천 | 2. cctv를 이용하여, 방문객 수 체크 가능      |
+## 🏠 Landing Page
+<a href="https://youz2me.notion.site/a211a10f45f349e5ab02bfd025b7eaab">랜딩 페이지</a>
 
 ## 📄 API Docs
 <a href="https://www.notion.so/youz2me/0b2cf6839c7843ecb505064c82f62758?v=bcca024b9b114c459c6a5a854ca731d5&pvs=4">API 명세서</a>
