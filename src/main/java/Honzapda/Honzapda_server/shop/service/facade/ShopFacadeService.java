@@ -18,6 +18,9 @@ import Honzapda.Honzapda_server.user.data.entity.LikeData;
 import Honzapda.Honzapda_server.user.data.entity.User;
 import Honzapda.Honzapda_server.user.repository.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -40,6 +43,7 @@ public class ShopFacadeService {
     private final ShopRepository shopRepository;
 
     @Transactional
+    @CachePut(cacheNames = "shop",key="#result.shopId")
     public ShopResponseDto.SearchDto registerShop(ShopRequestDto.RegisterDto request) {
         // mysql에 상점 등록
         // 좌표 등록 없는 반환 객체
@@ -61,6 +65,7 @@ public class ShopFacadeService {
         return shopService.loginShop(request);
     }
 
+    @Cacheable(cacheNames = "shop",key="#shopId")
     public ShopResponseDto.SearchDto findShop(Long shopId, Long userId) {
         // 좌표 등록 없는 반환 객체
         ShopResponseDto.SearchDto searchDto = shopService.findShop(shopId, userId);
@@ -69,7 +74,7 @@ public class ShopFacadeService {
 
         return shopCongestionService.findShopCongestion(searchDto);
     }
-
+    @Cacheable(cacheNames = "shopsByLocation", key = "#locationDto.toString()")
     public List<MapResponseDto.HomeDto> findShopsByLocation(MapRequestDto.LocationDto locationDto) {
         List<ShopCoordinates> shopCoordinates = shopCoordinatesService.findShopsByLocation(locationDto);
         List<Long> mysqlIds = shopCoordinates.stream()
@@ -88,6 +93,7 @@ public class ShopFacadeService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "shop", key = "#userId")
     public MapResponseDto.BookmarkResponseDto addBookmark(Long userId, Long shopId) {
 
         User user = findUserById(userId);
@@ -103,6 +109,7 @@ public class ShopFacadeService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "shop", key = "#id")
     public MapResponseDto.BookmarkResponseDto deleteBookmark(Long id, Long shopId) {
 
         User user = findUserById(id);
@@ -117,6 +124,7 @@ public class ShopFacadeService {
                 .build();
     }
 
+    @Cacheable(cacheNames = "searchShop", key = "#request.toString()")
     public Slice<ShopResponseDto.SearchByNameDto> searchShop(ShopRequestDto.SearchDto request, Pageable pageable) {
         SortColumn sortColumn = request.getSortColumn();
 
@@ -142,6 +150,7 @@ public class ShopFacadeService {
         return shopService.searchShopByShopNameContaining(request, pageable);
     }
 
+    @Cacheable(cacheNames = "bookmarks", key = "#userId")
     public Slice<MapResponseDto.UserBookmarkShopResponseDto> findBookmarks(Long userId, Pageable pageable) {
         User user = findUserById(userId);
 
@@ -181,6 +190,7 @@ public class ShopFacadeService {
         );
     }
 
+    @Cacheable(cacheNames = "likeShops", key = "#likes.toString()")
     public Slice<ShopResponseDto.likeDto> getLikeShopsSortBy(List<LikeData> likes, ShopRequestDto.SearchDto request, Pageable pageable){
         List<ShopResponseDto.likeDto> likeShops = new ArrayList<>();
 
