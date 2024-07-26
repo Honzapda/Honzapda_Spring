@@ -1,6 +1,10 @@
 package Honzapda.Honzapda_server.review.data.dto;
 
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,10 +25,14 @@ public class ReviewResponseDto {
         private Double score;
         private List<ReviewImageResponseDto.ImageDto> images;
         private String body;
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         private LocalDateTime visitedAt;
         // 기타 정보
         private Long reviewId;
         private Long shopId;
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         private LocalDateTime createdAt;
     }
     @Builder

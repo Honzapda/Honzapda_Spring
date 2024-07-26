@@ -7,6 +7,10 @@ import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
 import Honzapda.Honzapda_server.userHelpInfo.data.dto.UserHelpInfoResponseDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
@@ -42,6 +46,8 @@ public class ShopResponseDto {
         String stationDistance;
         boolean openNow;
         boolean userLike;
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         LocalDateTime inactiveDate;
         List<UserHelpInfoResponseDto.UserHelpInfoDto> userHelpInfoDtoList;
         List<ReviewResponseDto.ReviewDto> reviewList;

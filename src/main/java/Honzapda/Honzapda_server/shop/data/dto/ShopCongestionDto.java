@@ -3,7 +3,6 @@ package Honzapda.Honzapda_server.shop.data.dto;
 import Honzapda.Honzapda_server.shop.data.entity.Shop;
 import Honzapda.Honzapda_server.shop.data.entity.ShopAverageCongestion;
 import Honzapda.Honzapda_server.shop.data.entity.ShopDayCongestion;
-import Honzapda.Honzapda_server.userHelpInfo.data.entity.Congestion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +11,8 @@ import lombok.NoArgsConstructor;
 public class ShopCongestionDto {
     @Getter
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class DayCongestionDTO {
         String dayOfWeek;
 
@@ -21,8 +22,10 @@ public class ShopCongestionDto {
 
     @Getter
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class AverageCongestionDTO {
-        boolean isWeekend;
+        boolean weekend;
 
         String startTime;
 
@@ -45,7 +48,7 @@ public class ShopCongestionDto {
     }
     public static ShopAverageCongestion toEntity(AverageCongestionDTO averageCongestionDTO,Shop shop){
         return ShopAverageCongestion.builder()
-                .isWeekend(averageCongestionDTO.isWeekend)
+                .weekend(averageCongestionDTO.weekend)
                 .startTime(averageCongestionDTO.startTime)
                 .endTime(averageCongestionDTO.endTime)
                 .shop(shop)
@@ -53,7 +56,7 @@ public class ShopCongestionDto {
     }
     public static AverageCongestionDTO toDTO(ShopAverageCongestion shopAverageCongestion){
         return AverageCongestionDTO.builder()
-                .isWeekend(shopAverageCongestion.isWeekend())
+                .weekend(shopAverageCongestion.isWeekend())
                 .startTime(shopAverageCongestion.getStartTime())
                 .endTime(shopAverageCongestion.getEndTime())
                 .build();

@@ -1,6 +1,10 @@
 package Honzapda.Honzapda_server.userHelpInfo.data.dto;
 
 import Honzapda.Honzapda_server.user.data.dto.UserResDto;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +31,8 @@ public class UserHelpInfoResponseDto {
     public static class UserHelpInfoDto {
 
         private UserResDto.InfoDto user;
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         private LocalDateTime visitDateTime;
 
         private LikeDto like;
@@ -49,6 +55,8 @@ public class UserHelpInfoResponseDto {
         private String atmosphere;
         // 기타 정보
         private Long userHelpInfId;
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         private LocalDateTime createdAt;
     }
     @Builder
