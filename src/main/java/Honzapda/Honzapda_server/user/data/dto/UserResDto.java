@@ -3,8 +3,10 @@ package Honzapda.Honzapda_server.user.data.dto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
 import Honzapda.Honzapda_server.user.data.entity.SignUpType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -12,6 +14,8 @@ import java.util.List;
 public class UserResDto {
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class InfoDto{
         @Schema(example = "1")
         private Long id;
@@ -26,6 +30,8 @@ public class UserResDto {
     }
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ProfileDto{
         @Schema(example = "1")
         private Long id;

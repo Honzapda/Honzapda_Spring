@@ -21,7 +21,7 @@ public class ShopAverageCongestion {
     private Shop shop;
 
     @Column
-    private boolean isWeekend;
+    private boolean weekend;
 
     @Column
     private String startTime;
