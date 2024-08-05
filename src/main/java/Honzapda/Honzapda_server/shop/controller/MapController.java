@@ -2,6 +2,7 @@ package Honzapda.Honzapda_server.shop.controller;
 
 import Honzapda.Honzapda_server.apiPayload.ApiResult;
 import Honzapda.Honzapda_server.apiPayload.code.status.SuccessStatus;
+import Honzapda.Honzapda_server.shop.data.dto.HomeDtos;
 import Honzapda.Honzapda_server.shop.data.dto.MapRequestDto;
 import Honzapda.Honzapda_server.shop.data.dto.MapResponseDto;
 import Honzapda.Honzapda_server.shop.data.dto.ShopResponseDto;
@@ -27,7 +28,7 @@ public class MapController {
     private final ShopFacadeService shopFacadeService;
 
     @PostMapping
-    public ApiResult<List<MapResponseDto.HomeDto>> fetchShops(@RequestBody @Validated MapRequestDto.LocationDto locationDto) {
+    public ApiResult<HomeDtos> fetchShops(@RequestBody @Validated MapRequestDto.LocationDto locationDto) {
         return ApiResult.onSuccess(shopFacadeService.findShopsByLocation(locationDto));
     }
 

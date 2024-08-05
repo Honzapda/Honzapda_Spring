@@ -25,5 +25,9 @@ public class MapRequestDto {
         @Max(500)
         @Schema(example ="2")
         Double distance = 2.0;
+
+        public String getCacheKey() {
+            return latitude + ":" + longitude + ":" + distance;
+        }
     }
 }

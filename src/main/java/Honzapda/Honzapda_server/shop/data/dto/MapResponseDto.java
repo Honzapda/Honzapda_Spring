@@ -5,6 +5,10 @@ import Honzapda.Honzapda_server.shop.data.entity.ShopBusinessHour;
 import Honzapda.Honzapda_server.shop.data.entity.ShopCoordinates;
 import Honzapda.Honzapda_server.shop.data.entity.ShopDayCongestion;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
@@ -39,6 +43,8 @@ public class MapResponseDto {
         private String adminPhoneNumber;
         private String address;
         private String address_spec;
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         private LocalDateTime inactiveDate;
         private boolean openNow;
         private String photoUrl;

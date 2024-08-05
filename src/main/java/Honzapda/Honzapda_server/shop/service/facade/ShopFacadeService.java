@@ -74,8 +74,8 @@ public class ShopFacadeService {
 
         return shopCongestionService.findShopCongestion(searchDto);
     }
-    @Cacheable(cacheNames = "shopsByLocation", key = "#locationDto.toString()")
-    public List<MapResponseDto.HomeDto> findShopsByLocation(MapRequestDto.LocationDto locationDto) {
+    @Cacheable(cacheNames = "shopsByLocation", key = "#locationDto.getCacheKey()")
+    public HomeDtos findShopsByLocation(MapRequestDto.LocationDto locationDto) {
         List<ShopCoordinates> shopCoordinates = shopCoordinatesService.findShopsByLocation(locationDto);
         List<Long> mysqlIds = shopCoordinates.stream()
                 .map(ShopCoordinates::getMysqlId)
@@ -88,8 +88,8 @@ public class ShopFacadeService {
             shop.addCoordinates(coordinates);
         });
 
-        return shopMap.values().stream()
-                .toList();
+        return new HomeDtos(shopMap.values().stream()
+                .toList());
     }
 
     @Transactional
